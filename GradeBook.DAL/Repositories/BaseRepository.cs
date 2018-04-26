@@ -7,7 +7,7 @@ namespace GradeBook.DAL.Repositories
 {
     public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        private readonly GradebookContext _context;
+        protected readonly GradebookContext _context;
 
         protected BaseRepository(GradebookContext context)
         {

@@ -1,0 +1,171 @@
+GET /api/groups/{id:int}/semesters
+[
+    {
+        id,
+        courseNumber,
+        semesterNumber
+    }
+]
+
+---
+
+GET /api/groups/{id:int}/semesters/{courseNumber:int}/{semesterNumber:int}/courses
+[
+    {
+        id,
+        Name,
+    }
+]
+
+----
+
+GET /api/groups/{id:int}/semesters/{courseNumber:int}/{semesterNumber:int}/courses/{id:int}/students/self/grades
+{
+    id,
+    name,
+    isCurrentSemester,
+    finalGradeType,
+    finalGrade,
+    finalGradeDate,
+    finalGradeBy,
+    attestation1,
+    atteastation1date,
+    atteastation1By,
+    attestation2,
+    attestation2date,
+    attestation2By,
+    grades: [{
+        value,
+        date,
+        by
+    }]
+}
+
+---
+
+GET /api/groups/{id:int}/students/self/courses/grades/summary
+{
+    id,
+    name,
+    isCurrentSemester,
+    finalGradeType,
+    finalGrade,
+    finalGradeDate,
+    finalGradeBy,
+    attestation1,
+    atteastation1date,
+    atteastation1By,
+    attestation2,
+    attestation2date,
+    attestation2By,
+    semester
+}
+
+----
+
+GET /api/groups/{id:int}/students/self/courses/grades/statistic
+{
+    gradesDescrtibution: {},
+    overallGroupRating: 1
+}
+
+
+------
+
+GET /api/semesters/current/groups 
+[
+{
+    id,
+    code
+}
+]
+
+GET /api/semesters/current/groups/{id:int}/courses
+[
+{
+    id,
+    name
+}
+]
+
+GET /api/semesters/current/groups/{id:int}/courses/{id:int}/students
+[
+{
+    id,
+    name
+}
+]
+
+GET /api/semesters/current/groups/{id:int}/courses/{id:int}/students/grades/summary
+[
+{
+    id,
+    name,
+    totalGrade,
+    finalGrade,
+    attestation1,
+    attestation2,
+    eligebleAttestation1,
+    eligebleAttestation2
+}
+]
+
+GET /api/semesters/current/groups/{id:int}/courses/{id:int}/students/{id:int}/grades
+[
+{
+    id,
+    name,
+    totalGrade,
+    finalGrade,
+    attestation1,
+    attestation2,
+    eligebleAttestation1,
+    eligebleAttestation2,
+    grades: [{
+        value,
+        date,
+        by
+    }]
+}
+]
+
+POST /api/semesters/current/groups/{id:int}/courses/{id:int}/students/{id:int}/grades
+{
+    value,
+    desc
+}
+
+DELETE /api/semesters/current/groups/{id:int}/courses/{id:int}/students/{id:int}/grades/{id:int}
+
+GET /api/semesters/current/groups/{id:int}/courses/{id:int}/students/{id:int}/grades/final
+[
+{
+    id,
+    name,
+    totalGrade,
+    finalGrade,
+    attestation1,
+    attestation2
+}
+]
+
+POST /api/semesters/current/groups/{id:int}/courses/{id:int}/students/{id:int}/grades/final
+{
+    value,
+    type
+}
+
+Admin
+---------
+ GET /api/groups?year=&speciality=&code=&
+ GET /api/specialities
+ GET /api/teachers?speciality=&
+ PUT /api/teachers
+ GET /api/teachers/{id:int}
+ POST /api/teachers/{id:int}
+ DELETE /api/teachers/{id:int}
+ GET /api/groups/{id:int}/students
+ POST /api/groups/{id:int}/students
+ GET /api/groups/{id:int}/students/{id:int}
+ PUT /api/groups/{id:int}/students/{id:int}
+ DElETE /api/groups/{id:int}/students/{id:int}    

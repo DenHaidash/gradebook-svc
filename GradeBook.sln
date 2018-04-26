@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GradeBook.Common", "GradeBo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GradeBook", "GradeBook\GradeBook.csproj", "{2A6CEC38-8E74-40CD-8D6E-CA55E78DC444}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GradeBook.DTO", "GradeBook.DTO\GradeBook.DTO.csproj", "{98B96AEA-7DD7-4A09-8687-734045BA816B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{2A6CEC38-8E74-40CD-8D6E-CA55E78DC444}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A6CEC38-8E74-40CD-8D6E-CA55E78DC444}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A6CEC38-8E74-40CD-8D6E-CA55E78DC444}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98B96AEA-7DD7-4A09-8687-734045BA816B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98B96AEA-7DD7-4A09-8687-734045BA816B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98B96AEA-7DD7-4A09-8687-734045BA816B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98B96AEA-7DD7-4A09-8687-734045BA816B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

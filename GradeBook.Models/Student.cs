@@ -8,9 +8,9 @@ namespace GradeBook.Models
     {
         [Key]
         public int Id { get; set; }
-        public int AccountRefId { get; set; }
-        [ForeignKey("AccountRefId")]
+        [ForeignKey("Id")]
         public virtual Account Account { get; set; }
+        public bool IsDeleted { get; set; }
         public int GroupRefId { get; set; }
         [ForeignKey("GroupRefId")]
         public virtual Group Group { get; set; }

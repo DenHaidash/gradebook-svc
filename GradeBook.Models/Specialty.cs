@@ -12,6 +12,5 @@ namespace GradeBook.Models
         [Required]
         public string Name { get; set; }
         public virtual IEnumerable<Group> Groups { get; set; }
-        public virtual IEnumerable<Curriculum> Curriculum { get; set; }
     }
 }

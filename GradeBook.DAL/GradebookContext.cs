@@ -5,7 +5,7 @@ using GradeBook.Models;
  * dotnet ef migrations add Initial --project ../GradeBook.DAL/GradeBook.DAL.csproj
 
  * dotnet ef database update
-
+docker run -p 1111:5432 -e POSTGRES_PASSWORD=mysecretpassword -v pg_data:/var/lib/postgresql/data postgres
  */
 
 namespace GradeBook.DAL
@@ -21,6 +21,8 @@ namespace GradeBook.DAL
         public DbSet<Student> Students { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Gradebook> Gradebooks { get; set; }
+        public DbSet<Group> Groups { get; set; }
+        public DbSet<Subject> Subjects { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,8 +34,8 @@ namespace GradeBook.DAL
             modelBuilder.Entity<TeacherSubject>()
                 .HasKey(i => new {i.SubjectRefId, i.TeacherRefId});
             
-            modelBuilder.Entity<CurriculumSubject>()
-                .HasKey(i => new {i.CurriculumRefId, i.SubjectRefId});
+            modelBuilder.Entity<SemesterSchuduleSubject>()
+                .HasKey(i => new {i.SubjectRefId, i.SemesterScheduleRefId});
         }
     }
 }

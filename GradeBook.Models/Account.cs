@@ -16,10 +16,13 @@ namespace GradeBook.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         [Required]
+        public string Login { get; set; }
+        [Required]
         public string PasswordSalt { get; set; }
         [Required]
         public string PasswordHash { get; set; }
         [Required]
         public string Role { get; set; }
+        public bool IsActive { get; set; }
     }
 }

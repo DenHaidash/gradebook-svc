@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GradeBook.DAL;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace GradeBook
 {
@@ -27,8 +29,14 @@ namespace GradeBook
         {
             services.AddMvc();
             
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "GradeBook API", Version = "v1" });
+            });
+            
             var connectionString = Configuration.GetConnectionString("GradebookContext");
-            services.AddEntityFrameworkNpgsql().AddDbContext<GradebookContext>(options => options.UseNpgsql(connectionString));
+            services.AddEntityFrameworkNpgsql()
+                .AddDbContext<GradebookContext>(options => options.UseNpgsql(connectionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,6 +45,11 @@ namespace GradeBook
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "GradeBook API v1");
+                });
             }
 
             app.UseMvc();

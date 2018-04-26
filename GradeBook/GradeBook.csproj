@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="2.4.0" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
@@ -16,5 +17,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GradeBook.DAL\GradeBook.DAL.csproj" />
+    <ProjectReference Include="..\GradeBook.DTO\GradeBook.DTO.csproj" />
+    <ProjectReference Include="..\GradeBook.Services\GradeBook.Services.csproj" />
   </ItemGroup>
 </Project>

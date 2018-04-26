@@ -1,6 +1,8 @@
-﻿namespace GradeBook.DAL.Repositories.Interfaces
+﻿using GradeBook.Models;
+
+namespace GradeBook.DAL.Repositories.Interfaces
 {
-    public interface IGroupsRepository
+    public interface IGroupsRepository : IRepository<Group>
     {
         
     }

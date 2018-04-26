@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,5 +17,6 @@ namespace GradeBook.Models
         public virtual Semester Semester { get; set; }
         public DateTime StartsAt { get; set; }
         public DateTime EndsAt { get; set; }
+        public virtual IEnumerable<SemesterSchuduleSubject> SemesterSubjects { get; set; }
     }
 }

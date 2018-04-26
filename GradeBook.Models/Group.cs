@@ -10,6 +10,7 @@ namespace GradeBook.Models
         public int Id { get; set; }
         [Required]
         public string Code { get; set; }
+        public bool IsDeleted { get; set; }
         public int SpecialityRefId { get; set; }
         [ForeignKey("SpecialityRefId")]
         public virtual Specialty Specialty { get; set; }

@@ -1,5 +1,7 @@
-﻿using GradeBook.DAL.Repositories.Interfaces;
+﻿using System.Threading.Tasks;
+using GradeBook.DAL.Repositories.Interfaces;
 using GradeBook.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GradeBook.DAL.Repositories
 {
@@ -8,6 +10,11 @@ namespace GradeBook.DAL.Repositories
         public AccountRepository(GradebookContext context) : base(context)
         {
             
+        }
+
+        public async Task<Account> GetByLoginAsync(string login)
+        {
+            return await base._context.Accounts.FirstOrDefaultAsync(i => i.Login == login);
         }
     }
 }
