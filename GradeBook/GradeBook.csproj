@@ -7,6 +7,8 @@
     <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="6.2.2" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="3.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="2.4.0" />
@@ -16,6 +18,10 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GradeBook.Common\GradeBook.Common.csproj">
+      <Project>{97BF144C-0CC4-470E-8F3D-C38284036235}</Project>
+      <Name>GradeBook.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GradeBook.DAL\GradeBook.DAL.csproj" />
     <ProjectReference Include="..\GradeBook.DTO\GradeBook.DTO.csproj" />
     <ProjectReference Include="..\GradeBook.Services\GradeBook.Services.csproj" />

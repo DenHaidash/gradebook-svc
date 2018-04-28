@@ -5,7 +5,7 @@ namespace GradeBook.DAL.Repositories
 {
     public class SpecialitiesRepository : BaseRepository<Specialty>, ISpecialitiesRepository
     {
-        protected SpecialitiesRepository(GradebookContext context) : base(context)
+        public SpecialitiesRepository(GradebookContext context) : base(context)
         {
         }
     }

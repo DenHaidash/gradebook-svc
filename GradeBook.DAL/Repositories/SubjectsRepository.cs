@@ -5,7 +5,7 @@ namespace GradeBook.DAL.Repositories
 {
     public class SubjectsRepository : BaseRepository<Subject>, ISubjectsRepository
     {
-        protected SubjectsRepository(GradebookContext context) : base(context)
+        public SubjectsRepository(GradebookContext context) : base(context)
         {
         }
     }

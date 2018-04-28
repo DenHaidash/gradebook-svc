@@ -8,15 +8,16 @@ namespace GradeBook.DAL.Repositories
 {
     public class GroupsRepository : BaseRepository<Group>, IGroupsRepository
     {
-        protected GroupsRepository(GradebookContext context) : base(context)
+        public GroupsRepository(GradebookContext context) : base(context)
         {
         }
         
         public override async Task<Group> GetByIdAsync(int id)
         {
-            return await _context.Set<Group>()
+            return await Context.Groups
                 .Include(g => g.Specialty)
-                .FirstOrDefaultAsync(g => g.Id == id);
+                .FirstOrDefaultAsync(g => g.Id == id)
+                .ConfigureAwait(false);
         }
     }
 }

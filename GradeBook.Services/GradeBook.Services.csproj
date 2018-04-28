@@ -4,8 +4,17 @@
     <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GradeBook.Common\GradeBook.Common.csproj">
+      <Project>{97BF144C-0CC4-470E-8F3D-C38284036235}</Project>
+      <Name>GradeBook.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GradeBook.DAL\GradeBook.DAL.csproj" />
     <ProjectReference Include="..\GradeBook.DTO\GradeBook.DTO.csproj" />
     <ProjectReference Include="..\GradeBook.Models\GradeBook.Models.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="AutoMapper, Version=6.2.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005">
+      <HintPath>..\..\..\.nuget\packages\automapper\6.2.2\lib\netstandard1.3\AutoMapper.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

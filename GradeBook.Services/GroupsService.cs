@@ -41,7 +41,7 @@ namespace GradeBook.Services
 
         public async Task<IEnumerable<GroupDto>> GetGroupsAsync()
         {
-            var groups = await _groupsRepository.GetAll().ToListAsync();
+            var groups = await _groupsRepository.GetAllAsync();
 
             return groups.Select(g => new GroupDto()
             {

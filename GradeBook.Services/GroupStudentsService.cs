@@ -19,11 +19,11 @@ namespace GradeBook.Services
         
         public async Task<IEnumerable<StudentDto>> GetStudentsAsync(int groupId)
         {
-            var students = await _studentsRepository.GetAll()
-                .Include(s => s.Group.Specialty)
-                .Include(s => s.Account) // todo: should be in repo?
-                .Where(s => s.GroupRefId == groupId && !s.IsDeleted)
-                .ToListAsync();
+            var students = await _studentsRepository
+                .GetAllAsync(s => s.GroupRefId == groupId && !s.IsDeleted)
+//                .Include(s => s.Group.Specialty)
+//                .Include(s => s.Account) // todo: should be in repo?
+                .ConfigureAwait(false);
 
             return students.Select(s => new StudentDto()
             {

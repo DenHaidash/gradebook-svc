@@ -1,18 +1,24 @@
 ﻿using System.Threading.Tasks;
+using AutoMapper;
 using GradeBook.DTO;
+using GradeBook.Models;
 using GradeBook.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GradeBook.Controllers
 {
+    [Authorize]
     [Route("api/teachers")]
     public class TeachersController : Controller
     {
         private readonly ITeachersService _teachersService;
+        private readonly IMapper _mapper;
 
-        public TeachersController(ITeachersService teachersService)
+        public TeachersController(ITeachersService teachersService, IMapper mapper)
         {
             _teachersService = teachersService;
+            _mapper = mapper;
         }
         
         [HttpGet]
@@ -31,25 +37,32 @@ namespace GradeBook.Controllers
             return Ok(teachers);
         }
         
-        [HttpGet("{teacherId:int}")]
+        [HttpGet("{teacherId:int}", Name = "GetTeacher")]
         public async Task<IActionResult> GetTeacher(int teacherId)
         {
-            var teachers = await _teachersService.GetTeacherAsync(teacherId);
+            var teacher = await _teachersService.GetTeacherAsync(teacherId);
 
-            return Ok(teachers);
+            if (teacher == null)
+            {
+                return NotFound();
+            }
+             
+            return Ok(teacher);
         }
         
         [HttpPost("{teacherId:int}")]
-        public async Task<IActionResult> EditTeacher(int teacherId, [FromBody]TeacherDto teacher)
+        public async Task<IActionResult> EditTeacher(int teacherId, [FromBody]TeacherViewModel teacher)
         {
-            if (teacher == null)
+            if (teacher == null || !ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            teacher.Id = teacherId;
+            var teacherDto = _mapper.Map<TeacherDto>(teacher);
             
-            await _teachersService.UpdateTeacherAsync(teacher);
+            teacherDto.Id = teacherId;
+            
+            await _teachersService.UpdateTeacherAsync(teacherDto);
 
             return NoContent();
         }
@@ -63,11 +76,16 @@ namespace GradeBook.Controllers
         }
         
         [HttpPut]
-        public async Task<IActionResult> CreateTeacher(TeacherDto teacher)
+        public async Task<IActionResult> CreateTeacher([FromBody]TeacherViewModel teacher)
         {
-            var teacherId = await _teachersService.CreateTeacherAsync(teacher);
+            if (teacher == null || !ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            
+            var teacherId = await _teachersService.CreateTeacherAsync(_mapper.Map<TeacherDto>(teacher));
 
-            return CreatedAtAction("GetTeacher", teacherId);
+            return CreatedAtRoute("GetTeacher", new { teacherId }, null);
         }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace GradeBook.DTO
 {
     public class TeacherDto : AccountDto
-    {
-        public virtual IEnumerable<SubjectDto> Specializations { get; set; }
+    {        
+        public IEnumerable<SubjectDto> Specializations { get; set; } = Enumerable.Empty<SubjectDto>();
     }
 }

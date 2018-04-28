@@ -3,7 +3,11 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using GradeBook.Common.Mailing;
+using GradeBook.Common.Security;
 using GradeBook.DAL.Repositories.Interfaces;
+using GradeBook.DAL.UoW.Base;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Interfaces;
@@ -12,79 +16,74 @@ namespace GradeBook.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly IAccountRepository _accountRepository;
+        private readonly IUnitOfWork<IAccountRepository> _accountUnitOfWork;
+        private readonly IEmailSender _emailSender;
+        private readonly IMapper _mapper;
 
-        public AccountService(IAccountRepository accountRepository)
+        public AccountService(IUnitOfWork<IAccountRepository> accountUnitOfWork, IEmailSender emailSender, IMapper mapper)
         {
-            _accountRepository = accountRepository;
+            _accountUnitOfWork = accountUnitOfWork;
+            _emailSender = emailSender;
+            _mapper = mapper;
         }
 
         public async Task<AccountDto> GetAccountAsync(string login)
         {
-            var acct = await _accountRepository.GetByLoginAsync(login);
+            var acct = await _accountUnitOfWork.Repository.GetByLoginAsync(login);
 
             if (acct == null)
             {
                 return null;
             }
 
-            return new AccountDto()
-            {
-                Id = acct.Id,
-                FirstName = acct.FirstName,
-                LastName = acct.LastName,
-                MiddleName = acct.MiddleName,
-                Role = acct.Role
-            };
+            return _mapper.Map<AccountDto>(acct);
         }
 
         public async Task<bool> VerifyPasswordAsync(string login, string password)
         {
-            var account = await _accountRepository.GetByLoginAsync(login);
+            var account = await _accountUnitOfWork.Repository.GetByLoginAsync(login);
 
             if (account == null)
             {
                 return false;
             }
 
-            if (!account.IsActive)
-            {
-                throw new Exception("Acct is disabled"); // todo: custom exception
-            }
-
-            var saltedPassword =
-                new SHA256Managed().ComputeHash(
-                    Encoding.Unicode.GetBytes(account.PasswordSalt + password)).ToString();
+            var saltedPassword = PasswordProtector.SaltString(account.PasswordSalt, password);
 
             return saltedPassword.Equals(account.PasswordHash);
         }
 
         public async Task<int> CreateAccountAsync(AccountDto acct)
         {
+            var salt = PasswordProtector.GenerateSalt();
+            var randPassword = PasswordProtector.GenerateSalt();
+            
             var newAcct = new Account()
             {
                 FirstName = acct.FirstName,
                 LastName = acct.LastName,
                 IsActive = true,
-                Login = "",
+                Login = acct.Email,
                 MiddleName = acct.MiddleName,
-                PasswordSalt = "",
-                PasswordHash = "",
+                PasswordSalt = salt,
+                PasswordHash = PasswordProtector.SaltString(salt, randPassword),
                 Role = acct.Role,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
             };
             
-            _accountRepository.Add(newAcct);
-            
-            // save changes
+            _accountUnitOfWork.Repository.Add(newAcct);
+
+            await _accountUnitOfWork.SaveAsync().ConfigureAwait(false);
+
+            await _emailSender.SendEmailAsync(acct.Email, "GradeBook accout created", randPassword).ConfigureAwait(false);
 
             return newAcct.Id;
         }
 
         public async Task DisableAccountAsync(int accountId)
         {
-            var acct = await _accountRepository.GetByIdAsync(accountId).ConfigureAwait(false);
+            var acct = await _accountUnitOfWork.Repository.GetByIdAsync(accountId).ConfigureAwait(false);
 
             if (acct == null)
             {
@@ -92,13 +91,13 @@ namespace GradeBook.Services
             }
 
             acct.IsActive = false;
-            
-            // save changes
+
+            await _accountUnitOfWork.SaveAsync().ConfigureAwait(false);
         }
 
         public async Task UpdateAccountAsync(AccountDto acct)
         {
-            var acctToUpdate = await _accountRepository.GetByIdAsync(acct.Id).ConfigureAwait(false);
+            var acctToUpdate = await _accountUnitOfWork.Repository.GetByIdAsync(acct.Id).ConfigureAwait(false);
 
             if (acctToUpdate == null)
             {
@@ -111,19 +110,21 @@ namespace GradeBook.Services
             acctToUpdate.LastName = acct.LastName;
             acctToUpdate.MiddleName = acct.MiddleName;
             acctToUpdate.UpdatedAt = DateTime.Now;
-            
-            // save
+
+            await _accountUnitOfWork.SaveAsync().ConfigureAwait(false);
         }
 
         public async Task ChangePasswordAsync(int accountId, string newPassword)
         {
-            var acctToUpdate = await _accountRepository.GetByIdAsync(accountId).ConfigureAwait(false);
+            var acctToUpdate = await _accountUnitOfWork.Repository.GetByIdAsync(accountId).ConfigureAwait(false);
 
-            acctToUpdate.PasswordSalt = "";
-            acctToUpdate.PasswordHash = "";
+            var salt = PasswordProtector.GenerateSalt();
+            
+            acctToUpdate.PasswordSalt = salt;
+            acctToUpdate.PasswordHash = PasswordProtector.SaltString(salt, newPassword);
             acctToUpdate.UpdatedAt = DateTime.Now;
 
-            // save
+            await _accountUnitOfWork.SaveAsync().ConfigureAwait(false);
         }
     }
 }

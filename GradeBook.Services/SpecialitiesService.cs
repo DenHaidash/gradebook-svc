@@ -20,7 +20,7 @@ namespace GradeBook.Services
         
         public async Task<IEnumerable<SpecialtyDto>> GetSpecialitiesAsync()
         {
-            var specialities = await _specialitiesRepository.GetAll().ToListAsync().ConfigureAwait(false);
+            var specialities = await _specialitiesRepository.GetAllAsync().ConfigureAwait(false);
 
             return specialities.Select(s => new SpecialtyDto()
             {

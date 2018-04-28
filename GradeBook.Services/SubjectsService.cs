@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using GradeBook.DAL.Repositories.Interfaces;
+using GradeBook.DAL.UoW.Base;
+//using GradeBook.DAL.UoW.Interfaces;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Interfaces;
@@ -11,52 +14,48 @@ namespace GradeBook.Services
 {
     public class SubjectsService : ISubjectsService
     {
-        private readonly ISubjectsRepository _subjectsRepository;
+        private readonly IUnitOfWork<ISubjectsRepository>  _subjectsUnitOfWork;
+        private readonly IMapper _mapper;
 
-        public SubjectsService(ISubjectsRepository subjectsRepository)
+        public SubjectsService(IUnitOfWork<ISubjectsRepository> subjectsUnitOfWork, IMapper mapper)
         {
-            _subjectsRepository = subjectsRepository;
+            _subjectsUnitOfWork = subjectsUnitOfWork;
+            _mapper = mapper;
         }
         
         public async Task<IEnumerable<SubjectDto>> GetSubjectsAsync()
         {
-            var subjects = await _subjectsRepository.GetAll().ToListAsync();
+            var subjects = await _subjectsUnitOfWork.Repository.GetAllAsync().ConfigureAwait(false);
 
-            return subjects.Select(s => new SubjectDto()
-            {
-                Id = s.Id,
-                Name = s.Name
-            });
+            return _mapper.Map<IEnumerable<SubjectDto>>(subjects);
         }
 
         public async Task<SubjectDto> GetSubjectAsync(int subjectId)
         {
-            var subject = await _subjectsRepository.GetByIdAsync(subjectId);
-            
-            return new SubjectDto()
+            var subject = await _subjectsUnitOfWork.Repository.GetByIdAsync(subjectId).ConfigureAwait(false);
+
+            if (subject == null)
             {
-                Id = subject.Id,
-                Name = subject.Name
-            };
+                return null;
+            }
+
+            return _mapper.Map<SubjectDto>(subject);
         }
 
         public async Task<int> CreateSubjectAsync(SubjectDto subject)
         {
-            var newSubject = new Subject()
-            {
-                Name = subject.Name
-            };
+            var newSubject = _mapper.Map<Subject>(subject);
             
-            _subjectsRepository.Add(newSubject);
-            
-            // save
+            _subjectsUnitOfWork.Repository.Add(newSubject);
+
+            await _subjectsUnitOfWork.SaveAsync().ConfigureAwait(false);
 
             return newSubject.Id;
         }
 
         public async Task UpdateSubjectAsync(SubjectDto subject)
         {
-            var subjectToUpdate = await _subjectsRepository.GetByIdAsync(subject.Id);
+            var subjectToUpdate = await _subjectsUnitOfWork.Repository.GetByIdAsync(subject.Id).ConfigureAwait(false);
 
             if (subjectToUpdate == null)
             {
@@ -65,19 +64,21 @@ namespace GradeBook.Services
 
             subjectToUpdate.Name = subject.Name;
             
-            // save
+            await _subjectsUnitOfWork.SaveAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteSubjectAsync(int subjectId)
         {
-            var subjectToUpdate = await _subjectsRepository.GetByIdAsync(subjectId);
+            var subjectToUpdate = await _subjectsUnitOfWork.Repository.GetByIdAsync(subjectId).ConfigureAwait(false);
 
             if (subjectToUpdate == null)
             {
                 return; // throw NotFoundEx
             }
 
-            _subjectsRepository.Delete(subjectToUpdate);
+            _subjectsUnitOfWork.Repository.Delete(subjectToUpdate);
+            
+            await _subjectsUnitOfWork.SaveAsync().ConfigureAwait(false);
         }
     }
 }
