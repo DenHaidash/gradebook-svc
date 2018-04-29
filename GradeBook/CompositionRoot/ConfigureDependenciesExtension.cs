@@ -1,8 +1,11 @@
 ﻿using GradeBook.Common.Mailing;
+using GradeBook.Common.Options;
 using GradeBook.DAL;
 using GradeBook.DAL.Repositories;
 using GradeBook.DAL.Repositories.Interfaces;
 using GradeBook.DAL.UoW.Base;
+using GradeBook.Helpers;
+using GradeBook.Options;
 using GradeBook.Services;
 using GradeBook.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -19,8 +22,11 @@ namespace GradeBook.CompositionRoot
             services.AddEntityFrameworkNpgsql()
                 .AddDbContext<GradebookContext>(options => options.UseNpgsql(connectionString));
 
-            services.Configure<EmailSenderSettings>(configuration.GetSection("MailingSettings"));
+            services.Configure<EmailSenderOptions>(configuration.GetSection("MailingSettings"));
+            services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
 
+            services.AddSingleton<IJwtTokenHelper, JwtTokenHelper>();
+            
             services.AddTransient<IEmailSender, EmailSender>();
             
             services.AddScoped<IAccountRepository, AccountRepository>();
@@ -45,9 +51,13 @@ namespace GradeBook.CompositionRoot
             services.AddTransient<ITeacherCoursesService, TeacherCoursesService>();
             services.AddTransient<ITeachersService, TeachersService>();
             
+            // move to module
             services.AddScoped<IUnitOfWork<ISubjectsRepository>, UnitOfWork<ISubjectsRepository>>();
             services.AddScoped<IUnitOfWork<IAccountRepository>, UnitOfWork<IAccountRepository>>();
             services.AddScoped<IUnitOfWork<ITeachersRepository>, UnitOfWork<ITeachersRepository>>();
+            services.AddScoped<IUnitOfWork<ISpecialitiesRepository>, UnitOfWork<ISpecialitiesRepository>>();
+            services.AddScoped<IUnitOfWork<IGroupsRepository>, UnitOfWork<IGroupsRepository>>();
+            services.AddScoped<IUnitOfWork<IStudentsRepository>, UnitOfWork<IStudentsRepository>>();
         }
     }
 }

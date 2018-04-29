@@ -14,7 +14,6 @@ namespace GradeBook.DAL
     {
         public GradebookContext(DbContextOptions<GradebookContext> options) : base(options)
         {
-            
         }
         
         public DbSet<Account> Accounts { get; set; }
@@ -30,9 +29,6 @@ namespace GradeBook.DAL
 
             modelBuilder.Entity<GradebookTeacher>()
                 .HasKey(i => new {i.GradebookRefId, i.TeacherRefId});
-            
-            modelBuilder.Entity<TeacherSubject>()
-                .HasKey(i => new {i.SubjectRefId, i.TeacherRefId});
             
             modelBuilder.Entity<SemesterSchuduleSubject>()
                 .HasKey(i => new {i.SubjectRefId, i.SemesterScheduleRefId});

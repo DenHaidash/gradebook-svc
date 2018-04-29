@@ -45,7 +45,7 @@ namespace GradeBook.Controllers
         [HttpPut]
         public async Task<IActionResult> CreateSubjectAsync([FromBody]SubjectViewModel subject)
         {
-            if (subject == null || !ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
@@ -58,7 +58,7 @@ namespace GradeBook.Controllers
         [HttpPost("{subjectId:int}")]
         public async Task<IActionResult> UpdateSubjectAsync(int subjectId, [FromBody]SubjectViewModel subject)
         {
-            if (subject == null || !ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }

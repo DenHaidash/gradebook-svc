@@ -1,30 +1,36 @@
 ﻿using System.Threading.Tasks;
+using AutoMapper;
 using GradeBook.DTO;
+using GradeBook.Models;
 using GradeBook.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GradeBook.Controllers
 {
+    [Authorize]
     [Route("api/groups")]
     public class GroupsController : Controller
     {
         private readonly IGroupsService _groupsService;
+        private readonly IMapper _mapper;
 
-        public GroupsController(IGroupsService groupsService)
+        public GroupsController(IGroupsService groupsService, IMapper mapper)
         {
             _groupsService = groupsService;
+            _mapper = mapper;
         }
         
         [HttpGet]
-        public async Task<IActionResult> GetGroups()
+        public async Task<IActionResult> GetGroupsAsync()
         {
             var groups = await _groupsService.GetGroupsAsync();
 
             return Ok(groups);
         }
         
-        [HttpGet("{groupId:int}")]
-        public async Task<IActionResult> GetGroup(int groupId)
+        [HttpGet("{groupId:int}", Name = "GetGroup")]
+        public async Task<IActionResult> GetGroupAsync(int groupId)
         {
             var group = await _groupsService.GetGroupAsync(groupId);
 
@@ -37,20 +43,20 @@ namespace GradeBook.Controllers
         }
         
         [HttpPut]
-        public async Task<IActionResult> CreateGroup([FromBody]GroupDto group)
+        public async Task<IActionResult> CreateGroupAsync([FromBody]GroupViewModel group)
         {
-            if (group == null)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
-           
-            var groupId = await _groupsService.CreateGroupAsync(group);
+            
+            var groupId = await _groupsService.CreateGroupAsync(_mapper.Map<GroupDto>(group));
 
-            return CreatedAtAction("GetGroup", groupId);
+            return CreatedAtRoute("GetGroup", new { groupId }, null);
         }
         
         [HttpDelete("{groupId:int}")]
-        public async Task<IActionResult> DeleteGroup(int groupId)
+        public async Task<IActionResult> DeleteGroupAsync(int groupId)
         {
             await _groupsService.RemoveGroupAsync(groupId);
             
@@ -58,16 +64,17 @@ namespace GradeBook.Controllers
         }
         
         [HttpPost("{groupId:int}")]
-        public async Task<IActionResult> UpdateGroup(int groupId, [FromBody]GroupDto group)
+        public async Task<IActionResult> UpdateGroupAsync(int groupId, [FromBody]GroupViewModel group)
         {
-            if (group == null)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            group.Id = groupId;
+            var groupDto = _mapper.Map<GroupDto>(group);
+            groupDto.Id = groupId;
             
-            await _groupsService.UpdateGroupAsync(group);
+            await _groupsService.UpdateGroupAsync(groupDto);
             
             return NoContent();
         }

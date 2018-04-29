@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
+using AutoMapper;
 using GradeBook.DTO;
+using GradeBook.Models;
 using GradeBook.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,13 +11,15 @@ namespace GradeBook.Controllers
     public class StudentsController : Controller
     {
         private readonly IStudentsService _studentsService;
+        private readonly IMapper _mapper;
 
-        public StudentsController(IStudentsService studentsService)
+        public StudentsController(IStudentsService studentsService, IMapper mapper)
         {
             _studentsService = studentsService;
+            _mapper = mapper;
         }
         
-        [HttpGet("{studentId:int}")]
+        [HttpGet("{studentId:int}", Name = "GetStudent")]
         public async Task<IActionResult> GetStudent(int studentId)
         {
             var student = await _studentsService.GetStudentAsync(studentId);
@@ -37,31 +41,32 @@ namespace GradeBook.Controllers
         }
         
         [HttpPost("{studentId:int}")]
-        public async Task<IActionResult> UpdateStudent(int studentId, [FromBody]StudentDto student)
+        public async Task<IActionResult> UpdateStudent(int studentId, [FromBody]AccountViewModel student)
         {
-            if (student == null)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            student.Id = studentId;
+            var studentDto = _mapper.Map<StudentDto>(student);
+            studentDto.Id = studentId;
             
-            await _studentsService.UpdateStudentAsync(student);
+            await _studentsService.UpdateStudentAsync(studentDto);
             
             return NoContent();
         }
         
         [HttpPut]
-        public async Task<IActionResult> CreateStudent([FromBody]StudentDto student)
+        public async Task<IActionResult> CreateStudent([FromBody]NewStudentViewModel student)
         {
-            if (student == null)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
             
-            var studentId = await _studentsService.CreateStudentAsync(student);
+            var studentId = await _studentsService.CreateStudentAsync(_mapper.Map<StudentDto>(student));
             
-            return CreatedAtAction("GetStudent", studentId);
+            return CreatedAtRoute("GetStudent", new { studentId }, null);
         }
     }
 }

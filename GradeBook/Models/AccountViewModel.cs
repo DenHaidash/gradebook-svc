@@ -5,7 +5,7 @@ using GradeBook.DTO;
 
 namespace GradeBook.Models
 {
-    public class TeacherViewModel
+    public class AccountViewModel
     {
         [Required]
         public string FirstName { get; set; }
@@ -13,8 +13,5 @@ namespace GradeBook.Models
         public string LastName { get; set; }
         [Required]
         public string MiddleName { get; set; }
-        [Required]
-        public string Email { get; set; }
-        public IEnumerable<SubjectDto> Specializations { get; set; } = Enumerable.Empty<SubjectDto>();
     }
 }

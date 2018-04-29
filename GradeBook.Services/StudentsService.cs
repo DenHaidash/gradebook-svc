@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Data;
 using System.Threading.Tasks;
+using AutoMapper;
 using GradeBook.DAL.Repositories.Interfaces;
+using GradeBook.DAL.UoW.Base;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Interfaces;
@@ -9,82 +12,74 @@ namespace GradeBook.Services
 {
     public class StudentsService : IStudentsService
     {
-        private readonly IStudentsRepository _studentsRepository;
+        private readonly IUnitOfWork<IStudentsRepository> _studentsUnitOfWork;
         private readonly IAccountService _acctService;
+        private readonly IMapper _mapper;
 
-        public StudentsService(IStudentsRepository studentsRepository, IAccountService acctService)
+        public StudentsService(IUnitOfWork<IStudentsRepository> studentsUnitOfWork, IAccountService acctService, IMapper mapper)
         {
-            _studentsRepository = studentsRepository;
+            _studentsUnitOfWork = studentsUnitOfWork;
             _acctService = acctService;
+            _mapper = mapper;
         }
 
         public async Task<StudentDto> GetStudentAsync(int id)
         {
-            var student = await _studentsRepository.GetByIdAsync(id);
-            
-            return new StudentDto()
+            var student = await _studentsUnitOfWork.Repository.GetByIdAsync(id).ConfigureAwait(false);
+
+            if (student == null)
             {
-                FirstName = student.Account.FirstName,
-                LastName = student.Account.LastName,
-                MiddleName = student.Account.MiddleName,
-                Id = student.Id,
-                Group = new GroupDto()
-                {
-                    Code = student.Group.Code,
-                    Id = student.Group.Id,
-                    Specialty = new SpecialtyDto()
-                    {
-                        Code = student.Group.Specialty.Code,
-                        Id = student.Group.Specialty.Id,
-                        Name = student.Group.Specialty.Name
-                    }
-                }
-            };
+                return null;
+            }
+            
+            return _mapper.Map<StudentDto>(student);
         }
 
         public async Task<int> CreateStudentAsync(StudentDto student)
         {
-            // todo: in transaction
-            
-            var newAcctId = await _acctService.CreateAccountAsync(student);
-
-            var newStudent = new Student()
+            using (var tranaction = await _studentsUnitOfWork.InTransactionAsync(IsolationLevel.ReadCommitted).ConfigureAwait(false))
             {
-                Id = newAcctId,
-                GroupRefId = student.Group.Id
-            };
-            
-            _studentsRepository.Add(newStudent);
-            
-            // save
+                student.Role = "student"; // todo: move to mapper or ctor
+                
+                var newAcctId = await _acctService.CreateAccountAsync(student).ConfigureAwait(false);
 
-            return newAcctId;
+                var newStudent = new Student()
+                {
+                    Id = newAcctId,
+                    GroupRefId = student.Group.Id
+                };
+            
+                _studentsUnitOfWork.Repository.Add(newStudent);
+                await _studentsUnitOfWork.SaveAsync().ConfigureAwait(false);
+                
+                tranaction.Commit();
+
+                return newAcctId;
+            }
         }
 
         public async Task UpdateStudentAsync(StudentDto student)
         {
-            var studentToUpdate = await _studentsRepository.GetByIdAsync(student.Id); // todo: eager load group and acct
+            await _acctService.UpdateAccountAsync(student).ConfigureAwait(false);
 
-            studentToUpdate.GroupRefId = student.Group.Id;
-            studentToUpdate.Account.FirstName = student.FirstName;
-            studentToUpdate.Account.LastName = student.LastName;
-            studentToUpdate.Account.MiddleName = student.MiddleName;
-            studentToUpdate.Account.UpdatedAt = DateTime.Now;
-            
-            //save
-
+            //studentToUpdate.GroupRefId = student.Group.Id;
         }
 
         public async Task DeleteStudentAsync(int studentId)
         {
-            var studentToUpdate = await _studentsRepository.GetByIdAsync(studentId); // todo: eager load group and acct
+            var studentToUpdate = await _studentsUnitOfWork.Repository.GetByIdAsync(studentId).ConfigureAwait(false);
 
-            // in transaction
-            
-            studentToUpdate.IsDeleted = true;
-            studentToUpdate.Account.IsActive = false;
-            
-            // save
+            using (var tranaction = await _studentsUnitOfWork.InTransactionAsync(IsolationLevel.ReadCommitted)
+                .ConfigureAwait(false))
+            {
+                await _acctService.DisableAccountAsync(studentId).ConfigureAwait(false);
+                
+                studentToUpdate.IsDeleted = true;
+
+                await _studentsUnitOfWork.SaveAsync().ConfigureAwait(false);
+                
+                tranaction.Commit();
+            }
         }
     }
 }

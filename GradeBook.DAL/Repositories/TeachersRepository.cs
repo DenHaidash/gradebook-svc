@@ -17,7 +17,7 @@ namespace GradeBook.DAL.Repositories
 
         public override async Task<Teacher> GetByIdAsync(int id)
         {
-            return await Context.Teachers
+            return await Set
                 .Include(t => t.Account)
                 .FirstOrDefaultAsync(t => t.Id == id)
                 .ConfigureAwait(false);
@@ -25,7 +25,7 @@ namespace GradeBook.DAL.Repositories
 
         public override async Task<IEnumerable<Teacher>> GetAllAsync()
         {
-            return await Context.Teachers
+            return await Set
                 .Include(t => t.Account)
                 .ToListAsync()
                 .ConfigureAwait(false);
@@ -33,7 +33,7 @@ namespace GradeBook.DAL.Repositories
         
         public override async Task<IEnumerable<Teacher>> GetAllAsync(Expression<Func<Teacher, bool>> predicate)
         {
-            return await Context.Teachers
+            return await Set
                 .Include(t => t.Account)
                 .Where(predicate)
                 .ToListAsync()

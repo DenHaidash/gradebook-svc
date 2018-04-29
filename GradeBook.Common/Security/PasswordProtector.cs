@@ -18,9 +18,9 @@ namespace GradeBook.Common.Security
             return new string(chars.ToArray());
         }
         
-        public static string GenerateSalt()
+        public static string GenerateSalt(int saltLength = 30)
         {
-            return _getRandomString(10);
+            return _getRandomString(saltLength);
         }
 
         public static string SaltString(string salt, string str)

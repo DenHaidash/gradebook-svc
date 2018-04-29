@@ -1,6 +1,6 @@
-﻿namespace GradeBook.Common.Mailing
+﻿namespace GradeBook.Common.Options
 {
-    public class EmailSenderSettings
+    public class EmailSenderOptions
     {
         public string FromAddress { get; set; }
         public string FromName { get; set; }

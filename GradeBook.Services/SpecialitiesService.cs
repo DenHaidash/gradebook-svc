@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using GradeBook.DAL.Repositories.Interfaces;
+using GradeBook.DAL.UoW.Base;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Interfaces;
@@ -9,57 +11,51 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GradeBook.Services
 {
+    // todo: think about abstact CrudService<TRepository>
     public class SpecialitiesService : ISpecialitiesService
     {
-        private readonly ISpecialitiesRepository _specialitiesRepository;
+        private readonly IUnitOfWork<ISpecialitiesRepository> _specialitiesUnitOfWork;
+        private readonly IMapper _mapper;
 
-        public SpecialitiesService(ISpecialitiesRepository specialitiesRepository)
+        public SpecialitiesService(IUnitOfWork<ISpecialitiesRepository> specialitiesUnitOfWork, IMapper mapper)
         {
-            _specialitiesRepository = specialitiesRepository;
+            _specialitiesUnitOfWork = specialitiesUnitOfWork;
+            _mapper = mapper;
         }
         
         public async Task<IEnumerable<SpecialtyDto>> GetSpecialitiesAsync()
         {
-            var specialities = await _specialitiesRepository.GetAllAsync().ConfigureAwait(false);
+            var specialities = await _specialitiesUnitOfWork.Repository.GetAllAsync().ConfigureAwait(false);
 
-            return specialities.Select(s => new SpecialtyDto()
-            {
-                Id = s.Id,
-                Code = s.Code,
-                Name = s.Name
-            });
+            return _mapper.Map<IEnumerable<SpecialtyDto>>(specialities);
         }
 
         public async Task<SpecialtyDto> GetSpecialityAsync(int specialtyId)
         {
-            var specialty = await _specialitiesRepository.GetByIdAsync(specialtyId);
+            var specialty = await _specialitiesUnitOfWork.Repository.GetByIdAsync(specialtyId).ConfigureAwait(false);
 
-            return new SpecialtyDto()
+            if (specialty == null)
             {
-                Id = specialty.Id,
-                Code = specialty.Code,
-                Name = specialty.Name
-            };
+                return null;
+            }
+            
+            return _mapper.Map<SpecialtyDto>(specialty);
         }
 
         public async Task<int> CreateSpecialityAsync(SpecialtyDto specialty)
         {
-            var newSpeciality = new Specialty()
-            {
-                Code = specialty.Code,
-                Name = specialty.Name
-            };
+            var newSpeciality = _mapper.Map<Specialty>(specialty);
             
-            _specialitiesRepository.Add(newSpeciality);
-            
-            // save
+            _specialitiesUnitOfWork.Repository.Add(newSpeciality);
+
+            await _specialitiesUnitOfWork.SaveAsync().ConfigureAwait(false);
 
             return newSpeciality.Id;
         }
 
         public async Task UpdateSpecialityAsync(SpecialtyDto specialty)
         {
-            var specialityToUpdate = await _specialitiesRepository.GetByIdAsync(specialty.Id);
+            var specialityToUpdate = await _specialitiesUnitOfWork.Repository.GetByIdAsync(specialty.Id).ConfigureAwait(false);
 
             if (specialityToUpdate == null)
             {
@@ -68,23 +64,22 @@ namespace GradeBook.Services
             
             specialityToUpdate.Name = specialty.Name;
             specialityToUpdate.Code = specialty.Code;
-            
-            // save
+
+            await _specialitiesUnitOfWork.SaveAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteSpecialityAsync(int specialityId)
         {
-            var speciality = await _specialitiesRepository.GetByIdAsync(specialityId);
+            var speciality = await _specialitiesUnitOfWork.Repository.GetByIdAsync(specialityId).ConfigureAwait(false);
 
             if (speciality == null)
             {
                 return;
             }
             
-            _specialitiesRepository.Delete(speciality);
-            
-            // save
+            _specialitiesUnitOfWork.Repository.Delete(speciality);
 
+            await _specialitiesUnitOfWork.SaveAsync().ConfigureAwait(false);
         }
     }
 }

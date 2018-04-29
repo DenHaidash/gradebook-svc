@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using GradeBook.Common.Mailing;
@@ -56,27 +53,22 @@ namespace GradeBook.Services
         public async Task<int> CreateAccountAsync(AccountDto acct)
         {
             var salt = PasswordProtector.GenerateSalt();
-            var randPassword = PasswordProtector.GenerateSalt();
-            
-            var newAcct = new Account()
-            {
-                FirstName = acct.FirstName,
-                LastName = acct.LastName,
-                IsActive = true,
-                Login = acct.Email,
-                MiddleName = acct.MiddleName,
-                PasswordSalt = salt,
-                PasswordHash = PasswordProtector.SaltString(salt, randPassword),
-                Role = acct.Role,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
-            };
+            var randPassword = PasswordProtector.GenerateSalt(10);
+
+            var newAcct = _mapper.Map<Account>(acct);
+            newAcct.IsActive = true;
+            newAcct.PasswordSalt = salt;
+            newAcct.PasswordHash = PasswordProtector.SaltString(salt, randPassword);
+            newAcct.CreatedAt = DateTime.Now;
+            newAcct.UpdatedAt = DateTime.Now;
             
             _accountUnitOfWork.Repository.Add(newAcct);
 
             await _accountUnitOfWork.SaveAsync().ConfigureAwait(false);
 
-            await _emailSender.SendEmailAsync(acct.Email, "GradeBook accout created", randPassword).ConfigureAwait(false);
+            await _emailSender
+                .SendEmailAsync(acct.Email, "GradeBook account created", $"Account password: {randPassword}")
+                .ConfigureAwait(false);
 
             return newAcct.Id;
         }
@@ -118,6 +110,13 @@ namespace GradeBook.Services
         {
             var acctToUpdate = await _accountUnitOfWork.Repository.GetByIdAsync(accountId).ConfigureAwait(false);
 
+            if (acctToUpdate == null)
+            {
+                // throw
+
+                return;
+            }
+            
             var salt = PasswordProtector.GenerateSalt();
             
             acctToUpdate.PasswordSalt = salt;
@@ -125,6 +124,31 @@ namespace GradeBook.Services
             acctToUpdate.UpdatedAt = DateTime.Now;
 
             await _accountUnitOfWork.SaveAsync().ConfigureAwait(false);
+        }
+
+        public async Task ResetPasswordAsync(string login)
+        {
+            var acctToUpdate = await _accountUnitOfWork.Repository.GetByLoginAsync(login).ConfigureAwait(false);
+
+            if (acctToUpdate == null)
+            {
+                // throw
+
+                return;
+            }
+            
+            var salt = PasswordProtector.GenerateSalt();
+            var newPassword = PasswordProtector.GenerateSalt(10);
+            
+            acctToUpdate.PasswordSalt = salt;
+            acctToUpdate.PasswordHash = PasswordProtector.SaltString(salt, newPassword);
+            acctToUpdate.UpdatedAt = DateTime.Now;
+
+            await _accountUnitOfWork.SaveAsync().ConfigureAwait(false);
+            
+            await _emailSender
+                .SendEmailAsync(acctToUpdate.Login, "GradeBook password reset", $"New password: {newPassword}")
+                .ConfigureAwait(false);
         }
     }
 }

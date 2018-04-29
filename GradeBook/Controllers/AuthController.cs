@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GradeBook.Common.Mailing;
 using GradeBook.DTO;
+using GradeBook.Helpers;
 using GradeBook.Models;
 using GradeBook.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -20,63 +21,37 @@ namespace GradeBook.Controllers
     public class AuthController : Controller
     {
         private readonly IAccountService _accountService;
-        private readonly IConfiguration _config;
+        private readonly IJwtTokenHelper _jwtTokenHelper;
 
-        public AuthController(IAccountService accountService, IConfiguration config)
+        public AuthController(IAccountService accountService, IJwtTokenHelper jwtTokenHelper)
         {
             _accountService = accountService;
-            _config = config;
+            _jwtTokenHelper = jwtTokenHelper;
         }
         
         [HttpPost]
-        public async Task<IActionResult> GetAuthToken([FromBody]LoginViewModel loginModel)
+        public async Task<IActionResult> GetAuthTokenAsync([FromBody]LoginViewModel loginModel)
         {
-            if (loginModel == null || !ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
             
-            var isLoginValid = await _accountService.VerifyPasswordAsync(loginModel.Login, loginModel.Password);
-
-            if (!isLoginValid)
+            if (!(await _accountService.VerifyPasswordAsync(loginModel.Login, loginModel.Password)))
             {
                 return Unauthorized();
             }
 
             var user = await _accountService.GetAccountAsync(loginModel.Login);
 
-            return Ok(_buildToken(user));
-        }
-        
-        // todo: extract to helper
-        private string _buildToken(AccountDto user)
-        {
-            var claims = new[] {
-                new Claim("FirstName", user.FirstName),
-                new Claim("LastName", user.LastName),
-                new Claim("MiddleName", user.MiddleName),
-                new Claim("Role", user.Role),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Sid, user.Id.ToString()), 
-            };
-            
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
-                _config["Jwt:Issuer"],
-                claims,
-                expires: DateTime.Now.AddMinutes(30),
-                signingCredentials: creds);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return Ok(_jwtTokenHelper.BuildJwtToken(user));
         }
         
         [Authorize]
         [HttpPost("change-password")]
-        public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordViewModel changePasswordModel)
+        public async Task<IActionResult> ChangePasswordAsync([FromBody]ChangePasswordViewModel changePasswordModel)
         {
-            if (changePasswordModel == null || !ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
@@ -97,12 +72,17 @@ namespace GradeBook.Controllers
             return NoContent();
         }
         
-        [HttpPost("restore-password")]
-        public async Task<IActionResult> RestorePassword(string email)
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> RestorePasswordAsync([FromBody]PasswordResetViewModel passwordResetModel)
         {
-            //var isLoginValid = await _accountService.VerifyPasswordAsync(login, password);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
             
-            return Ok();
+            await _accountService.ResetPasswordAsync(passwordResetModel.Email);
+            
+            return NoContent();
         }
     }
 }

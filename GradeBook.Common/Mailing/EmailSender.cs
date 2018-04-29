@@ -2,32 +2,33 @@
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using GradeBook.Common.Options;
 using Microsoft.Extensions.Options;
 
 namespace GradeBook.Common.Mailing
 {
     public class EmailSender : IEmailSender
     {
-        private readonly EmailSenderSettings _settings;
+        private readonly EmailSenderOptions _options;
 
-        public EmailSender(IOptions<EmailSenderSettings> settings)
+        public EmailSender(IOptions<EmailSenderOptions> settings)
         {
-            _settings = settings.Value;
+            _options = settings.Value;
         }
 
         public async Task SendEmailAsync(string toAddress, string subject, string message)
         {
-            var sender = new MailAddress(_settings.FromAddress, _settings.FromName);
+            var sender = new MailAddress(_options.FromAddress, _options.FromName);
             var receiver = new MailAddress(toAddress, String.Empty);
 
             var smtp = new SmtpClient
             {
-                Host = _settings.SmptServerUrl,
-                Port = _settings.SmptServerPort,
+                Host = _options.SmptServerUrl,
+                Port = _options.SmptServerPort,
                 EnableSsl = true,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(_settings.SmptAccountLogin, _settings.SmptAccountPassword)
+                Credentials = new NetworkCredential(_options.SmptAccountLogin, _options.SmptAccountPassword)
             };
             
             using (var mail = new MailMessage(sender, receiver)

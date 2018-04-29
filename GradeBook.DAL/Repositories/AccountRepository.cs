@@ -14,7 +14,7 @@ namespace GradeBook.DAL.Repositories
 
         public async Task<Account> GetByLoginAsync(string login)
         {
-            return await base.Context.Accounts
+            return await Set
                 .FirstOrDefaultAsync(i => i.Login == login && i.IsActive)
                 .ConfigureAwait(false);
         }

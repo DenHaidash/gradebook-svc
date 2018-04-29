@@ -29,14 +29,6 @@ namespace GradeBook.Controllers
             return Ok(teachers);
         }
         
-        [HttpGet("~/api/specialities/{specialityId:int}/teachers")]
-        public async Task<IActionResult> GetTeachersWithSpeciality(int specialityId)
-        {
-            var teachers = await _teachersService.GetTeachersAsync();
-
-            return Ok(teachers);
-        }
-        
         [HttpGet("{teacherId:int}", Name = "GetTeacher")]
         public async Task<IActionResult> GetTeacher(int teacherId)
         {
@@ -51,15 +43,14 @@ namespace GradeBook.Controllers
         }
         
         [HttpPost("{teacherId:int}")]
-        public async Task<IActionResult> EditTeacher(int teacherId, [FromBody]TeacherViewModel teacher)
+        public async Task<IActionResult> EditTeacher(int teacherId, [FromBody]AccountViewModel account)
         {
-            if (teacher == null || !ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            var teacherDto = _mapper.Map<TeacherDto>(teacher);
-            
+            var teacherDto = _mapper.Map<TeacherDto>(account);
             teacherDto.Id = teacherId;
             
             await _teachersService.UpdateTeacherAsync(teacherDto);
@@ -76,14 +67,14 @@ namespace GradeBook.Controllers
         }
         
         [HttpPut]
-        public async Task<IActionResult> CreateTeacher([FromBody]TeacherViewModel teacher)
+        public async Task<IActionResult> CreateTeacher([FromBody]NewAccountViewModel account)
         {
-            if (teacher == null || !ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
             
-            var teacherId = await _teachersService.CreateTeacherAsync(_mapper.Map<TeacherDto>(teacher));
+            var teacherId = await _teachersService.CreateTeacherAsync(_mapper.Map<TeacherDto>(account));
 
             return CreatedAtRoute("GetTeacher", new { teacherId }, null);
         }

@@ -10,43 +10,45 @@ namespace GradeBook.DAL.Repositories
 {
     public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        protected readonly GradebookContext Context;
+        private readonly GradebookContext _context;
 
         protected BaseRepository(GradebookContext context)
         {
-            Context = context;
+            _context = context;
         }
-        
+
+        protected DbSet<TEntity> Set => _context.Set<TEntity>();
+
         public virtual async Task<TEntity> GetByIdAsync(int id)
         {
-            return await Context.Set<TEntity>().FindAsync(id);
+            return await Set.FindAsync(id);
         }
 
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
         {
-            return await Context.Set<TEntity>().ToListAsync().ConfigureAwait(false);
+            return await Set.ToListAsync().ConfigureAwait(false);
         }
         
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return await Context.Set<TEntity>().Where(predicate).ToListAsync().ConfigureAwait(false);
+            return await Set.Where(predicate).ToListAsync().ConfigureAwait(false);
         }
 
         public virtual void Add(TEntity entity)
         {
-            Context.Set<TEntity>().Add(entity);
+            Set.Add(entity);
         }
 
         public virtual void Update(TEntity entity)
         {
-            Context.Set<TEntity>().Attach(entity);
-            Context.Entry(entity).State = EntityState.Modified;
+            Set.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
         }
 
         public virtual void Delete(TEntity entity)
         {
-            Context.Set<TEntity>().Attach(entity);
-            Context.Set<TEntity>().Remove(entity);
+            Set.Attach(entity);
+            Set.Remove(entity);
         }
     }
 }

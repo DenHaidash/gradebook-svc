@@ -11,5 +11,6 @@ namespace GradeBook.Services.Interfaces
         Task DisableAccountAsync(int accountId);
         Task UpdateAccountAsync(AccountDto acct);
         Task ChangePasswordAsync(int accountId, string newPassword);
+        Task ResetPasswordAsync(string email);
     }
 }

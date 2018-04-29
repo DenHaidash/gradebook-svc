@@ -11,7 +11,6 @@ namespace GradeBook.Models
         [ForeignKey("Id")]
         public virtual Account Account { get; set; }
         public bool IsDeleted { get; set; }
-        public virtual IEnumerable<TeacherSubject> Specializations { get; set; }
         public virtual IEnumerable<GradebookTeacher> GradebookTeachers { get; set; }
     }
 }

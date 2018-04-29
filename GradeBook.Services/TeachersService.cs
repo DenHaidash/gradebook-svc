@@ -28,7 +28,6 @@ namespace GradeBook.Services
         
         public async Task<TeacherDto> GetTeacherAsync(int id)
         {
-            // todo include specializations, acct,
             var teacher = await _teachersUnitOfWork.Repository.GetByIdAsync(id).ConfigureAwait(false);
 
             if (teacher == null)
@@ -37,15 +36,6 @@ namespace GradeBook.Services
             }
             
             return _mapper.Map<TeacherDto>(teacher);
-        }
-
-        public async Task<IEnumerable<TeacherDto>> GetTeachersWithSpecialityAsync(int subjectId)
-        {
-            var teachers = await _teachersUnitOfWork.Repository
-                .GetAllAsync(t => t.Specializations.Any(s => s.SubjectRefId == subjectId))
-                .ConfigureAwait(false);
-
-            return _mapper.Map<IEnumerable<TeacherDto>>(teachers);
         }
 
         public async Task<IEnumerable<TeacherDto>> GetTeachersAsync()
@@ -57,7 +47,7 @@ namespace GradeBook.Services
 
         public async Task<int> CreateTeacherAsync(TeacherDto teacher)
         {
-            using (var transaction = await _teachersUnitOfWork.InTransactionAsync(IsolationLevel.ReadCommitted))
+            using (var transaction = await _teachersUnitOfWork.InTransactionAsync(IsolationLevel.ReadCommitted).ConfigureAwait(false))
             {
                 teacher.Role = "teacher";
                 
@@ -65,12 +55,7 @@ namespace GradeBook.Services
 
                 var newTeacher = new Teacher()
                 {
-                    Id = newAcctId,
-//                    Specializations = teacher.Specializations.Select(s => new TeacherSubject()
-//                    {
-//                        // todo map teacher id as acct id
-//                        SubjectRefId = s.Id
-//                    })
+                    Id = newAcctId
                 };
             
                 _teachersUnitOfWork.Repository.Add(newTeacher);
@@ -84,23 +69,16 @@ namespace GradeBook.Services
 
         public async Task UpdateTeacherAsync(TeacherDto teacher)
         {
-            var teacherToUpdate = await _teachersUnitOfWork.Repository.GetByIdAsync(teacher.Id);
-
-            teacherToUpdate.Account.FirstName = teacher.FirstName;
-            teacherToUpdate.Account.LastName = teacher.LastName;
-            teacherToUpdate.Account.MiddleName = teacher.MiddleName;
-            teacherToUpdate.Account.UpdatedAt = DateTime.Now;
+            await _accountService.UpdateAccountAsync(teacher).ConfigureAwait(false);
             
-            // todo: update teacher specializations
-
             await _teachersUnitOfWork.SaveAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteTeacherAsync(int teacherId)
         {
-            var teacherToUpdate = await _teachersUnitOfWork.Repository.GetByIdAsync(teacherId);
+            var teacherToUpdate = await _teachersUnitOfWork.Repository.GetByIdAsync(teacherId).ConfigureAwait(false);
 
-            using (var transaction = await _teachersUnitOfWork.InTransactionAsync(IsolationLevel.ReadCommitted))
+            using (var transaction = await _teachersUnitOfWork.InTransactionAsync(IsolationLevel.ReadCommitted).ConfigureAwait(false))
             {
                 await _accountService.DisableAccountAsync(teacherId).ConfigureAwait(false);
                 

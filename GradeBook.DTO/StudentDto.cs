@@ -2,6 +2,6 @@
 {
     public class StudentDto : AccountDto
     {
-        public virtual GroupDto Group { get; set; }
+        public GroupDto Group { get; set; }
     }
 }

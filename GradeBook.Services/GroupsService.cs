@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using GradeBook.DAL.Repositories.Interfaces;
+using GradeBook.DAL.UoW.Base;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Interfaces;
@@ -11,69 +13,48 @@ namespace GradeBook.Services
 {
     public class GroupsService : IGroupsService
     {
-        private readonly IGroupsRepository _groupsRepository;
+        private readonly IUnitOfWork<IGroupsRepository> _groupsUnitOfWork;
+        private readonly IMapper _mapper;
 
-        public GroupsService(IGroupsRepository groupsRepository)
+        public GroupsService(IUnitOfWork<IGroupsRepository> groupsUnitOfWork, IMapper mapper)
         {
-            _groupsRepository = groupsRepository;
+            _groupsUnitOfWork = groupsUnitOfWork;
+            _mapper = mapper;
         }
         
         public async Task<GroupDto> GetGroupAsync(int id)
         {
-            var group = await _groupsRepository.GetByIdAsync(id).ConfigureAwait(false);
+            var group = await _groupsUnitOfWork.Repository.GetByIdAsync(id).ConfigureAwait(false);
 
             if (group == null)
             {
                 return null;
             }
             
-            return new GroupDto()
-            {
-                Id = group.Id,
-                Code = group.Code,
-                Specialty = new SpecialtyDto()
-                {
-                    Id = group.Specialty.Id,
-                    Name = group.Specialty.Name
-                }
-            };
+            return _mapper.Map<GroupDto>(group);
         }
 
         public async Task<IEnumerable<GroupDto>> GetGroupsAsync()
         {
-            var groups = await _groupsRepository.GetAllAsync();
+            var groups = await _groupsUnitOfWork.Repository.GetAllAsync().ConfigureAwait(false);
 
-            return groups.Select(g => new GroupDto()
-            {
-                Id = g.Id,
-                Code = g.Code,
-                Specialty = new SpecialtyDto()
-                {
-                    Id = g.Specialty.Id,
-                    Code = g.Specialty.Code,
-                    Name = g.Specialty.Name
-                }
-            });
+            return _mapper.Map<IEnumerable<GroupDto>>(groups);
         }
 
         public async Task<int> CreateGroupAsync(GroupDto group)
         {
-            var newGroup = new Group()
-            {
-                Code = group.Code,
-                SpecialityRefId = group.Specialty.Id
-            };
+            var newGroup = _mapper.Map<Group>(group);
             
-            _groupsRepository.Add(newGroup);
-            
-            // save
+            _groupsUnitOfWork.Repository.Add(newGroup);
+
+            await _groupsUnitOfWork.SaveAsync().ConfigureAwait(false);
 
             return newGroup.Id;
         }
 
         public async Task UpdateGroupAsync(GroupDto group)
         {
-            var groupToUpdate = await _groupsRepository.GetByIdAsync(group.Id).ConfigureAwait(false);
+            var groupToUpdate = await _groupsUnitOfWork.Repository.GetByIdAsync(group.Id).ConfigureAwait(false);
 
             if (groupToUpdate == null)
             {
@@ -82,13 +63,13 @@ namespace GradeBook.Services
 
             groupToUpdate.Code = group.Code;
             groupToUpdate.SpecialityRefId = group.Specialty.Id;
-            
-            // save
+
+            await _groupsUnitOfWork.SaveAsync().ConfigureAwait(false);
         }
 
         public async Task RemoveGroupAsync(int groupId)
         {
-            var groupToUpdate = await _groupsRepository.GetByIdAsync(groupId).ConfigureAwait(false);
+            var groupToUpdate = await _groupsUnitOfWork.Repository.GetByIdAsync(groupId).ConfigureAwait(false);
 
             if (groupToUpdate == null)
             {
@@ -97,7 +78,7 @@ namespace GradeBook.Services
 
             groupToUpdate.IsDeleted = true;
             
-            // save
+            await _groupsUnitOfWork.SaveAsync().ConfigureAwait(false);
         }
     }
 }
