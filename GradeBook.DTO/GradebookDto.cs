@@ -5,9 +5,7 @@ namespace GradeBook.DTO
     public class GradebookDto
     {
         public int Id { get; set; }
-        public GroupDto Group { get; set; }
-        public SubjectDto Subject { get; set; }
-        public IEnumerable<GradeDto> Grades { get; set; }
-        public IEnumerable<GradeDto> FinalGrades { get; set; }
+        public int SemesterId { get; set; }
+        public int SubjectId { get; set; }
     }
 }

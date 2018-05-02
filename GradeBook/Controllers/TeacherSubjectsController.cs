@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using GradeBook.Models;
 using GradeBook.Services.Abstactions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,17 +16,22 @@ namespace GradeBook.Controllers
         }
         
         [HttpPut]
-        public async Task<IActionResult> AssignTeacherToCourse(int groupId, int year, int semester, int courseId, [FromBody]int teacherId)
+        public async Task<IActionResult> AssignTeacherToCourseAsync(int groupId, int year, int semester, int courseId, [FromBody]TeacherSubjectAssignmentViewModel teacherAssignment)
         {
-            await _teacherCoursesService.AssignTeacherToCourseAsync(teacherId, year, groupId, courseId);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            
+            await _teacherCoursesService.AssignTeacherToCourseAsync(teacherAssignment.TeacherId, year, semester, groupId, courseId);
 
             return NoContent();
         }
         
-        [HttpDelete]
-        public async Task<IActionResult> UnassignTeacherToCourse(int groupId, int year, int semester, int courseId, [FromBody]int teacherId)
+        [HttpDelete("{teacherId:int}")]
+        public async Task<IActionResult> UnassignTeacherToCourseAsync(int groupId, int year, int semester, int courseId, int teacherId)
         {
-            await _teacherCoursesService.UnassignTeacherFromCourseAsync(teacherId, year, groupId, courseId);
+            await _teacherCoursesService.UnassignTeacherFromCourseAsync(teacherId, year, semester, groupId, courseId);
 
             return NoContent();
         }

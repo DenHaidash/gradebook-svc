@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using GradeBook.Models;
 
-namespace GradeBook.DAL.Repositories.Interfaces
+namespace GradeBook.DAL.Repositories.Abstractions
 {
     public interface IAccountRepository : IRepository<Account>
     {

@@ -2,7 +2,7 @@
 using GradeBook.Common.Options;
 using GradeBook.DAL;
 using GradeBook.DAL.Repositories;
-using GradeBook.DAL.Repositories.Interfaces;
+using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.DAL.UoW.Base;
 using GradeBook.Helpers;
 using GradeBook.Options;
@@ -40,6 +40,8 @@ namespace GradeBook.CompositionRoot
             services.AddScoped<ITeachersRepository, TeachersRepository>();
             services.AddScoped<ISemestersRepository, SemestersRepository>();
             services.AddScoped<ISemesterSubjectsRepository, SemesterSubjectsRepository>();
+            services.AddScoped<IAssestmentTypesRepository, AssestmentTypesRepository>();
+            services.AddScoped<ITeacherGradebookRepository, TeacherGradebookRepository>();
             
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IGroupScheduleService, GroupScheduleService>();
@@ -53,6 +55,8 @@ namespace GradeBook.CompositionRoot
             services.AddTransient<ITeacherCoursesService, TeacherCoursesService>();
             services.AddTransient<ITeachersService, TeachersService>();
             services.AddTransient<IGroupSemestersService, GroupSemestersService>();
+            services.AddTransient<IAssestmentTypesService, AssestmentTypesService>();
+            services.AddTransient<IGradebooksService, GradebookService>();
             
             // move to module
             services.AddScoped<IUnitOfWork<ISubjectsRepository>, UnitOfWork<ISubjectsRepository>>();
@@ -63,6 +67,8 @@ namespace GradeBook.CompositionRoot
             services.AddScoped<IUnitOfWork<IStudentsRepository>, UnitOfWork<IStudentsRepository>>();
             services.AddScoped<IUnitOfWork<ISemestersRepository>, UnitOfWork<ISemestersRepository>>();
             services.AddScoped<IUnitOfWork<ISemesterSubjectsRepository>, UnitOfWork<ISemesterSubjectsRepository>>();
+            services.AddScoped<IUnitOfWork<IGradebooksRepository>, UnitOfWork<IGradebooksRepository>>();
+            services.AddScoped<IUnitOfWork<ITeacherGradebookRepository>, UnitOfWork<ITeacherGradebookRepository>>();
         }
     }
 }

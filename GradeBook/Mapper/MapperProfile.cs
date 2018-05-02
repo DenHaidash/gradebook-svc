@@ -32,6 +32,7 @@ namespace GradeBook.Mapper
                 .ForMember(m => m.LastName, t => t.MapFrom(s => s.Account.LastName))
                 .ForMember(m => m.MiddleName, t => t.MapFrom(s => s.Account.MiddleName));
             CreateMap<Group, GroupDto>();
+            CreateMap<AssestmentType, AssestmentTypeDto>().ReverseMap();
             CreateMap<Semester, SemesterDto>();
             CreateMap<Student, StudentDto>()
                 .ForMember(m => m.Role, t => t.MapFrom(s => s.Account.Role))
@@ -54,6 +55,9 @@ namespace GradeBook.Mapper
                 .ForMember(m => m.Specialty, t => t.Ignore());
             CreateMap<AccountDto, Account>()
                 .ForMember(m => m.Login, t => t.MapFrom(s => s.Email));
+            CreateMap<GradebookDto, Gradebook>()
+                .ForMember(m => m.SemesterRefId, t => t.MapFrom(s => s.SemesterId))
+                .ForMember(m => m.SubjectRefId, t => t.MapFrom(s => s.SubjectId));
 //            CreateMap<StudentDto, Student>()
 //                .ForMember(m => m.GroupRefId, t => t.MapFrom(s => s.Group.Id))
 //                .ForMember(m => m.Group, t => t.Ignore());

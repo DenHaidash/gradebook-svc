@@ -1,4 +1,4 @@
-﻿using GradeBook.DAL.Repositories.Interfaces;
+﻿using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.Models;
 
 namespace GradeBook.DAL.Repositories

@@ -16,6 +16,7 @@ namespace GradeBook.DAL
         {
         }
         
+        // todo: check, seems redundant
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
@@ -28,10 +29,10 @@ namespace GradeBook.DAL
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<GradebookTeacher>()
-                .HasKey(i => new {i.GradebookRefId, i.TeacherRefId});
+                .HasKey(i => new { i.GradebookRefId, i.TeacherRefId });
             
             modelBuilder.Entity<SemesterSubject>()
-                .HasKey(i => new {i.SubjectRefId, i.SemesterRefId});
+                .HasKey(i => new { i.SemesterRefId, i.SubjectRefId });
         }
     }
 }

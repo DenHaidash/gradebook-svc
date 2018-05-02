@@ -17,7 +17,7 @@ namespace GradeBook.Controllers
         [HttpGet("{teacherId:int}/semesters/{year:int}/{semester:int}/groups")]
         public async Task<IActionResult> GetTeacherSemesterGroups(int teacherId, int year, int semester)
         {
-            var groups = await _teacherCoursesService.GetTeacherSemesterGroupsAsync(teacherId, 0);
+            var groups = await _teacherCoursesService.GetTeacherSemesterGroupsAsync(teacherId, year, semester);
 
             return Ok(groups);
         }
@@ -25,7 +25,7 @@ namespace GradeBook.Controllers
         [HttpGet("{teacherId:int}/semesters/{year:int}/{semester:int}/groups/{groupId:int}/courses")]
         public async Task<IActionResult> GetTeacherSemesterGroupsCourses(int teacherId, int year, int semester, int groupId)
         {
-            var courses = await _teacherCoursesService.GetTeacherSemesterGroupCoursesAsync(teacherId, 0, groupId); // fix semester id
+            var courses = await _teacherCoursesService.GetTeacherSemesterGroupCoursesAsync(teacherId, year, semester, groupId);
 
             return Ok(courses);
         }

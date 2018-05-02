@@ -1,4 +1,4 @@
-﻿namespace GradeBook.DAL.Repositories.Interfaces
+﻿namespace GradeBook.DAL.Repositories.Abstractions
 {
     public interface IGradesRepository
     {

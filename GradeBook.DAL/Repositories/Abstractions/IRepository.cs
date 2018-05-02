@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace GradeBook.DAL.Repositories.Interfaces
+namespace GradeBook.DAL.Repositories.Abstractions
 {
     public interface IRepository<TEntity> where TEntity: class
     {

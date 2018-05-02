@@ -8,7 +8,6 @@ using GradeBook.Common.Mailing;
 using GradeBook.CompositionRoot;
 using GradeBook.DAL;
 using GradeBook.DAL.Repositories;
-using GradeBook.DAL.Repositories.Interfaces;
 using GradeBook.DAL.UoW;
 using GradeBook.DAL.UoW.Base;
 using GradeBook.Middleware;

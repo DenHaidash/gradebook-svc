@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using GradeBook.DAL.Repositories.Interfaces;
+using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.Models;
 using Microsoft.EntityFrameworkCore;
 

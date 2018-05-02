@@ -11,9 +11,10 @@ using System;
 namespace GradeBook.DAL.Migrations
 {
     [DbContext(typeof(GradebookContext))]
-    partial class GradebookContextModelSnapshot : ModelSnapshot
+    [Migration("20180502185603_GradebookForeignKey")]
+    partial class GradebookForeignKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -136,8 +137,6 @@ namespace GradeBook.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SubjectRefId");
-
                     b.HasIndex("SemesterRefId", "SubjectRefId");
 
                     b.ToTable("Gradebooks");
@@ -201,17 +200,17 @@ namespace GradeBook.DAL.Migrations
 
             modelBuilder.Entity("GradeBook.Models.SemesterSubject", b =>
                 {
-                    b.Property<int>("SemesterRefId");
-
                     b.Property<int>("SubjectRefId");
+
+                    b.Property<int>("SemesterRefId");
 
                     b.Property<int>("AssestemtTypeRefId");
 
-                    b.HasKey("SemesterRefId", "SubjectRefId");
+                    b.HasKey("SubjectRefId", "SemesterRefId");
 
                     b.HasIndex("AssestemtTypeRefId");
 
-                    b.HasIndex("SubjectRefId");
+                    b.HasIndex("SemesterRefId");
 
                     b.ToTable("SemesterSubject");
                 });
@@ -309,16 +308,6 @@ namespace GradeBook.DAL.Migrations
 
             modelBuilder.Entity("GradeBook.Models.Gradebook", b =>
                 {
-                    b.HasOne("GradeBook.Models.Semester", "Semester")
-                        .WithMany()
-                        .HasForeignKey("SemesterRefId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("GradeBook.Models.Subject", "Subject")
-                        .WithMany()
-                        .HasForeignKey("SubjectRefId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("GradeBook.Models.SemesterSubject", "SemesterSubject")
                         .WithMany()
                         .HasForeignKey("SemesterRefId", "SubjectRefId")

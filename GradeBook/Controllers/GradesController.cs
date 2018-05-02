@@ -33,7 +33,7 @@ namespace GradeBook.Controllers
 
             grade.Teacher.Id = 0;
             grade.Student.Id = studentId;
-            grade.Gradebook.Subject.Id = courseId;
+            //grade.Gradebook.Subject.Id = courseId;
             
             await _studentGradesService.AddStudentCourseGradeAsync(grade, studentId);
 
