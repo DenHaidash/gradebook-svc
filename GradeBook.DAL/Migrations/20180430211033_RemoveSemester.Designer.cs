@@ -11,9 +11,10 @@ using System;
 namespace GradeBook.DAL.Migrations
 {
     [DbContext(typeof(GradebookContext))]
-    partial class GradebookContextModelSnapshot : ModelSnapshot
+    [Migration("20180430211033_RemoveSemester")]
+    partial class RemoveSemester
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -163,8 +164,6 @@ namespace GradeBook.DAL.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired();
-
-                    b.Property<DateTime>("EducationStartedAt");
 
                     b.Property<bool>("IsDeleted");
 

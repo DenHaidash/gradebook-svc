@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using GradeBook.Services.Interfaces;
+using GradeBook.Services.Abstactions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GradeBook.Controllers

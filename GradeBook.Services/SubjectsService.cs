@@ -7,7 +7,7 @@ using GradeBook.DAL.UoW.Base;
 //using GradeBook.DAL.UoW.Interfaces;
 using GradeBook.DTO;
 using GradeBook.Models;
-using GradeBook.Services.Interfaces;
+using GradeBook.Services.Abstactions;
 using Microsoft.EntityFrameworkCore;
 
 namespace GradeBook.Services

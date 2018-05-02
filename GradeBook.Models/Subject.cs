@@ -9,6 +9,6 @@ namespace GradeBook.Models
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
-        public virtual IEnumerable<SemesterSchuduleSubject> Semesters { get; set; }
+        public virtual IEnumerable<SemesterSubject> Semesters { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -6,7 +7,8 @@ using GradeBook.DAL.Repositories.Interfaces;
 using GradeBook.DAL.UoW.Base;
 using GradeBook.DTO;
 using GradeBook.Models;
-using GradeBook.Services.Interfaces;
+using GradeBook.Services.Abstactions;
+using GradeBook.Services.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace GradeBook.Services
@@ -14,11 +16,13 @@ namespace GradeBook.Services
     public class GroupsService : IGroupsService
     {
         private readonly IUnitOfWork<IGroupsRepository> _groupsUnitOfWork;
+        private readonly IGroupSemestersService _groupSemestersService;
         private readonly IMapper _mapper;
 
-        public GroupsService(IUnitOfWork<IGroupsRepository> groupsUnitOfWork, IMapper mapper)
+        public GroupsService(IUnitOfWork<IGroupsRepository> groupsUnitOfWork, IGroupSemestersService groupSemestersService, IMapper mapper)
         {
             _groupsUnitOfWork = groupsUnitOfWork;
+            _groupSemestersService = groupSemestersService;
             _mapper = mapper;
         }
         
@@ -43,13 +47,24 @@ namespace GradeBook.Services
 
         public async Task<int> CreateGroupAsync(GroupDto group)
         {
-            var newGroup = _mapper.Map<Group>(group);
+            using (var transaction = await _groupsUnitOfWork.InTransactionAsync(IsolationLevel.ReadCommitted)
+                .ConfigureAwait(false))
+            {
+                var newGroup = _mapper.Map<Group>(group);
+ 
+                _groupsUnitOfWork.Repository.Add(newGroup);
+
+                await _groupsUnitOfWork.SaveAsync().ConfigureAwait(false);
+
+                var groupSemesters = SemestersHelper.GenerateSemesters(group.EducationStartedAt.Year).ToList();
+                groupSemesters.ForEach(s => { s.Group.Id = newGroup.Id; });
             
-            _groupsUnitOfWork.Repository.Add(newGroup);
+                await _groupSemestersService.CreateGroupSemestersAsync(groupSemesters).ConfigureAwait(false);
 
-            await _groupsUnitOfWork.SaveAsync().ConfigureAwait(false);
-
-            return newGroup.Id;
+                transaction.Commit();
+                
+                return newGroup.Id;
+            }
         }
 
         public async Task UpdateGroupAsync(GroupDto group)

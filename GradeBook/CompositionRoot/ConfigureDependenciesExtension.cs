@@ -7,7 +7,7 @@ using GradeBook.DAL.UoW.Base;
 using GradeBook.Helpers;
 using GradeBook.Options;
 using GradeBook.Services;
-using GradeBook.Services.Interfaces;
+using GradeBook.Services.Abstactions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +38,8 @@ namespace GradeBook.CompositionRoot
             services.AddScoped<IStudentsRepository, StudentsRepository>();
             services.AddScoped<ISubjectsRepository, SubjectsRepository>();
             services.AddScoped<ITeachersRepository, TeachersRepository>();
+            services.AddScoped<ISemestersRepository, SemestersRepository>();
+            services.AddScoped<ISemesterSubjectsRepository, SemesterSubjectsRepository>();
             
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IGroupScheduleService, GroupScheduleService>();
@@ -50,6 +52,7 @@ namespace GradeBook.CompositionRoot
             services.AddTransient<ISubjectsService, SubjectsService>();
             services.AddTransient<ITeacherCoursesService, TeacherCoursesService>();
             services.AddTransient<ITeachersService, TeachersService>();
+            services.AddTransient<IGroupSemestersService, GroupSemestersService>();
             
             // move to module
             services.AddScoped<IUnitOfWork<ISubjectsRepository>, UnitOfWork<ISubjectsRepository>>();
@@ -58,6 +61,8 @@ namespace GradeBook.CompositionRoot
             services.AddScoped<IUnitOfWork<ISpecialitiesRepository>, UnitOfWork<ISpecialitiesRepository>>();
             services.AddScoped<IUnitOfWork<IGroupsRepository>, UnitOfWork<IGroupsRepository>>();
             services.AddScoped<IUnitOfWork<IStudentsRepository>, UnitOfWork<IStudentsRepository>>();
+            services.AddScoped<IUnitOfWork<ISemestersRepository>, UnitOfWork<ISemestersRepository>>();
+            services.AddScoped<IUnitOfWork<ISemesterSubjectsRepository>, UnitOfWork<ISemesterSubjectsRepository>>();
         }
     }
 }

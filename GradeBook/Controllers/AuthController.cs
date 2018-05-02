@@ -8,7 +8,7 @@ using GradeBook.Common.Mailing;
 using GradeBook.DTO;
 using GradeBook.Helpers;
 using GradeBook.Models;
-using GradeBook.Services.Interfaces;
+using GradeBook.Services.Abstactions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;

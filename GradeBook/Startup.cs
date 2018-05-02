@@ -11,9 +11,9 @@ using GradeBook.DAL.Repositories;
 using GradeBook.DAL.Repositories.Interfaces;
 using GradeBook.DAL.UoW;
 using GradeBook.DAL.UoW.Base;
+using GradeBook.Middleware;
 //using GradeBook.DAL.UoW.Interfaces;
 using GradeBook.Services;
-using GradeBook.Services.Interfaces;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -81,7 +81,12 @@ namespace GradeBook
             }
             
             app.UseAuthentication();
-            
+
+//            if (env.IsProduction())
+//            {
+//                app.UseMiddleware<ErrorHandlingMiddleware>();
+//            }
+
             app.UseMvc();
         }
     }

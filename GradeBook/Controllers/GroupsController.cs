@@ -2,7 +2,7 @@
 using AutoMapper;
 using GradeBook.DTO;
 using GradeBook.Models;
-using GradeBook.Services.Interfaces;
+using GradeBook.Services.Abstactions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

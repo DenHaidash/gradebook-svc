@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using GradeBook.DTO;
 
-namespace GradeBook.Services.Interfaces
+namespace GradeBook.Services.Abstactions
 {
     public interface IGroupStudentsService
     {

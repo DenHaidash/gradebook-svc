@@ -17,6 +17,9 @@ namespace GradeBook.Mapper
                 .ForPath(m => m.Specialty.Id, t => t.MapFrom(s => s.SpecialtyId));
             CreateMap<NewStudentViewModel, StudentDto>()
                 .ForPath(m => m.Group.Id, t => t.MapFrom(s => s.GroupId));
+            CreateMap<SemesterSubjectViewModel, SemesterSubjectDto>()
+                .ForPath(m => m.AssestmentType.Id, t => t.MapFrom(s => s.AssestmentTypeId))
+                .ForPath(m => m.Subject.Id, t => t.MapFrom(s => s.SubjectId));
             
             CreateMap<Subject, SubjectDto>().ReverseMap();
             CreateMap<Specialty, SpecialtyDto>().ReverseMap();
@@ -29,6 +32,7 @@ namespace GradeBook.Mapper
                 .ForMember(m => m.LastName, t => t.MapFrom(s => s.Account.LastName))
                 .ForMember(m => m.MiddleName, t => t.MapFrom(s => s.Account.MiddleName));
             CreateMap<Group, GroupDto>();
+            CreateMap<Semester, SemesterDto>();
             CreateMap<Student, StudentDto>()
                 .ForMember(m => m.Role, t => t.MapFrom(s => s.Account.Role))
                 .ForMember(m => m.Email, t => t.MapFrom(s => s.Account.Login))
@@ -36,6 +40,15 @@ namespace GradeBook.Mapper
                 .ForMember(m => m.LastName, t => t.MapFrom(s => s.Account.LastName))
                 .ForMember(m => m.MiddleName, t => t.MapFrom(s => s.Account.MiddleName));
             
+            CreateMap<SemesterDto, Semester>()
+                .ForPath(m => m.GroupRefId, t => t.MapFrom(s => s.Group.Id))
+                .ForMember(m => m.Group, t => t.Ignore());
+            CreateMap<SemesterSubjectDto, SemesterSubject>()
+                .ForMember(m => m.AssestemtTypeRefId, t => t.MapFrom(s => s.AssestmentType.Id))
+                .ForMember(m => m.SubjectRefId, t => t.MapFrom(s => s.Subject.Id))
+                .ForMember(m => m.Semester, t => t.Ignore())
+                .ForMember(m => m.AssestmentType, t => t.Ignore())
+                .ForMember(m => m.Subject, t => t.Ignore());
             CreateMap<GroupDto, Group>()
                 .ForMember(m => m.SpecialityRefId, t => t.MapFrom(s => s.Specialty.Id))
                 .ForMember(m => m.Specialty, t => t.Ignore());

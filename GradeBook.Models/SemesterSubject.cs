@@ -2,11 +2,11 @@
 
 namespace GradeBook.Models
 {
-    public class SemesterSchuduleSubject
+    public class SemesterSubject
     {
-        public int SemesterScheduleRefId { get; set; }
-        [ForeignKey("SemesterScheduleRefId")]
-        public SemesterSchedule SemesterSchedule { get; set; }
+        public int SemesterRefId { get; set; }
+        [ForeignKey("SemesterRefId")]
+        public Semester Semester { get; set; }
         public int SubjectRefId { get; set; }
         [ForeignKey("SubjectRefId")]        
         public Subject Subject { get; set; }

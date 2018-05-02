@@ -30,8 +30,8 @@ namespace GradeBook.DAL
             modelBuilder.Entity<GradebookTeacher>()
                 .HasKey(i => new {i.GradebookRefId, i.TeacherRefId});
             
-            modelBuilder.Entity<SemesterSchuduleSubject>()
-                .HasKey(i => new {i.SubjectRefId, i.SemesterScheduleRefId});
+            modelBuilder.Entity<SemesterSubject>()
+                .HasKey(i => new {i.SubjectRefId, i.SemesterRefId});
         }
     }
 }

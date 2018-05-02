@@ -6,7 +6,7 @@ using GradeBook.DAL.Repositories.Interfaces;
 using GradeBook.DAL.UoW.Base;
 using GradeBook.DTO;
 using GradeBook.Models;
-using GradeBook.Services.Interfaces;
+using GradeBook.Services.Abstactions;
 
 namespace GradeBook.Services
 {
