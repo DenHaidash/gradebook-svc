@@ -1,27 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using AutoMapper;
-using GradeBook.Common.Mailing;
 using GradeBook.CompositionRoot;
-using GradeBook.DAL;
-using GradeBook.DAL.Repositories;
-using GradeBook.DAL.UoW;
-using GradeBook.DAL.UoW.Base;
-using GradeBook.Middleware;
-//using GradeBook.DAL.UoW.Interfaces;
-using GradeBook.Services;
-using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -54,6 +38,8 @@ namespace GradeBook
                     };
                 });
             
+            services.AddCors();
+            services.AddResponseCompression();
             services.AddMvc();
             
             services.AddSwaggerGen(c =>
@@ -78,7 +64,9 @@ namespace GradeBook
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "GradeBook API v1");
                 });
             }
-            
+
+            app.UseResponseCompression(); // todo: prod only?
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod());
             app.UseAuthentication();
 
 //            if (env.IsProduction())

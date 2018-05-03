@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.Threading.Tasks;
 using AutoMapper;
 using GradeBook.DAL.Repositories.Abstractions;
@@ -43,7 +42,7 @@ namespace GradeBook.Services
                 
                 var newAcctId = await _acctService.CreateAccountAsync(student).ConfigureAwait(false);
 
-                var newStudent = new Student()
+                var newStudent = new Student
                 {
                     Id = newAcctId,
                     GroupRefId = student.Group.Id

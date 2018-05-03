@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using GradeBook.DAL.Repositories.Abstractions;
@@ -9,7 +7,6 @@ using GradeBook.DAL.UoW.Base;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
-using Microsoft.EntityFrameworkCore;
 
 namespace GradeBook.Services
 {
@@ -53,7 +50,7 @@ namespace GradeBook.Services
                 
                 var newAcctId = await _accountService.CreateAccountAsync(teacher).ConfigureAwait(false);
 
-                var newTeacher = new Teacher()
+                var newTeacher = new Teacher
                 {
                     Id = newAcctId
                 };

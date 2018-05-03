@@ -1,14 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.DAL.UoW.Base;
-//using GradeBook.DAL.UoW.Interfaces;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
-using Microsoft.EntityFrameworkCore;
 
 namespace GradeBook.Services
 {

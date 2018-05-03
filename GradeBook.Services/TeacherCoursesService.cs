@@ -53,7 +53,7 @@ namespace GradeBook.Services
                 return;
             }
             
-            var newTeacherAssignment = new GradebookTeacher()
+            var newTeacherAssignment = new GradebookTeacher
             {
                 GradebookRefId = gradebook.Id,
                 TeacherRefId = teacherId

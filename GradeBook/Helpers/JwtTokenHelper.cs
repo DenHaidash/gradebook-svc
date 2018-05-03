@@ -19,7 +19,7 @@ namespace GradeBook.Helpers
             _jwtOptions = jwtOptions.Value;
         }
 
-        private IEnumerable<Claim> _createClaims(AccountDto acct)
+        private static IEnumerable<Claim> _createClaims(AccountDto acct)
         {
             return new[]
             {

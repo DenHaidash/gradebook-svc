@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace GradeBook.DTO
+﻿namespace GradeBook.DTO
 {
     public class GradebookDto
     {

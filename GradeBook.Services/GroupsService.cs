@@ -9,7 +9,6 @@ using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
 using GradeBook.Services.Helpers;
-using Microsoft.EntityFrameworkCore;
 
 namespace GradeBook.Services
 {

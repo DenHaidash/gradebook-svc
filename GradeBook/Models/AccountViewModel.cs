@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using GradeBook.DTO;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace GradeBook.Models
 {

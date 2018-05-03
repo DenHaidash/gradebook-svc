@@ -11,7 +11,7 @@ namespace GradeBook.Services.Helpers
         {   
             return Enumerable.Range(fromYear, numberOfCourses).Select((year, index) => new []
             {
-                new SemesterDto()
+                new SemesterDto
                 {
                     StartsAt = new DateTime(year, 9, 1),
                     EndsAt = new DateTime(year + 1, 1, 31),
@@ -19,7 +19,7 @@ namespace GradeBook.Services.Helpers
                     CourseNumber = index + 1,
                     Group = new GroupDto()
                 },
-                new SemesterDto()
+                new SemesterDto
                 {
                     StartsAt = new DateTime(year + 1, 2, 1),
                     EndsAt = new DateTime(year + 1, 6, 30),
@@ -27,7 +27,7 @@ namespace GradeBook.Services.Helpers
                     CourseNumber = index + 1,
                     Group = new GroupDto()
                 }
-            }).SelectMany(s => s.ToList());
+            }).SelectMany(s => s);
         }
     }
 }

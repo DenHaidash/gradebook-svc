@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using GradeBook.DTO;
-using GradeBook.Models;
 
 namespace GradeBook.Services.Abstactions
 {

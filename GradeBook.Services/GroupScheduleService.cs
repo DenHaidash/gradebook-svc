@@ -55,7 +55,7 @@ namespace GradeBook.Services
 
                 await _semesterScheduleUnitOfWork.SaveAsync().ConfigureAwait(false);
 
-                await _gradebooksService.CreateGradebookAsync(new GradebookDto()
+                await _gradebooksService.CreateGradebookAsync(new GradebookDto
                 {
                     SemesterId = semester.Id,
                     SubjectId = semesterSubject.Subject.Id

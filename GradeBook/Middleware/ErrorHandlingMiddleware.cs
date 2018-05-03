@@ -30,7 +30,7 @@ namespace GradeBook.Middleware
 
         private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            var code = HttpStatusCode.InternalServerError; // 500 if unexpected
+            const HttpStatusCode code = HttpStatusCode.InternalServerError; // 500 if unexpected
 
 //            if      (exception is MyNotFoundException)     code = HttpStatusCode.NotFound;
 //            else if (exception is MyUnauthorizedException) code = HttpStatusCode.Unauthorized;

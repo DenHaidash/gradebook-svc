@@ -19,7 +19,7 @@ namespace GradeBook.Common.Mailing
         public async Task SendEmailAsync(string toAddress, string subject, string message)
         {
             var sender = new MailAddress(_options.FromAddress, _options.FromName);
-            var receiver = new MailAddress(toAddress, String.Empty);
+            var receiver = new MailAddress(toAddress, string.Empty);
 
             var smtp = new SmtpClient
             {

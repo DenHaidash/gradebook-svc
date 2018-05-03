@@ -1,19 +1,11 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
-using GradeBook.Common.Mailing;
-using GradeBook.DTO;
 using GradeBook.Helpers;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 
 namespace GradeBook.Controllers
 {

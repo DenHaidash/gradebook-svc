@@ -12,7 +12,7 @@ namespace GradeBook.DAL
 {
     public class GradebookContext : DbContext
     {
-        public GradebookContext(DbContextOptions<GradebookContext> options) : base(options)
+        public GradebookContext(DbContextOptions options) : base(options)
         {
         }
         
