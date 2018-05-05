@@ -2,9 +2,10 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using GradeBook.Common.Mailing;
+using GradeBook.Common.Mailing.Abstractions;
 using GradeBook.Common.Security;
 using GradeBook.DAL.Repositories.Abstractions;
-using GradeBook.DAL.UoW.Base;
+using GradeBook.DAL.UoW;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
@@ -64,7 +65,7 @@ namespace GradeBook.Services
             
             _accountUnitOfWork.Repository.Add(newAcct);
 
-            await _accountUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _accountUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
             await _emailSender
                 .SendEmailAsync(acct.Email, "GradeBook account created", $"Account password: {randPassword}")
@@ -84,7 +85,7 @@ namespace GradeBook.Services
 
             acct.IsActive = false;
 
-            await _accountUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _accountUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task UpdateAccountAsync(AccountDto acct)
@@ -103,7 +104,7 @@ namespace GradeBook.Services
             acctToUpdate.MiddleName = acct.MiddleName;
             acctToUpdate.UpdatedAt = DateTime.Now;
 
-            await _accountUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _accountUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task ChangePasswordAsync(int accountId, string newPassword)
@@ -123,7 +124,7 @@ namespace GradeBook.Services
             acctToUpdate.PasswordHash = PasswordProtector.SaltString(salt, newPassword);
             acctToUpdate.UpdatedAt = DateTime.Now;
 
-            await _accountUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _accountUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task ResetPasswordAsync(string login)
@@ -144,7 +145,7 @@ namespace GradeBook.Services
             acctToUpdate.PasswordHash = PasswordProtector.SaltString(salt, newPassword);
             acctToUpdate.UpdatedAt = DateTime.Now;
 
-            await _accountUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _accountUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
             
             await _emailSender
                 .SendEmailAsync(acctToUpdate.Login, "GradeBook password reset", $"New password: {newPassword}")

@@ -5,10 +5,11 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using GradeBook.DAL.Repositories.Abstractions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace GradeBook.DAL.Repositories
 {
-    public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
+    public abstract class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         private readonly GradebookContext _context;
 
@@ -17,21 +18,28 @@ namespace GradeBook.DAL.Repositories
             _context = context;
         }
 
+        protected virtual IQueryable<TEntity> WithIncludes(DbSet<TEntity> dbSet)
+        {
+            return dbSet;
+        }
+        
         protected DbSet<TEntity> Set => _context.Set<TEntity>();
+
+        protected abstract int GetKeyValue(TEntity entity);
 
         public virtual async Task<TEntity> GetByIdAsync(int id)
         {
-            return await Set.FindAsync(id);
+            return await WithIncludes(Set).FirstOrDefaultAsync(i => GetKeyValue(i) == id).ConfigureAwait(false);
         }
 
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
         {
-            return await Set.ToListAsync().ConfigureAwait(false);
+            return await WithIncludes(Set).ToListAsync().ConfigureAwait(false);
         }
         
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return await Set.Where(predicate).ToListAsync().ConfigureAwait(false);
+            return await WithIncludes(Set).Where(predicate).ToListAsync().ConfigureAwait(false);
         }
 
         public virtual void Add(TEntity entity)

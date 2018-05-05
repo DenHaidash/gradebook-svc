@@ -1,10 +1,15 @@
 ﻿using System.Threading.Tasks;
+using GradeBook.Common.Security;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GradeBook.Controllers
 {
+    [Produces("application/json")]
+    [Authorize(Roles = Roles.Admin)]
     [Route("/api/groups/{groupId:int}/semesters/{year:int}/{semester:int}/courses/{courseId:int}/teachers")]
     public class TeacherSubjectsController : Controller
     {
@@ -15,12 +20,17 @@ namespace GradeBook.Controllers
             _teacherCoursesService = teacherCoursesService;
         }
         
+        /// <summary>
+        /// Assign teacher to group's subject
+        /// </summary>
         [HttpPut]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AssignTeacherToCourseAsync(int groupId, int year, int semester, int courseId, [FromBody]TeacherSubjectAssignmentViewModel teacherAssignment)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
             
             await _teacherCoursesService.AssignTeacherToCourseAsync(teacherAssignment.TeacherId, year, semester, groupId, courseId);
@@ -28,7 +38,11 @@ namespace GradeBook.Controllers
             return NoContent();
         }
         
+        /// <summary>
+        /// Unassign teacher from group's subject
+        /// </summary>
         [HttpDelete("{teacherId:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> UnassignTeacherToCourseAsync(int groupId, int year, int semester, int courseId, int teacherId)
         {
             await _teacherCoursesService.UnassignTeacherFromCourseAsync(teacherId, year, semester, groupId, courseId);

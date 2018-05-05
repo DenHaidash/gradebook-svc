@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using GradeBook.Common.Mailing.Abstractions;
 using GradeBook.Common.Options;
 using Microsoft.Extensions.Options;
 

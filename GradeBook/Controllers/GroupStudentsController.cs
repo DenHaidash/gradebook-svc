@@ -1,9 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using GradeBook.DTO;
 using GradeBook.Services.Abstactions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GradeBook.Controllers
 {
+    [Produces("application/json")]
+    [Authorize]
     [Route("api/groups/{groupId:int}/students")]
     public class GroupStudentsController : Controller
     {
@@ -14,8 +20,12 @@ namespace GradeBook.Controllers
             _groupStudentsService = groupStudentsService;
         }
         
+        /// <summary>
+        /// Get group's students
+        /// </summary>
         [HttpGet]
-        public async Task<IActionResult> GetGroupStudents(int groupId)
+        [ProducesResponseType(typeof(IEnumerable<StudentDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetGroupStudentsAsync(int groupId)
         {
             var students = await _groupStudentsService.GetStudentsAsync(groupId);
 

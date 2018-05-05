@@ -28,18 +28,21 @@ namespace GradeBook.DAL.Migrations
                     b.Property<DateTime>("CreatedAt");
 
                     b.Property<string>("FirstName")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(20);
 
                     b.Property<bool>("IsActive");
 
                     b.Property<string>("LastName")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(20);
 
                     b.Property<string>("Login")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<string>("MiddleName")
-                        .IsRequired();
+                        .HasMaxLength(20);
 
                     b.Property<string>("PasswordHash")
                         .IsRequired();
@@ -48,7 +51,8 @@ namespace GradeBook.DAL.Migrations
                         .IsRequired();
 
                     b.Property<string>("Role")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(20);
 
                     b.Property<DateTime>("UpdatedAt");
 
@@ -63,11 +67,12 @@ namespace GradeBook.DAL.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Description")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(20);
 
                     b.HasKey("Id");
 
-                    b.ToTable("AssestmentType");
+                    b.ToTable("AssestmentTypes");
                 });
 
             modelBuilder.Entity("GradeBook.Models.FinalGrade", b =>
@@ -87,13 +92,14 @@ namespace GradeBook.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GradebookRefId");
-
                     b.HasIndex("StudentRefId");
 
                     b.HasIndex("TeacherRefId");
 
-                    b.ToTable("FinalGrade");
+                    b.HasIndex("GradebookRefId", "StudentRefId")
+                        .IsUnique();
+
+                    b.ToTable("FinalGrades");
                 });
 
             modelBuilder.Entity("GradeBook.Models.Grade", b =>
@@ -104,7 +110,8 @@ namespace GradeBook.DAL.Migrations
                     b.Property<DateTime>("CreatedAt");
 
                     b.Property<string>("Description")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(50);
 
                     b.Property<int>("GradebookRefId");
 
@@ -122,7 +129,7 @@ namespace GradeBook.DAL.Migrations
 
                     b.HasIndex("TeacherRefId");
 
-                    b.ToTable("Grade");
+                    b.ToTable("Grades");
                 });
 
             modelBuilder.Entity("GradeBook.Models.Gradebook", b =>
@@ -138,7 +145,8 @@ namespace GradeBook.DAL.Migrations
 
                     b.HasIndex("SubjectRefId");
 
-                    b.HasIndex("SemesterRefId", "SubjectRefId");
+                    b.HasIndex("SemesterRefId", "SubjectRefId")
+                        .IsUnique();
 
                     b.ToTable("Gradebooks");
                 });
@@ -153,7 +161,10 @@ namespace GradeBook.DAL.Migrations
 
                     b.HasIndex("TeacherRefId");
 
-                    b.ToTable("GradebookTeacher");
+                    b.HasIndex("GradebookRefId", "TeacherRefId")
+                        .IsUnique();
+
+                    b.ToTable("GradebooksTeachers");
                 });
 
             modelBuilder.Entity("GradeBook.Models.Group", b =>
@@ -162,15 +173,17 @@ namespace GradeBook.DAL.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Code")
-                        .IsRequired();
-
-                    b.Property<DateTime>("EducationStartedAt");
+                        .IsRequired()
+                        .HasMaxLength(10);
 
                     b.Property<bool>("IsDeleted");
 
                     b.Property<int>("SpecialityRefId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
 
                     b.HasIndex("SpecialityRefId");
 
@@ -194,9 +207,10 @@ namespace GradeBook.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GroupRefId");
+                    b.HasIndex("GroupRefId", "CourseNumber", "SemesterNumber")
+                        .IsUnique();
 
-                    b.ToTable("Semester");
+                    b.ToTable("Semesters");
                 });
 
             modelBuilder.Entity("GradeBook.Models.SemesterSubject", b =>
@@ -205,15 +219,18 @@ namespace GradeBook.DAL.Migrations
 
                     b.Property<int>("SubjectRefId");
 
-                    b.Property<int>("AssestemtTypeRefId");
+                    b.Property<int>("AssestmentTypeRefId");
 
                     b.HasKey("SemesterRefId", "SubjectRefId");
 
-                    b.HasIndex("AssestemtTypeRefId");
+                    b.HasIndex("AssestmentTypeRefId");
 
                     b.HasIndex("SubjectRefId");
 
-                    b.ToTable("SemesterSubject");
+                    b.HasIndex("SemesterRefId", "SubjectRefId")
+                        .IsUnique();
+
+                    b.ToTable("SemestersSubjects");
                 });
 
             modelBuilder.Entity("GradeBook.Models.Specialty", b =>
@@ -222,14 +239,22 @@ namespace GradeBook.DAL.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Code")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(20);
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(50);
 
                     b.HasKey("Id");
 
-                    b.ToTable("Specialty");
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Specialties");
                 });
 
             modelBuilder.Entity("GradeBook.Models.Student", b =>
@@ -253,9 +278,13 @@ namespace GradeBook.DAL.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Subjects");
                 });
@@ -358,7 +387,7 @@ namespace GradeBook.DAL.Migrations
                 {
                     b.HasOne("GradeBook.Models.AssestmentType", "AssestmentType")
                         .WithMany()
-                        .HasForeignKey("AssestemtTypeRefId")
+                        .HasForeignKey("AssestmentTypeRefId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GradeBook.Models.Semester", "Semester")

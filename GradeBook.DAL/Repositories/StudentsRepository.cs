@@ -15,11 +15,16 @@ namespace GradeBook.DAL.Repositories
         {
         }
 
+        protected override IQueryable<Student> WithIncludes(DbSet<Student> dbSet)
+        {
+            return dbSet
+                .Include(s => s.Account)
+                .Include(s => s.Group.Specialty);
+        }
+
         public override async Task<IEnumerable<Student>> GetAllAsync()
         {
-            return await Set
-                .Include(s => s.Account)
-                .Include(s => s.Group.Specialty)
+            return await WithIncludes(Set)
                 .Where(s => !s.IsDeleted)
                 .ToListAsync()
                 .ConfigureAwait(false);
@@ -27,20 +32,21 @@ namespace GradeBook.DAL.Repositories
 
         public override async Task<IEnumerable<Student>> GetAllAsync(Expression<Func<Student, bool>> predicate)
         {
-            return await Set
-                .Include(s => s.Account)
-                .Include(s => s.Group.Specialty)
+            return await WithIncludes(Set)
                 .Where(s => !s.IsDeleted)
                 .Where(predicate)
                 .ToListAsync()
                 .ConfigureAwait(false);
         }
 
+        protected override int GetKeyValue(Student entity)
+        {
+            return entity.Id;
+        }
+
         public override async Task<Student> GetByIdAsync(int id)
         {
-            return await Set
-                .Include(s => s.Account)
-                .Include(s => s.Group.Specialty)
+            return await WithIncludes(Set)
                 .FirstOrDefaultAsync(s => s.Id == id && !s.IsDeleted)
                 .ConfigureAwait(false);
         }

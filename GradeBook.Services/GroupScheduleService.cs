@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using GradeBook.DAL.Repositories.Abstractions;
-using GradeBook.DAL.UoW.Base;
+using GradeBook.DAL.UoW;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
@@ -49,11 +49,11 @@ namespace GradeBook.Services
             var newSemesterSubject = _mapper.Map<SemesterSubject>(semesterSubject);
             newSemesterSubject.SemesterRefId = semester.Id;
 
-            using (var transaction = await _semesterScheduleUnitOfWork.InTransactionAsync(IsolationLevel.ReadCommitted).ConfigureAwait(false))
+            using (var transaction = await _semesterScheduleUnitOfWork.BeginTransactionAsync().ConfigureAwait(false))
             {
                 _semesterScheduleUnitOfWork.Repository.Add(newSemesterSubject);
 
-                await _semesterScheduleUnitOfWork.SaveAsync().ConfigureAwait(false);
+                await _semesterScheduleUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
                 await _gradebooksService.CreateGradebookAsync(new GradebookDto
                 {
@@ -84,12 +84,12 @@ namespace GradeBook.Services
                 return;
             }
 
-            using (var transaction = await _semesterScheduleUnitOfWork.InTransactionAsync(IsolationLevel.ReadCommitted)
+            using (var transaction = await _semesterScheduleUnitOfWork.BeginTransactionAsync()
                 .ConfigureAwait(false))
             {
                 _semesterScheduleUnitOfWork.Repository.Delete(semesterSubject);
 
-                await _semesterScheduleUnitOfWork.SaveAsync().ConfigureAwait(false);
+                await _semesterScheduleUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
                 var gradebook = await _gradebooksService.GetGradebookAsync(semester.Id, subjectId).ConfigureAwait(false);
 

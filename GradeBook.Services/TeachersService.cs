@@ -3,7 +3,7 @@ using System.Data;
 using System.Threading.Tasks;
 using AutoMapper;
 using GradeBook.DAL.Repositories.Abstractions;
-using GradeBook.DAL.UoW.Base;
+using GradeBook.DAL.UoW;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
@@ -44,7 +44,7 @@ namespace GradeBook.Services
 
         public async Task<int> CreateTeacherAsync(TeacherDto teacher)
         {
-            using (var transaction = await _teachersUnitOfWork.InTransactionAsync(IsolationLevel.ReadCommitted).ConfigureAwait(false))
+            using (var transaction = await _teachersUnitOfWork.BeginTransactionAsync().ConfigureAwait(false))
             {
                 teacher.Role = "teacher";
                 
@@ -56,7 +56,7 @@ namespace GradeBook.Services
                 };
             
                 _teachersUnitOfWork.Repository.Add(newTeacher);
-                await _teachersUnitOfWork.SaveAsync().ConfigureAwait(false);
+                await _teachersUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
                 
                transaction.Commit();
 
@@ -68,19 +68,19 @@ namespace GradeBook.Services
         {
             await _accountService.UpdateAccountAsync(teacher).ConfigureAwait(false);
             
-            await _teachersUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _teachersUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteTeacherAsync(int teacherId)
         {
             var teacherToUpdate = await _teachersUnitOfWork.Repository.GetByIdAsync(teacherId).ConfigureAwait(false);
 
-            using (var transaction = await _teachersUnitOfWork.InTransactionAsync(IsolationLevel.ReadCommitted).ConfigureAwait(false))
+            using (var transaction = await _teachersUnitOfWork.BeginTransactionAsync().ConfigureAwait(false))
             {
                 await _accountService.DisableAccountAsync(teacherId).ConfigureAwait(false);
                 
                 teacherToUpdate.IsDeleted = true;
-                await _teachersUnitOfWork.SaveAsync().ConfigureAwait(false);
+                await _teachersUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
                 
                 transaction.Commit();
             }

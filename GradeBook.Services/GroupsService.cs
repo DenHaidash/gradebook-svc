@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using GradeBook.DAL.Repositories.Abstractions;
-using GradeBook.DAL.UoW.Base;
+using GradeBook.DAL.UoW;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
@@ -44,18 +45,17 @@ namespace GradeBook.Services
             return _mapper.Map<IEnumerable<GroupDto>>(groups);
         }
 
-        public async Task<int> CreateGroupAsync(GroupDto group)
+        public async Task<int> CreateGroupAsync(GroupDto group, DateTime educationStartedAt)
         {
-            using (var transaction = await _groupsUnitOfWork.InTransactionAsync(IsolationLevel.ReadCommitted)
-                .ConfigureAwait(false))
+            using (var transaction = await _groupsUnitOfWork.BeginTransactionAsync().ConfigureAwait(false))
             {
                 var newGroup = _mapper.Map<Group>(group);
  
                 _groupsUnitOfWork.Repository.Add(newGroup);
 
-                await _groupsUnitOfWork.SaveAsync().ConfigureAwait(false);
+                await _groupsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
-                var groupSemesters = SemestersHelper.GenerateSemesters(group.EducationStartedAt.Year).ToList();
+                var groupSemesters = SemestersHelper.GenerateSemesters(educationStartedAt.Year).ToList();
                 groupSemesters.ForEach(s => { s.Group.Id = newGroup.Id; });
             
                 await _groupSemestersService.CreateGroupSemestersAsync(groupSemesters).ConfigureAwait(false);
@@ -78,7 +78,7 @@ namespace GradeBook.Services
             groupToUpdate.Code = group.Code;
             groupToUpdate.SpecialityRefId = group.Specialty.Id;
 
-            await _groupsUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _groupsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task RemoveGroupAsync(int groupId)
@@ -92,7 +92,7 @@ namespace GradeBook.Services
 
             groupToUpdate.IsDeleted = true;
             
-            await _groupsUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _groupsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }

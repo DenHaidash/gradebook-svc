@@ -1,4 +1,8 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Text;
 using AutoMapper;
 using GradeBook.CompositionRoot;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -44,7 +48,36 @@ namespace GradeBook
             
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "GradeBook API", Version = "v1" });
+                c.SwaggerDoc("v1", new Info
+                {
+                    Title = "GradeBook API",
+                    Version = "v1",
+                    Description = "GradeBook service RESTful API",
+                    Contact = new Contact
+                    {
+                        Name = "Denis Haidash",
+                        Url = "https://github.com/DenHaydash"
+                    }
+                });
+
+                var xmlDocsPath = Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetEntryAssembly().GetName().Name}.xml");
+
+                if (File.Exists(xmlDocsPath))
+                {
+                    c.IncludeXmlComments(xmlDocsPath);
+                }
+                
+                c.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                {
+                    Name = "Authorization",
+                    In = "header",
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+                    Type = "apiKey"
+                });
+                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                {
+                    { "Bearer", new string[] {} }
+                });
             });
 
             services.AddAutoMapper();
@@ -58,15 +91,18 @@ namespace GradeBook
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "GradeBook API v1");
-                });
             }
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "GradeBook API v1");
+            });
+            
             app.UseResponseCompression(); // todo: prod only?
+            
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod());
+            
             app.UseAuthentication();
 
 //            if (env.IsProduction())

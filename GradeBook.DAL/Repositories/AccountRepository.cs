@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.Models;
 using Microsoft.EntityFrameworkCore;
@@ -9,14 +11,19 @@ namespace GradeBook.DAL.Repositories
     {
         public AccountRepository(GradebookContext context) : base(context)
         {
-            
-        }
 
+        }
+        
         public async Task<Account> GetByLoginAsync(string login)
         {
             return await Set
                 .FirstOrDefaultAsync(i => i.Login == login && i.IsActive)
                 .ConfigureAwait(false);
+        }
+
+        protected override int GetKeyValue(Account entity)
+        {
+            return entity.Id;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GradeBook.DAL.UoW.Base
+namespace GradeBook.DAL.UoW
 {
     public interface IUnitOfWorkTransaction : IDisposable
     {

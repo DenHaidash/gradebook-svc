@@ -16,14 +16,6 @@ namespace GradeBook.DAL
         {
         }
         
-        // todo: check, seems redundant
-        public DbSet<Account> Accounts { get; set; }
-        public DbSet<Student> Students { get; set; }
-        public DbSet<Teacher> Teachers { get; set; }
-        public DbSet<Gradebook> Gradebooks { get; set; }
-        public DbSet<Group> Groups { get; set; }
-        public DbSet<Subject> Subjects { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -33,6 +25,42 @@ namespace GradeBook.DAL
             
             modelBuilder.Entity<SemesterSubject>()
                 .HasKey(i => new { i.SemesterRefId, i.SubjectRefId });
+
+            modelBuilder.Entity<FinalGrade>()
+                .HasIndex(i => new {i.GradebookRefId, i.StudentRefId})
+                .IsUnique();
+
+            modelBuilder.Entity<Gradebook>()
+                .HasIndex(i => new {i.SemesterRefId, i.SubjectRefId})
+                .IsUnique();
+
+            modelBuilder.Entity<GradebookTeacher>()
+                .HasIndex(i => new {i.GradebookRefId, i.TeacherRefId})
+                .IsUnique();
+
+            modelBuilder.Entity<Group>()
+                .HasIndex(i => i.Code)
+                .IsUnique();
+
+            modelBuilder.Entity<Semester>()
+                .HasIndex(i => new {i.GroupRefId, i.CourseNumber, i.SemesterNumber})
+                .IsUnique();
+            
+            modelBuilder.Entity<SemesterSubject>()
+                .HasIndex(i => new {i.SemesterRefId, i.SubjectRefId})
+                .IsUnique();
+
+            modelBuilder.Entity<Specialty>()
+                .HasIndex(i => i.Code)
+                .IsUnique();
+
+            modelBuilder.Entity<Specialty>()
+                .HasIndex(i => i.Name)
+                .IsUnique();
+
+            modelBuilder.Entity<Subject>()
+                .HasIndex(i => i.Name)
+                .IsUnique();
         }
     }
 }

@@ -15,24 +15,14 @@ namespace GradeBook.DAL.Repositories
         {
         }
 
-        public override async Task<IEnumerable<Semester>> GetAllAsync()
+        protected override IQueryable<Semester> WithIncludes(DbSet<Semester> dbSet)
         {
-            return await Set.Include(s => s.Group.Specialty).ToListAsync().ConfigureAwait(false);
+            return dbSet.Include(s => s.Group.Specialty);
         }
 
-        public override async Task<IEnumerable<Semester>> GetAllAsync(Expression<Func<Semester, bool>> predicate)
+        protected override int GetKeyValue(Semester entity)
         {
-            return await Set.Include(s => s.Group.Specialty)
-                .Where(predicate)
-                .ToListAsync()
-                .ConfigureAwait(false);
-        }
-
-        public override async Task<Semester> GetByIdAsync(int id)
-        {
-            return await Set.Include(s => s.Group.Specialty)
-                .FirstOrDefaultAsync(s => s.Id == id)
-                .ConfigureAwait(false);
+            return entity.Id;
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using GradeBook.DAL.Repositories.Abstractions;
-using GradeBook.DAL.UoW.Base;
+using GradeBook.DAL.UoW;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
@@ -58,7 +58,7 @@ namespace GradeBook.Services
         {
             var newSemester = _addSemesterToRepo(semester);
 
-            await _semesterScheduleUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _semesterScheduleUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
             return newSemester.Id;
         }
@@ -70,7 +70,7 @@ namespace GradeBook.Services
                 _addSemesterToRepo(semester);
             }
 
-            await _semesterScheduleUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _semesterScheduleUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteGroupSemester(int semesterId)
@@ -84,7 +84,7 @@ namespace GradeBook.Services
             
             _semesterScheduleUnitOfWork.Repository.Delete(semesterToDelete);
 
-            await _semesterScheduleUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _semesterScheduleUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }

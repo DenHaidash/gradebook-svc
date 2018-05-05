@@ -1,12 +1,17 @@
 ﻿using System.Threading.Tasks;
 using AutoMapper;
+using GradeBook.Common.Security;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GradeBook.Controllers
 {
+    [Produces("application/json")]
+    [Authorize(Roles = Roles.Admin)]
     [Route("api/students")]
     public class StudentsController : Controller
     {
@@ -19,8 +24,13 @@ namespace GradeBook.Controllers
             _mapper = mapper;
         }
         
+        /// <summary>
+        /// Get student
+        /// </summary>
         [HttpGet("{studentId:int}", Name = "GetStudent")]
-        public async Task<IActionResult> GetStudent(int studentId)
+        [ProducesResponseType(typeof(StudentDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetStudentAsync(int studentId)
         {
             var student = await _studentsService.GetStudentAsync(studentId);
 
@@ -32,20 +42,29 @@ namespace GradeBook.Controllers
             return Ok(student);
         }
         
+        /// <summary>
+        /// Delete student
+        /// </summary>
         [HttpDelete("{studentId:int}")]
-        public async Task<IActionResult> DeleteStudent(int studentId)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> DeleteStudentAsync(int studentId)
         {
             await _studentsService.DeleteStudentAsync(studentId);
             
             return NoContent();
         }
         
+        /// <summary>
+        /// Update student
+        /// </summary>
         [HttpPost("{studentId:int}")]
-        public async Task<IActionResult> UpdateStudent(int studentId, [FromBody]AccountViewModel student)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateStudentAsync(int studentId, [FromBody]AccountViewModel student)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var studentDto = _mapper.Map<StudentDto>(student);
@@ -56,12 +75,17 @@ namespace GradeBook.Controllers
             return NoContent();
         }
         
+        /// <summary>
+        /// Create student
+        /// </summary>
         [HttpPut]
-        public async Task<IActionResult> CreateStudent([FromBody]NewStudentViewModel student)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CreateStudentAsync([FromBody]NewStudentViewModel student)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
             
             var studentId = await _studentsService.CreateStudentAsync(_mapper.Map<StudentDto>(student));

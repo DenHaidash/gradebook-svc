@@ -8,5 +8,10 @@ namespace GradeBook.DAL.Repositories
         public SubjectsRepository(GradebookContext context) : base(context)
         {
         }
+
+        protected override int GetKeyValue(Subject entity)
+        {
+            return entity.Id;
+        }
     }
 }

@@ -4,7 +4,7 @@ namespace GradeBook.Models
 {
     public class PasswordResetViewModel
     {
-        [Required]
+        [Required, EmailAddress, StringLength(50)]
         public string Email { get; set; }
     }
 }

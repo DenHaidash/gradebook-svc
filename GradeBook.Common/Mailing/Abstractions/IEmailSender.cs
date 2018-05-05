@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace GradeBook.Common.Mailing
+namespace GradeBook.Common.Mailing.Abstractions
 {
     public interface IEmailSender
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace GradeBook.DAL.UoW.Base
+namespace GradeBook.DAL.UoW
 {
     public class UnitOfWorkTransaction : IUnitOfWorkTransaction
     {

@@ -4,7 +4,7 @@ namespace GradeBook.Models
 {
     public class SubjectViewModel
     {
-        [Required]
+        [Required, StringLength(30)]
         public string Name { get; set; }
     }
 }

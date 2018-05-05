@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using GradeBook.DAL.Repositories.Abstractions;
-using GradeBook.DAL.UoW.Base;
+using GradeBook.DAL.UoW;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
@@ -45,7 +45,7 @@ namespace GradeBook.Services
             
             _subjectsUnitOfWork.Repository.Add(newSubject);
 
-            await _subjectsUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _subjectsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
             return newSubject.Id;
         }
@@ -61,7 +61,7 @@ namespace GradeBook.Services
 
             subjectToUpdate.Name = subject.Name;
             
-            await _subjectsUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _subjectsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteSubjectAsync(int subjectId)
@@ -75,7 +75,7 @@ namespace GradeBook.Services
 
             _subjectsUnitOfWork.Repository.Delete(subjectToUpdate);
             
-            await _subjectsUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _subjectsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }

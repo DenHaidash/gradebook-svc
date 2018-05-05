@@ -14,19 +14,27 @@ namespace GradeBook.DAL.Repositories
         public GroupsRepository(GradebookContext context) : base(context)
         {
         }
-        
+
+        protected override IQueryable<Group> WithIncludes(DbSet<Group> dbSet)
+        {
+            return dbSet.Include(g => g.Specialty);
+        }
+
+        protected override int GetKeyValue(Group entity)
+        {
+            return entity.Id;
+        }
+
         public override async Task<Group> GetByIdAsync(int id)
         {
-            return await Set
-                .Include(g => g.Specialty)
+            return await WithIncludes(Set)
                 .FirstOrDefaultAsync(g => g.Id == id && !g.IsDeleted)
                 .ConfigureAwait(false);
         }
 
         public override async Task<IEnumerable<Group>> GetAllAsync()
         {
-            return await Set
-                .Include(g => g.Specialty)
+            return await WithIncludes(Set)
                 .Where(g => !g.IsDeleted)
                 .ToListAsync()
                 .ConfigureAwait(false);
@@ -34,8 +42,7 @@ namespace GradeBook.DAL.Repositories
         
         public override async Task<IEnumerable<Group>> GetAllAsync(Expression<Func<Group, bool>> predicate)
         {
-            return await Set
-                .Include(g => g.Specialty)
+            return await WithIncludes(Set)
                 .Where(g => !g.IsDeleted)
                 .Where(predicate)
                 .ToListAsync()

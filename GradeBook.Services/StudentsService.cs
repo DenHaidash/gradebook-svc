@@ -1,8 +1,9 @@
 ﻿using System.Data;
 using System.Threading.Tasks;
 using AutoMapper;
+using GradeBook.Common.Security;
 using GradeBook.DAL.Repositories.Abstractions;
-using GradeBook.DAL.UoW.Base;
+using GradeBook.DAL.UoW;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
@@ -36,9 +37,9 @@ namespace GradeBook.Services
 
         public async Task<int> CreateStudentAsync(StudentDto student)
         {
-            using (var tranaction = await _studentsUnitOfWork.InTransactionAsync(IsolationLevel.ReadCommitted).ConfigureAwait(false))
+            using (var tranaction = await _studentsUnitOfWork.BeginTransactionAsync().ConfigureAwait(false))
             {
-                student.Role = "student"; // todo: move to mapper or ctor
+                student.Role = Roles.Student;
                 
                 var newAcctId = await _acctService.CreateAccountAsync(student).ConfigureAwait(false);
 
@@ -49,7 +50,7 @@ namespace GradeBook.Services
                 };
             
                 _studentsUnitOfWork.Repository.Add(newStudent);
-                await _studentsUnitOfWork.SaveAsync().ConfigureAwait(false);
+                await _studentsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
                 
                 tranaction.Commit();
 
@@ -60,22 +61,19 @@ namespace GradeBook.Services
         public async Task UpdateStudentAsync(StudentDto student)
         {
             await _acctService.UpdateAccountAsync(student).ConfigureAwait(false);
-
-            //studentToUpdate.GroupRefId = student.Group.Id;
         }
 
         public async Task DeleteStudentAsync(int studentId)
         {
             var studentToUpdate = await _studentsUnitOfWork.Repository.GetByIdAsync(studentId).ConfigureAwait(false);
 
-            using (var tranaction = await _studentsUnitOfWork.InTransactionAsync(IsolationLevel.ReadCommitted)
-                .ConfigureAwait(false))
+            using (var tranaction = await _studentsUnitOfWork.BeginTransactionAsync().ConfigureAwait(false))
             {
                 await _acctService.DisableAccountAsync(studentId).ConfigureAwait(false);
                 
                 studentToUpdate.IsDeleted = true;
 
-                await _studentsUnitOfWork.SaveAsync().ConfigureAwait(false);
+                await _studentsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
                 
                 tranaction.Commit();
             }

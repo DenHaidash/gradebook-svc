@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using GradeBook.DTO;
 
@@ -8,7 +9,7 @@ namespace GradeBook.Services.Abstactions
     {
         Task<GroupDto> GetGroupAsync(int id);
         Task<IEnumerable<GroupDto>> GetGroupsAsync();
-        Task<int> CreateGroupAsync(GroupDto group);
+        Task<int> CreateGroupAsync(GroupDto group, DateTime educationStartedAt);
         Task UpdateGroupAsync(GroupDto group);
         Task RemoveGroupAsync(int groupId);
     }

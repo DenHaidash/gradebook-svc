@@ -4,11 +4,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using GradeBook.DTO;
+using GradeBook.Helpers.Jwt.Abstractions;
 using GradeBook.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
-namespace GradeBook.Helpers
+namespace GradeBook.Helpers.Jwt
 {
     public class JwtTokenHelper : IJwtTokenHelper
     {
@@ -28,7 +30,9 @@ namespace GradeBook.Helpers
                 new Claim("MiddleName", acct.MiddleName),
                 new Claim("Role", acct.Role),
                 new Claim("Email", acct.Email),
-                new Claim("Id", acct.Id.ToString())
+                new Claim("Id", acct.Id.ToString()),
+                new Claim(ClaimTypes.Role, acct.Role),
+                new Claim(ClaimTypes.Sid, acct.Id.ToString())
             };
         }
         

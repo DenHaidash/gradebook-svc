@@ -1,10 +1,13 @@
 ﻿using GradeBook.Common.Mailing;
+using GradeBook.Common.Mailing.Abstractions;
 using GradeBook.Common.Options;
 using GradeBook.DAL;
 using GradeBook.DAL.Repositories;
 using GradeBook.DAL.Repositories.Abstractions;
-using GradeBook.DAL.UoW.Base;
+using GradeBook.DAL.UoW;
 using GradeBook.Helpers;
+using GradeBook.Helpers.Jwt;
+using GradeBook.Helpers.Jwt.Abstractions;
 using GradeBook.Options;
 using GradeBook.Services;
 using GradeBook.Services.Abstactions;
@@ -48,7 +51,6 @@ namespace GradeBook.CompositionRoot
             services.AddTransient<IGroupsService, GroupsService>();
             services.AddTransient<IGroupStudentsService, GroupStudentsService>();
             services.AddTransient<ISpecialitiesService, SpecialitiesService>();
-            services.AddTransient<IStatisticService, StatisticService>();
             services.AddTransient<IStudentGradesService, StudentGradesService>();
             services.AddTransient<IStudentsService, StudentsService>();
             services.AddTransient<ISubjectsService, SubjectsService>();
@@ -69,6 +71,8 @@ namespace GradeBook.CompositionRoot
             services.AddScoped<IUnitOfWork<ISemesterSubjectsRepository>, UnitOfWork<ISemesterSubjectsRepository>>();
             services.AddScoped<IUnitOfWork<IGradebooksRepository>, UnitOfWork<IGradebooksRepository>>();
             services.AddScoped<IUnitOfWork<ITeacherGradebookRepository>, UnitOfWork<ITeacherGradebookRepository>>();
+            services.AddScoped<IUnitOfWork<IGradesRepository>, UnitOfWork<IGradesRepository>>();
+            services.AddScoped<IUnitOfWork<IFinalGradesRepository>, UnitOfWork<IFinalGradesRepository>>();
         }
     }
 }

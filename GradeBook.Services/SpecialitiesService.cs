@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using GradeBook.DAL.Repositories.Abstractions;
-using GradeBook.DAL.UoW.Base;
+using GradeBook.DAL.UoW;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
@@ -46,7 +46,7 @@ namespace GradeBook.Services
             
             _specialitiesUnitOfWork.Repository.Add(newSpeciality);
 
-            await _specialitiesUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _specialitiesUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
             return newSpeciality.Id;
         }
@@ -63,7 +63,7 @@ namespace GradeBook.Services
             specialityToUpdate.Name = specialty.Name;
             specialityToUpdate.Code = specialty.Code;
 
-            await _specialitiesUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _specialitiesUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteSpecialityAsync(int specialityId)
@@ -77,7 +77,7 @@ namespace GradeBook.Services
             
             _specialitiesUnitOfWork.Repository.Delete(speciality);
 
-            await _specialitiesUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _specialitiesUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }

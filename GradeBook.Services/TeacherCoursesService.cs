@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using GradeBook.DAL.Repositories.Abstractions;
-using GradeBook.DAL.UoW.Base;
+using GradeBook.DAL.UoW;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
@@ -61,7 +61,7 @@ namespace GradeBook.Services
             
             _teacherGradebookUnitOfWork.Repository.Add(newTeacherAssignment);
 
-            await _teacherGradebookUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _teacherGradebookUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task UnassignTeacherFromCourseAsync(int teacherId, int year, int semester, int groupId, int subjectId)
@@ -80,7 +80,7 @@ namespace GradeBook.Services
             
             _teacherGradebookUnitOfWork.Repository.Delete(teacherAssignment);
 
-            await _teacherGradebookUnitOfWork.SaveAsync().ConfigureAwait(false);
+            await _teacherGradebookUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }

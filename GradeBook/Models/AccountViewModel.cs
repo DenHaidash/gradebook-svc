@@ -4,11 +4,13 @@ namespace GradeBook.Models
 {
     public class AccountViewModel
     {
-        [Required]
+        [Required, StringLength(20)]
         public string FirstName { get; set; }
-        [Required]
+        
+        [Required, StringLength(20)]
         public string LastName { get; set; }
-        [Required]
+        
+        [Required, StringLength(20)]
         public string MiddleName { get; set; }
     }
 }

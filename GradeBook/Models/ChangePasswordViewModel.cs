@@ -4,9 +4,10 @@ namespace GradeBook.Models
 {
     public class ChangePasswordViewModel
     {
-        [Required]
+        [Required, StringLength(20)]
         public string OldPassword { get; set; }
-        [Required]
+        
+        [Required, StringLength(20), MinLength(6)]
         public string NewPassword { get; set; }
     }
 }

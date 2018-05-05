@@ -4,9 +4,10 @@ namespace GradeBook.Models
 {
     public class SpecialtyViewModel
     {
-        [Required]
+        [Required, StringLength(20)]
         public string Code { get; set; }
-        [Required]
+        
+        [Required, StringLength(50)]
         public string Name { get; set; }
     }
 }

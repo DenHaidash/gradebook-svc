@@ -1,14 +1,18 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
+using GradeBook.Common.Security;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GradeBook.Controllers
 {
-    [Authorize]
+    [Produces("application/json")]
+    [Authorize(Roles = Roles.Admin)]
     [Route("/api/subjects")]
     public class SubjectsController : Controller
     {
@@ -21,7 +25,11 @@ namespace GradeBook.Controllers
             _mapper = mapper;
         }
         
+        /// <summary>
+        /// Get subjects
+        /// </summary>
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<SubjectDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetSubjectsAsync()
         {
             var subjects = await _subjectsService.GetSubjectsAsync();
@@ -29,7 +37,12 @@ namespace GradeBook.Controllers
             return Ok(subjects);
         }
         
+        /// <summary>
+        /// Get subject
+        /// </summary>
         [HttpGet("{subjectId:int}", Name = "GetSubject")]
+        [ProducesResponseType(typeof(SubjectDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetSubjectAsync(int subjectId)
         {
             var subject = await _subjectsService.GetSubjectAsync(subjectId);
@@ -42,12 +55,17 @@ namespace GradeBook.Controllers
             return Ok(subject);
         }
         
+        /// <summary>
+        /// Create subject
+        /// </summary>
         [HttpPut]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateSubjectAsync([FromBody]SubjectViewModel subject)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
             
             var subjectId = await _subjectsService.CreateSubjectAsync(_mapper.Map<SubjectDto>(subject));
@@ -55,12 +73,17 @@ namespace GradeBook.Controllers
             return CreatedAtRoute("GetSubject", new {  subjectId }, null);
         }
         
+        /// <summary>
+        /// Update subject
+        /// </summary>
         [HttpPost("{subjectId:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateSubjectAsync(int subjectId, [FromBody]SubjectViewModel subject)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
             
             var subjectDto = _mapper.Map<SubjectDto>(subject);
@@ -71,7 +94,11 @@ namespace GradeBook.Controllers
             return NoContent();
         }
         
+        /// <summary>
+        /// Delete subject
+        /// </summary>
         [HttpDelete("{subjectId:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteSubjectAsync(int subjectId)
         {
             await _subjectsService.DeleteSubjectAsync(subjectId);

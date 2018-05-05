@@ -1,6 +1,6 @@
 ﻿using GradeBook.DTO;
 
-namespace GradeBook.Helpers
+namespace GradeBook.Helpers.Jwt.Abstractions
 {
     public interface IJwtTokenHelper
     {

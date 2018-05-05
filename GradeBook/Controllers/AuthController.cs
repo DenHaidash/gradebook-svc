@@ -1,14 +1,19 @@
 ﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using GradeBook.DTO;
 using GradeBook.Helpers;
+using GradeBook.Helpers.Jwt.Abstractions;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GradeBook.Controllers
 {
+    [Produces("application/json")]
+    [AllowAnonymous]
     [Route("api/auth")]
     public class AuthController : Controller
     {
@@ -21,12 +26,18 @@ namespace GradeBook.Controllers
             _jwtTokenHelper = jwtTokenHelper;
         }
         
+        /// <summary>
+        /// Get auth token
+        /// </summary>
         [HttpPost]
+        [ProducesResponseType(typeof(TokenDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetAuthTokenAsync([FromBody]LoginViewModel loginModel)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
             
             if (!(await _accountService.VerifyPasswordAsync(loginModel.Login, loginModel.Password)))
@@ -36,16 +47,24 @@ namespace GradeBook.Controllers
 
             var user = await _accountService.GetAccountAsync(loginModel.Login);
 
-            return Ok(_jwtTokenHelper.BuildJwtToken(user));
+            return Ok(new TokenDto { Token = _jwtTokenHelper.BuildJwtToken(user) });
         }
         
+        /// <summary>
+        /// Change password
+        /// </summary>
+        /// <param name="changePasswordModel"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpPost("change-password")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> ChangePasswordAsync([FromBody]ChangePasswordViewModel changePasswordModel)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
             
             var email = User.Claims.First(c => c.Type == ClaimTypes.Email).Value;
@@ -64,12 +83,16 @@ namespace GradeBook.Controllers
             return NoContent();
         }
         
+        /// <summary>
+        /// Reset password
+        /// </summary>
         [HttpPost("reset-password")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RestorePasswordAsync([FromBody]PasswordResetViewModel passwordResetModel)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
             
             await _accountService.ResetPasswordAsync(passwordResetModel.Email);

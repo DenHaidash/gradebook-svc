@@ -1,13 +1,14 @@
-﻿using Microsoft.AspNetCore;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
 namespace GradeBook
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            await BuildWebHost(args).RunAsync();
         }
 
         public static IWebHost BuildWebHost(string[] args) =>
