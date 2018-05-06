@@ -3,7 +3,7 @@ using GradeBook.Models;
 
 namespace GradeBook.DAL.Repositories
 {
-    public class SpecialitiesRepository : BaseRepository<Specialty>, ISpecialitiesRepository
+    public sealed class SpecialitiesRepository : BaseRepository<Specialty>, ISpecialitiesRepository
     {
         public SpecialitiesRepository(GradebookContext context) : base(context)
         {

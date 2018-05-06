@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GradeBook.DAL.Repositories
 {
-    public class GroupsRepository : BaseRepository<Group>, IGroupsRepository
+    public sealed class GroupsRepository : BaseRepository<Group>, IGroupsRepository
     {
         public GroupsRepository(GradebookContext context) : base(context)
         {

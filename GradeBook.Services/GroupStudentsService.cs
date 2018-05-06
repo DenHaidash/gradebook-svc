@@ -7,7 +7,7 @@ using GradeBook.Services.Abstactions;
 
 namespace GradeBook.Services
 {
-    public class GroupStudentsService : IGroupStudentsService
+    public sealed class GroupStudentsService : IGroupStudentsService
     {
         private readonly IStudentsRepository _studentsRepository;
         private readonly IMapper _mapper;

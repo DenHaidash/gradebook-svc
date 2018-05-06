@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GradeBook.DAL.Repositories
 {
-    public class TeachersRepository : BaseRepository<Teacher>, ITeachersRepository
+    public sealed class TeachersRepository : BaseRepository<Teacher>, ITeachersRepository
     {
         public TeachersRepository(GradebookContext context) : base(context)
         {

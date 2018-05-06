@@ -13,7 +13,7 @@ using GradeBook.Services.Helpers;
 
 namespace GradeBook.Services
 {
-    public class TeacherCoursesService : ITeacherCoursesService
+    public sealed class TeacherCoursesService : ITeacherCoursesService
     {
         private readonly IUnitOfWork<ITeacherGradebookRepository> _teacherGradebookUnitOfWork;
         private readonly IMapper _mapper;

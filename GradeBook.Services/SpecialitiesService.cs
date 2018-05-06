@@ -10,8 +10,7 @@ using GradeBook.Services.Abstactions;
 
 namespace GradeBook.Services
 {
-    // todo: think about abstact CrudService<TRepository>
-    public class SpecialitiesService : ISpecialitiesService
+    public sealed class SpecialitiesService : ISpecialitiesService
     {
         private readonly IUnitOfWork<ISpecialitiesRepository> _specialitiesUnitOfWork;
         private readonly IMapper _mapper;

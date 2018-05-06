@@ -14,7 +14,7 @@ using GradeBook.Services.Helpers;
 
 namespace GradeBook.Services
 {
-    public class GroupScheduleService : IGroupScheduleService
+    public sealed class GroupScheduleService : IGroupScheduleService
     {
         private readonly IUnitOfWork<ISemesterSubjectsRepository> _semesterScheduleUnitOfWork;
         private readonly IMapper _mapper;

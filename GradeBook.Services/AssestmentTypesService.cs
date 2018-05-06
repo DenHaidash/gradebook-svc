@@ -7,7 +7,7 @@ using GradeBook.Services.Abstactions;
 
 namespace GradeBook.Services
 {
-    public class AssestmentTypesService : IAssestmentTypesService
+    public sealed class AssestmentTypesService : IAssestmentTypesService
     {
         private readonly IAssestmentTypesRepository _assestmentTypesRepository;
         private readonly IMapper _mapper;

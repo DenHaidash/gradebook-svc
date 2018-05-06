@@ -11,7 +11,7 @@ using GradeBook.Services.Abstactions;
 
 namespace GradeBook.Services
 {
-    public class GroupSemestersService : IGroupSemestersService
+    public sealed class GroupSemestersService : IGroupSemestersService
     {
         private readonly IUnitOfWork<ISemestersRepository> _semesterScheduleUnitOfWork;
         private readonly IMapper _mapper;

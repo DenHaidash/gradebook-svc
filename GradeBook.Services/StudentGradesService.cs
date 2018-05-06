@@ -13,7 +13,7 @@ using GradeBook.Services.Abstactions;
 
 namespace GradeBook.Services
 {
-    public class StudentGradesService : IStudentGradesService
+    public sealed class StudentGradesService : IStudentGradesService
     {
         private readonly IUnitOfWork<IGradesRepository> _gradesUnitOfWork;
         private readonly IUnitOfWork<IFinalGradesRepository> _finalGradesUnitOfWork;

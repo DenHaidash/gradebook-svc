@@ -11,7 +11,7 @@ using GradeBook.Services.Abstactions;
 
 namespace GradeBook.Services
 {
-    public class TeachersService : ITeachersService
+    public sealed class TeachersService : ITeachersService
     {
         private readonly IUnitOfWork<ITeachersRepository> _teachersUnitOfWork;
         private readonly IAccountService _accountService;

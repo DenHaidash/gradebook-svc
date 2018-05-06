@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GradeBook.DAL.Repositories
 {
-    public class AccountRepository : BaseRepository<Account>, IAccountRepository
+    public sealed class AccountRepository : BaseRepository<Account>, IAccountRepository
     {
         public AccountRepository(GradebookContext context) : base(context)
         {

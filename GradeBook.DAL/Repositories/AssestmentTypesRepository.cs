@@ -3,7 +3,7 @@ using GradeBook.Models;
 
 namespace GradeBook.DAL.Repositories
 {
-    public class AssestmentTypesRepository : BaseRepository<AssestmentType>, IAssestmentTypesRepository
+    public sealed class AssestmentTypesRepository : BaseRepository<AssestmentType>, IAssestmentTypesRepository
     {
         public AssestmentTypesRepository(GradebookContext context) : base(context)
         {
