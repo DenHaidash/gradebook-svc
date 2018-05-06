@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using GradeBook.Common.Security;
 using GradeBook.DTO;
 using GradeBook.Services.Abstactions;
 using Microsoft.AspNetCore.Authorization;
@@ -9,8 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace GradeBook.Controllers
 {
     [Produces("application/json")]
-    [Authorize]
-    [Route("api/groups/{groupId:int}/students")]
+    [Authorize(Roles = Roles.Teacher+","+Roles.Admin)]
+    [Route("api/groups/{groupId:int:min(1)}/students")]
     public class GroupStudentsController : Controller
     {
         private readonly IGroupStudentsService _groupStudentsService;

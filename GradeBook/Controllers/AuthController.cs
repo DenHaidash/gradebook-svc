@@ -6,6 +6,7 @@ using GradeBook.Helpers;
 using GradeBook.Helpers.Jwt.Abstractions;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
+using GradeBook.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace GradeBook.Controllers
 {
     [Produces("application/json")]
-    [AllowAnonymous]
     [Route("api/auth")]
     public class AuthController : Controller
     {
@@ -29,6 +29,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Get auth token
         /// </summary>
+        [AllowAnonymous]
         [HttpPost]
         [ProducesResponseType(typeof(TokenDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -37,7 +38,7 @@ namespace GradeBook.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new ValidationError(ModelState));
             }
             
             if (!(await _accountService.VerifyPasswordAsync(loginModel.Login, loginModel.Password)))
@@ -57,14 +58,14 @@ namespace GradeBook.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpPost("change-password")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> ChangePasswordAsync([FromBody]ChangePasswordViewModel changePasswordModel)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new ValidationError(ModelState));
             }
             
             var email = User.Claims.First(c => c.Type == ClaimTypes.Email).Value;
@@ -86,13 +87,15 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Reset password
         /// </summary>
+        [AllowAnonymous]
         [HttpPost("reset-password")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RestorePasswordAsync([FromBody]PasswordResetViewModel passwordResetModel)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new ValidationError(ModelState));
             }
             
             await _accountService.ResetPasswordAsync(passwordResetModel.Email);

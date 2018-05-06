@@ -22,10 +22,8 @@ namespace GradeBook.Mapper
                 .ForPath(m => m.AssestmentType.Id, t => t.MapFrom(s => s.AssestmentTypeId))
                 .ForPath(m => m.Subject.Id, t => t.MapFrom(s => s.SubjectId));
             CreateMap<GradeViewModel, GradeDto>()
-                .ForPath(m => m.Gradebook, t => t.Ignore())
                 .ForPath(m => m.GradebookRefId, t => t.Ignore())
                 .ForPath(m => m.Id, t => t.Ignore())
-                .ForPath(m => m.Student, t => t.Ignore())
                 .ForPath(m => m.Teacher, t => t.Ignore());
             
             CreateMap<Subject, SubjectDto>().ReverseMap();
@@ -40,20 +38,23 @@ namespace GradeBook.Mapper
                 .ForMember(m => m.MiddleName, t => t.MapFrom(s => s.Account.MiddleName));
             CreateMap<Group, GroupDto>();
             CreateMap<AssestmentType, AssestmentTypeDto>().ReverseMap();
-            CreateMap<Semester, SemesterDto>();
+            CreateMap<Semester, SemesterDto>()
+                .ForMember(m => m.GroupId, t => t.MapFrom(s => s.GroupRefId));
             CreateMap<Student, StudentDto>()
                 .ForMember(m => m.Role, t => t.MapFrom(s => s.Account.Role))
                 .ForMember(m => m.Email, t => t.MapFrom(s => s.Account.Login))
                 .ForMember(m => m.FirstName, t => t.MapFrom(s => s.Account.FirstName))
                 .ForMember(m => m.LastName, t => t.MapFrom(s => s.Account.LastName))
                 .ForMember(m => m.MiddleName, t => t.MapFrom(s => s.Account.MiddleName));
-            CreateMap<FinalGrade, GradeDto>()
-                .ForMember(m => m.Description, t => t.Ignore());
+            CreateMap<Grade, GradeDto>();
+            CreateMap<FinalGrade, FinalGradeDto>()
+                .ForMember(m => m.AssestmentType, t => t.MapFrom(s => s.Gradebook.SemesterSubject.AssestmentType));
             CreateMap<Gradebook, GradebookDto>()
+                .ForMember(m => m.AssestmentType, t => t.MapFrom(s => s.SemesterSubject.AssestmentType))
                 .ForMember(m => m.Teachers, t => t.MapFrom(s => s.GradebookTeachers.Select(r => r.Teacher)));
             
             CreateMap<SemesterDto, Semester>()
-                .ForPath(m => m.GroupRefId, t => t.MapFrom(s => s.Group.Id))
+                .ForPath(m => m.GroupRefId, t => t.MapFrom(s => s.GroupId))
                 .ForMember(m => m.Group, t => t.Ignore());
             CreateMap<SemesterSubjectDto, SemesterSubject>()
                 .ForMember(m => m.AssestmentTypeRefId, t => t.MapFrom(s => s.AssestmentType.Id))

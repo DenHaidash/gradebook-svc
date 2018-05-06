@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using GradeBook.Common.Exceptions;
 using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.DAL.UoW;
 using GradeBook.DTO;
@@ -34,15 +35,15 @@ namespace GradeBook.Services
             _studentsService = studentsService;
         }
 
-        public async Task<IEnumerable<GradeDto>> GetStudentFinalGradesAsync(int studentId)
+        public async Task<IEnumerable<FinalGradeDto>> GetStudentFinalGradesAsync(int studentId)
         {
             var finalGrades = await _finalGradesUnitOfWork.Repository.GetAllAsync(s => s.StudentRefId == studentId)
                 .ConfigureAwait(false);
 
-            return _mapper.Map<IEnumerable<GradeDto>>(finalGrades);
+            return _mapper.Map<IEnumerable<FinalGradeDto>>(finalGrades);
         }
 
-        public async Task<GradeDto> GetStudentSubjectFinalGradeAsync(int studentId, int subjectId)
+        public async Task<FinalGradeDto> GetStudentSubjectFinalGradeAsync(int studentId, int subjectId)
         {
             var finalGrade = (await _finalGradesUnitOfWork.Repository
                 .GetAllAsync(s => s.StudentRefId == studentId && s.Gradebook.SubjectRefId == subjectId)
@@ -53,7 +54,7 @@ namespace GradeBook.Services
                 return null;
             }
 
-            return _mapper.Map<GradeDto>(finalGrade);
+            return _mapper.Map<FinalGradeDto>(finalGrade);
         }
 
         public async Task<StudentSubjectGradesDto> GetStudentSubjectCurrentGradesAsync(int studentId, int subjectId)
@@ -63,10 +64,26 @@ namespace GradeBook.Services
 
             var finalGrade = await GetStudentSubjectFinalGradeAsync(studentId, subjectId).ConfigureAwait(false);
 
+            var student = await _studentsService.GetStudentAsync(studentId).ConfigureAwait(false);
+
+            if (student == null)
+            {
+                throw new ResourceNotFoundException($"Student {studentId} not found");
+            }
+            
+            var gradebook = await _gradebooksService.GetGradebookByGroupAsync(student.Group.Id, subjectId)
+                .ConfigureAwait(false);
+
+            if (gradebook == null)
+            {
+                throw new ResourceNotFoundException($"Gradebook of group {student.Group.Id} for subject {subjectId} not found");
+            }
+            
             return new StudentSubjectGradesDto
             {
                 CurrentGrades = _mapper.Map<IEnumerable<GradeDto>>(currentGrades),
-                FinalGrade = _mapper.Map<GradeDto>(finalGrade)
+                FinalGrade = _mapper.Map<FinalGradeDto>(finalGrade),
+                AssestmentType = gradebook.AssestmentType
             };
         }
 
@@ -74,7 +91,7 @@ namespace GradeBook.Services
         {
             if (grade.Value == 0)
             {
-                return;
+                throw new ResourceOperationException("Grade value can't be 0");
             }
 
             using (var transaction = await _gradesUnitOfWork.BeginTransactionAsync(IsolationLevel.RepeatableRead).ConfigureAwait(false))
@@ -83,14 +100,14 @@ namespace GradeBook.Services
 
                 if (finalGrade != null)
                 {
-                    return;
+                    throw new ResourceOperationException($"Student {studentId} already has final grade for subject {subjectId}");
                 }
 
                 var student = await _studentsService.GetStudentAsync(studentId).ConfigureAwait(false);
 
                 if (student == null)
                 {
-                    return;
+                    throw new ResourceNotFoundException($"Student {studentId} not found");
                 }
 
                 var gradebook = await _gradebooksService.GetGradebookByGroupAsync(student.Group.Id, subjectId)
@@ -98,12 +115,12 @@ namespace GradeBook.Services
 
                 if (gradebook == null)
                 {
-                    return;
+                    throw new ResourceNotFoundException($"Gradebook for subject {subjectId} of group {student.Group.Id} not found");
                 }
 
                 if (gradebook.Teachers.All(t => t.Id != teacherId))
                 {
-                    return;
+                    throw new ResourceAccessPermissionException($"Teacher {teacherId} doesn't have an access to gradebook {gradebook.Id}");
                 }
 
                 var currentGradeTotal =
@@ -111,7 +128,7 @@ namespace GradeBook.Services
 
                 if (currentGradeTotal + grade.Value > MaxFinalGradeValue)
                 {
-                    return;
+                    throw new ResourceOperationException($"Total grades for subject can't be greater then {MaxFinalGradeValue}");
                 }
 
                 var newGrade = new Grade
@@ -138,15 +155,15 @@ namespace GradeBook.Services
 
             if (grade == null)
             {
-                return;
+                throw new ResourceNotFoundException($"Grade {gradeId} not found");
             }
 
-            var finalGrade = await GetStudentSubjectFinalGradeAsync(grade.StudentRefId, grade.TeacherRefId)
+            var finalGrade = await GetStudentSubjectFinalGradeAsync(grade.StudentRefId, grade.Gradebook.SemesterRefId)
                 .ConfigureAwait(false);
 
             if (finalGrade != null)
             {
-                return;
+                throw new ResourceOperationException($"Student {grade.StudentRefId} already has final grade for subject {grade.Gradebook.SemesterRefId}");
             }
 
             var gradebook = await _gradebooksService.GetGradebookAsync(grade.GradebookRefId)
@@ -154,12 +171,12 @@ namespace GradeBook.Services
 
             if (gradebook == null)
             {
-                return;
+                throw new ResourceNotFoundException($"Gradebook {grade.GradebookRefId} not found");
             }
 
             if (gradebook.Teachers.All(t => t.Id != teacherId))
             {
-                return; // access denied
+                throw new ResourceAccessPermissionException($"Teacher {teacherId} doesn't have an access to gradebook {gradebook.Id}");
             }
 
             _gradesUnitOfWork.Repository.Delete(grade);
@@ -173,7 +190,7 @@ namespace GradeBook.Services
 
             if (student == null)
             {
-                return;
+                throw new ResourceNotFoundException($"Student {studentId} not found");
             }
 
             var gradebook = await _gradebooksService.GetGradebookByGroupAsync(student.Group.Id, subjectId)
@@ -181,12 +198,12 @@ namespace GradeBook.Services
 
             if (gradebook == null)
             {
-                return;
+                throw new ResourceNotFoundException($"Gradebook for subject {subjectId} of group {student.Group.Id} not found");
             }
 
             if (gradebook.Teachers.All(t => t.Id != teacherId))
             {
-                return;
+                throw new ResourceAccessPermissionException($"Teacher {teacherId} doesn't have an access to gradebook {gradebook.Id}");
             }
 
             using (var transaction = await _finalGradesUnitOfWork.BeginTransactionAsync(IsolationLevel.RepeatableRead)
@@ -197,7 +214,7 @@ namespace GradeBook.Services
 
                 if (currentGradeTotal < MinFinalGradeValue)
                 {
-                    return; // throw
+                    throw new ResourceOperationException($"Final grade can't be lower than {MinFinalGradeValue}");
                 }
 
                 var finalGrade = new FinalGrade

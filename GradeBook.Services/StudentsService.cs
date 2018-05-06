@@ -1,6 +1,6 @@
-﻿using System.Data;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AutoMapper;
+using GradeBook.Common.Exceptions;
 using GradeBook.Common.Security;
 using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.DAL.UoW;
@@ -27,7 +27,7 @@ namespace GradeBook.Services
         {
             var student = await _studentsUnitOfWork.Repository.GetByIdAsync(id).ConfigureAwait(false);
 
-            if (student == null)
+            if (student == null || student.IsDeleted)
             {
                 return null;
             }
@@ -67,6 +67,11 @@ namespace GradeBook.Services
         {
             var studentToUpdate = await _studentsUnitOfWork.Repository.GetByIdAsync(studentId).ConfigureAwait(false);
 
+            if (studentToUpdate == null || studentToUpdate.IsDeleted)
+            {
+                throw new ResourceNotFoundException($"Student {studentId} not found");
+            }
+            
             using (var tranaction = await _studentsUnitOfWork.BeginTransactionAsync().ConfigureAwait(false))
             {
                 await _acctService.DisableAccountAsync(studentId).ConfigureAwait(false);

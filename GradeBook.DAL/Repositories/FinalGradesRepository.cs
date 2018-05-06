@@ -2,7 +2,6 @@
 using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 
 namespace GradeBook.DAL.Repositories
 {
@@ -14,7 +13,8 @@ namespace GradeBook.DAL.Repositories
 
         protected override IQueryable<FinalGrade> WithIncludes(DbSet<FinalGrade> dbSet)
         {
-            return dbSet.Include(s => s.Teacher);
+            return dbSet.Include(s => s.Teacher.Account)
+                .Include(s => s.Gradebook.SemesterSubject.AssestmentType);
         }
 
         protected override int GetKeyValue(FinalGrade entity)

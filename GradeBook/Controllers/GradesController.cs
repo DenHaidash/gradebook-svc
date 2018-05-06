@@ -2,9 +2,11 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
+using GradeBook.Common.Security;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
+using GradeBook.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,8 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GradeBook.Controllers
 {
     [Produces("application/json")]
-    [Authorize]
-    [Route("api/students/{studentId:int}/courses/{courseId:int}/grades")]
+    [Route("api/students/{studentId:int:min(1)}/courses/{courseId:int:min(1)}/grades")]
     public class GradesController : Controller
     {
         private readonly IStudentGradesService _studentGradesService;
@@ -30,6 +31,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Get student's grades for the subject
         /// </summary>
+        [Authorize(Roles = Roles.Teacher+","+Roles.Admin)]
         [HttpGet]
         [ProducesResponseType(typeof(StudentSubjectGradesDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetStudentGradesAsync(int studentId, int courseId)
@@ -42,6 +44,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Create student's grade for the subject
         /// </summary>
+        [Authorize(Roles = Roles.Teacher)]
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -49,7 +52,7 @@ namespace GradeBook.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new ValidationError(ModelState));
             }
             
             await _studentGradesService.AddStudentCourseGradeAsync(_mapper.Map<GradeDto>(grade), studentId, TeacherId, courseId);
@@ -60,7 +63,8 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Delete student's grade
         /// </summary>
-        [HttpDelete("{gradeId:int}")]
+        [Authorize(Roles = Roles.Teacher)]
+        [HttpDelete("{gradeId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteStudentGradeAsync(int gradeId)
         {            
@@ -72,6 +76,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Get student's final grade for the subject
         /// </summary>
+        [Authorize(Roles = Roles.Teacher+","+Roles.Admin)]
         [HttpGet("final")]
         [ProducesResponseType(typeof(GradeDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -91,6 +96,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Create student's final grade for the subject
         /// </summary>
+        [Authorize(Roles = Roles.Teacher)]
         [HttpPut("final")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> ConfirmStudentFinalGradeAsync(int studentId, int courseId)

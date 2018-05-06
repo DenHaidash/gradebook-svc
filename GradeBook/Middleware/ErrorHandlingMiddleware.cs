@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using GradeBook.Common.Exceptions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace GradeBook.Middleware
@@ -9,14 +11,15 @@ namespace GradeBook.Middleware
     public class ErrorHandlingMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<ErrorHandlingMiddleware> _logger;
 
-        // todo: don't expose internal errors, disable for develop
-        public ErrorHandlingMiddleware(RequestDelegate next)
+        public ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandlingMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
-        public async Task Invoke(HttpContext context /* other dependencies */)
+        public async Task InvokeAsync(HttpContext context)
         {
             try
             {
@@ -25,18 +28,25 @@ namespace GradeBook.Middleware
             catch (Exception ex)
             {
                 await HandleExceptionAsync(context, ex);
+                
+                _logger.LogError(ex, "Application error");
             }
         }
 
         private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            const HttpStatusCode code = HttpStatusCode.InternalServerError; // 500 if unexpected
+            HttpStatusCode code = HttpStatusCode.InternalServerError;
 
-//            if      (exception is MyNotFoundException)     code = HttpStatusCode.NotFound;
-//            else if (exception is MyUnauthorizedException) code = HttpStatusCode.Unauthorized;
-//            else if (exception is MyException)             code = HttpStatusCode.BadRequest;
-
-            var result = JsonConvert.SerializeObject(new { error = exception.Message });
+            if (exception is ResourceAccessPermissionException)
+            {
+                code = HttpStatusCode.Forbidden;
+            }
+            else if (exception is GradebookException)
+            {
+                code = HttpStatusCode.BadRequest;
+            }
+            
+            var result = JsonConvert.SerializeObject(new { Error = exception.Message });
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)code;
             await context.Response.WriteAsync(result);

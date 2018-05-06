@@ -5,6 +5,7 @@ using GradeBook.Common.Security;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
+using GradeBook.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -40,7 +41,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Get group
         /// </summary>
-        [HttpGet("{groupId:int}", Name = "GetGroup")]
+        [HttpGet("{groupId:int:min(1)}", Name = "GetGroup")]
         [ProducesResponseType(typeof(GroupDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(GroupDto), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetGroupAsync(int groupId)
@@ -65,7 +66,7 @@ namespace GradeBook.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new ValidationError(ModelState));
             }
             
             var groupId = await _groupsService.CreateGroupAsync(_mapper.Map<GroupDto>(group), group.EducationStartedAt);
@@ -76,7 +77,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Delete group
         /// </summary>
-        [HttpDelete("{groupId:int}")]
+        [HttpDelete("{groupId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteGroupAsync(int groupId)
         {
@@ -88,14 +89,14 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Update group
         /// </summary>
-        [HttpPost("{groupId:int}")]
+        [HttpPost("{groupId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateGroupAsync(int groupId, [FromBody]GroupViewModel group)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new ValidationError(ModelState));
             }
 
             var groupDto = _mapper.Map<GroupDto>(group);

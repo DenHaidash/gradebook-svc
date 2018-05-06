@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.Models;
@@ -31,7 +29,7 @@ namespace GradeBook.DAL.Repositories
         {
             return await Set
                 .Where(s => s.TeacherRefId == teacherId 
-                            && s.Gradebook.Semester.StartsAt.Year == year
+                            && s.Gradebook.Semester.StartsAt.Year == (semester == 2 ? year + 1 : year)
                             && s.Gradebook.Semester.SemesterNumber == semester)
                 .Select(s => s.Gradebook.Semester.Group)
                 .Include(s => s.Specialty)

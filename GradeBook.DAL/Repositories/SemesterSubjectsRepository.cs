@@ -26,5 +26,11 @@ namespace GradeBook.DAL.Repositories
         {
             return entity.SemesterRefId;
         }
+
+        public async Task<bool> HasGroupSubjectInScheduleAsync(int groupId, int subjectId)
+        {
+            return await Set.AnyAsync(s => s.SubjectRefId == subjectId && s.Semester.GroupRefId == groupId)
+                .ConfigureAwait(false);
+        }
     }
 }

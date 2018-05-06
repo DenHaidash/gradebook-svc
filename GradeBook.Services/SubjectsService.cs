@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using GradeBook.Common.Exceptions;
 using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.DAL.UoW;
 using GradeBook.DTO;
@@ -56,7 +57,7 @@ namespace GradeBook.Services
 
             if (subjectToUpdate == null)
             {
-                return; // throw NotFoundEx
+                throw new ResourceNotFoundException($"Subject {subject.Id} not found");
             }
 
             subjectToUpdate.Name = subject.Name;
@@ -70,7 +71,7 @@ namespace GradeBook.Services
 
             if (subjectToUpdate == null)
             {
-                return; // throw NotFoundEx
+                throw new ResourceNotFoundException($"Subject {subjectId} not found");
             }
 
             _subjectsUnitOfWork.Repository.Delete(subjectToUpdate);

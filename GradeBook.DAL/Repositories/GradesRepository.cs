@@ -12,6 +12,13 @@ namespace GradeBook.DAL.Repositories
         {
         }
 
+        protected override IQueryable<Grade> WithIncludes(DbSet<Grade> dbSet)
+        {
+            return dbSet
+                .Include(s => s.Gradebook)
+                .Include(s => s.Teacher.Account);
+        }
+
         public async Task<int> GetStudentSubjectCurrentGradeTotalAsync(int studentId, int subjectId)
         {
             return await Set

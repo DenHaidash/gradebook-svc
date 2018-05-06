@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.Models;
 using Microsoft.EntityFrameworkCore;

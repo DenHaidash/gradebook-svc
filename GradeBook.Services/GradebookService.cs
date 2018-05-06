@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using GradeBook.Common.Exceptions;
 using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.DAL.UoW;
 using GradeBook.DTO;
@@ -23,7 +24,8 @@ namespace GradeBook.Services
         public async Task<GradebookDto> GetGradebookAsync(int semesterId, int subjectId)
         {
             var gradebook = (await _gradebookUnitOfWork.Repository
-                .GetAllAsync(s => s.SemesterRefId == semesterId && s.SubjectRefId == subjectId)
+                .GetAllAsync(s => s.SemesterRefId == semesterId 
+                                  && s.SubjectRefId == subjectId)
                 .ConfigureAwait(false)).FirstOrDefault();
 
             return _mapper.Map<GradebookDto>(gradebook);
@@ -32,7 +34,7 @@ namespace GradeBook.Services
         public async Task<GradebookDto> GetGradebookAsync(int year, int semester, int subjectId)
         {
             var gradebook = (await _gradebookUnitOfWork.Repository
-                .GetAllAsync(s => s.Semester.StartsAt.Year == year 
+                .GetAllAsync(s => s.Semester.StartsAt.Year == (semester == 2 ? year + 1 : year)
                                   && s.Semester.SemesterNumber == semester
                                   && s.SubjectRefId == subjectId)
                 .ConfigureAwait(false)).FirstOrDefault();
@@ -43,7 +45,8 @@ namespace GradeBook.Services
         public async Task<GradebookDto> GetGradebookByGroupAsync(int groupId, int subjectId)
         {
             var gradebook = (await _gradebookUnitOfWork.Repository
-                .GetAllAsync(s => s.Semester.GroupRefId == groupId && s.SubjectRefId == subjectId)
+                .GetAllAsync(s => s.Semester.GroupRefId == groupId 
+                                  && s.SubjectRefId == subjectId)
                 .ConfigureAwait(false)).FirstOrDefault();
 
             if (gradebook == null)
@@ -83,7 +86,7 @@ namespace GradeBook.Services
 
             if (gradebook == null)
             {
-                return;
+                throw new ResourceNotFoundException($"Gradebook {gradebookId} not found");
             }
             
             _gradebookUnitOfWork.Repository.Delete(gradebook);

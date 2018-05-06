@@ -11,8 +11,8 @@ using System;
 namespace GradeBook.DAL.Migrations
 {
     [DbContext(typeof(GradebookContext))]
-    [Migration("20180322204049_Initial")]
-    partial class Initial
+    [Migration("20180506192229_UniqueIndexForLogin")]
+    partial class UniqueIndexForLogin
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -29,13 +29,21 @@ namespace GradeBook.DAL.Migrations
                     b.Property<DateTime>("CreatedAt");
 
                     b.Property<string>("FirstName")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(20);
+
+                    b.Property<bool>("IsActive");
 
                     b.Property<string>("LastName")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(20);
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.Property<string>("MiddleName")
-                        .IsRequired();
+                        .HasMaxLength(20);
 
                     b.Property<string>("PasswordHash")
                         .IsRequired();
@@ -44,31 +52,31 @@ namespace GradeBook.DAL.Migrations
                         .IsRequired();
 
                     b.Property<string>("Role")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(20);
 
                     b.Property<DateTime>("UpdatedAt");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Login")
+                        .IsUnique();
+
                     b.ToTable("Accounts");
                 });
 
-            modelBuilder.Entity("GradeBook.Models.Curriculum", b =>
+            modelBuilder.Entity("GradeBook.Models.AssestmentType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("SemesterRefId");
-
-                    b.Property<int>("SpecialtyRefId");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(20);
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SemesterRefId");
-
-                    b.HasIndex("SpecialtyRefId");
-
-                    b.ToTable("Curriculum");
+                    b.ToTable("AssestmentTypes");
                 });
 
             modelBuilder.Entity("GradeBook.Models.FinalGrade", b =>
@@ -88,13 +96,14 @@ namespace GradeBook.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GradebookRefId");
-
                     b.HasIndex("StudentRefId");
 
                     b.HasIndex("TeacherRefId");
 
-                    b.ToTable("FinalGrade");
+                    b.HasIndex("GradebookRefId", "StudentRefId")
+                        .IsUnique();
+
+                    b.ToTable("FinalGrades");
                 });
 
             modelBuilder.Entity("GradeBook.Models.Grade", b =>
@@ -103,6 +112,10 @@ namespace GradeBook.DAL.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(50);
 
                     b.Property<int>("GradebookRefId");
 
@@ -120,7 +133,7 @@ namespace GradeBook.DAL.Migrations
 
                     b.HasIndex("TeacherRefId");
 
-                    b.ToTable("Grade");
+                    b.ToTable("Grades");
                 });
 
             modelBuilder.Entity("GradeBook.Models.Gradebook", b =>
@@ -128,21 +141,34 @@ namespace GradeBook.DAL.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("CurriculumRefId");
-
-                    b.Property<int>("GroupRefId");
+                    b.Property<int>("SemesterRefId");
 
                     b.Property<int>("SubjectRefId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurriculumRefId");
-
-                    b.HasIndex("GroupRefId");
-
                     b.HasIndex("SubjectRefId");
 
+                    b.HasIndex("SemesterRefId", "SubjectRefId")
+                        .IsUnique();
+
                     b.ToTable("Gradebooks");
+                });
+
+            modelBuilder.Entity("GradeBook.Models.GradebookTeacher", b =>
+                {
+                    b.Property<int>("GradebookRefId");
+
+                    b.Property<int>("TeacherRefId");
+
+                    b.HasKey("GradebookRefId", "TeacherRefId");
+
+                    b.HasIndex("TeacherRefId");
+
+                    b.HasIndex("GradebookRefId", "TeacherRefId")
+                        .IsUnique();
+
+                    b.ToTable("GradebooksTeachers");
                 });
 
             modelBuilder.Entity("GradeBook.Models.Group", b =>
@@ -151,15 +177,21 @@ namespace GradeBook.DAL.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Code")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(10);
+
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<int>("SpecialityRefId");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Code")
+                        .IsUnique();
+
                     b.HasIndex("SpecialityRefId");
 
-                    b.ToTable("Group");
+                    b.ToTable("Groups");
                 });
 
             modelBuilder.Entity("GradeBook.Models.Semester", b =>
@@ -169,35 +201,40 @@ namespace GradeBook.DAL.Migrations
 
                     b.Property<int>("CourseNumber");
 
-                    b.Property<int>("CourseSemesterNumber");
-
-                    b.Property<int>("Number");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Semester");
-                });
-
-            modelBuilder.Entity("GradeBook.Models.SemesterSchedule", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
                     b.Property<DateTime>("EndsAt");
 
                     b.Property<int>("GroupRefId");
 
-                    b.Property<int>("SemesteRefId");
+                    b.Property<int>("SemesterNumber");
 
                     b.Property<DateTime>("StartsAt");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GroupRefId");
+                    b.HasIndex("GroupRefId", "CourseNumber", "SemesterNumber")
+                        .IsUnique();
 
-                    b.HasIndex("SemesteRefId");
+                    b.ToTable("Semesters");
+                });
 
-                    b.ToTable("SemesterSchedule");
+            modelBuilder.Entity("GradeBook.Models.SemesterSubject", b =>
+                {
+                    b.Property<int>("SemesterRefId");
+
+                    b.Property<int>("SubjectRefId");
+
+                    b.Property<int>("AssestmentTypeRefId");
+
+                    b.HasKey("SemesterRefId", "SubjectRefId");
+
+                    b.HasIndex("AssestmentTypeRefId");
+
+                    b.HasIndex("SubjectRefId");
+
+                    b.HasIndex("SemesterRefId", "SubjectRefId")
+                        .IsUnique();
+
+                    b.ToTable("SemestersSubjects");
                 });
 
             modelBuilder.Entity("GradeBook.Models.Specialty", b =>
@@ -206,28 +243,33 @@ namespace GradeBook.DAL.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Code")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(20);
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(50);
 
                     b.HasKey("Id");
 
-                    b.ToTable("Specialty");
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Specialties");
                 });
 
             modelBuilder.Entity("GradeBook.Models.Student", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("AccountRefId");
+                    b.Property<int>("Id");
 
                     b.Property<int>("GroupRefId");
 
-                    b.HasKey("Id");
+                    b.Property<bool>("IsDeleted");
 
-                    b.HasIndex("AccountRefId");
+                    b.HasKey("Id");
 
                     b.HasIndex("GroupRefId");
 
@@ -239,51 +281,27 @@ namespace GradeBook.DAL.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("CurriculumId");
-
                     b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<int?>("TeacherId");
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurriculumId");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
-                    b.HasIndex("TeacherId");
-
-                    b.ToTable("Subject");
+                    b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("GradeBook.Models.Teacher", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("Id");
 
-                    b.Property<int>("AccountRefId");
-
-                    b.Property<int?>("GradebookId");
+                    b.Property<bool>("IsDeleted");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountRefId");
-
-                    b.HasIndex("GradebookId");
-
                     b.ToTable("Teachers");
-                });
-
-            modelBuilder.Entity("GradeBook.Models.Curriculum", b =>
-                {
-                    b.HasOne("GradeBook.Models.Semester", "Semester")
-                        .WithMany()
-                        .HasForeignKey("SemesterRefId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("GradeBook.Models.Specialty", "Specialty")
-                        .WithMany("Curriculum")
-                        .HasForeignKey("SpecialtyRefId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GradeBook.Models.FinalGrade", b =>
@@ -294,7 +312,7 @@ namespace GradeBook.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GradeBook.Models.Student", "Student")
-                        .WithMany()
+                        .WithMany("FinalGrades")
                         .HasForeignKey("StudentRefId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -312,7 +330,7 @@ namespace GradeBook.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GradeBook.Models.Student", "Student")
-                        .WithMany()
+                        .WithMany("Grades")
                         .HasForeignKey("StudentRefId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -324,19 +342,32 @@ namespace GradeBook.DAL.Migrations
 
             modelBuilder.Entity("GradeBook.Models.Gradebook", b =>
                 {
-                    b.HasOne("GradeBook.Models.Curriculum", "Curriculum")
+                    b.HasOne("GradeBook.Models.Semester", "Semester")
                         .WithMany()
-                        .HasForeignKey("CurriculumRefId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("GradeBook.Models.Group", "Group")
-                        .WithMany()
-                        .HasForeignKey("GroupRefId")
+                        .HasForeignKey("SemesterRefId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GradeBook.Models.Subject", "Subject")
                         .WithMany()
                         .HasForeignKey("SubjectRefId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GradeBook.Models.SemesterSubject", "SemesterSubject")
+                        .WithMany()
+                        .HasForeignKey("SemesterRefId", "SubjectRefId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GradeBook.Models.GradebookTeacher", b =>
+                {
+                    b.HasOne("GradeBook.Models.Gradebook", "Gradebook")
+                        .WithMany("GradebookTeachers")
+                        .HasForeignKey("GradebookRefId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GradeBook.Models.Teacher", "Teacher")
+                        .WithMany("GradebookTeachers")
+                        .HasForeignKey("TeacherRefId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -348,53 +379,51 @@ namespace GradeBook.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("GradeBook.Models.SemesterSchedule", b =>
+            modelBuilder.Entity("GradeBook.Models.Semester", b =>
                 {
                     b.HasOne("GradeBook.Models.Group", "Group")
-                        .WithMany("Schedule")
+                        .WithMany("Semesters")
                         .HasForeignKey("GroupRefId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GradeBook.Models.SemesterSubject", b =>
+                {
+                    b.HasOne("GradeBook.Models.AssestmentType", "AssestmentType")
+                        .WithMany()
+                        .HasForeignKey("AssestmentTypeRefId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GradeBook.Models.Semester", "Semester")
-                        .WithMany()
-                        .HasForeignKey("SemesteRefId")
+                        .WithMany("SemesterSubjects")
+                        .HasForeignKey("SemesterRefId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GradeBook.Models.Subject", "Subject")
+                        .WithMany("Semesters")
+                        .HasForeignKey("SubjectRefId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GradeBook.Models.Student", b =>
                 {
-                    b.HasOne("GradeBook.Models.Account", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountRefId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("GradeBook.Models.Group", "Group")
                         .WithMany("Students")
                         .HasForeignKey("GroupRefId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
 
-            modelBuilder.Entity("GradeBook.Models.Subject", b =>
-                {
-                    b.HasOne("GradeBook.Models.Curriculum")
-                        .WithMany("Subjects")
-                        .HasForeignKey("CurriculumId");
-
-                    b.HasOne("GradeBook.Models.Teacher")
-                        .WithMany("Specializations")
-                        .HasForeignKey("TeacherId");
+                    b.HasOne("GradeBook.Models.Account", "Account")
+                        .WithMany()
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GradeBook.Models.Teacher", b =>
                 {
                     b.HasOne("GradeBook.Models.Account", "Account")
                         .WithMany()
-                        .HasForeignKey("AccountRefId")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("GradeBook.Models.Gradebook")
-                        .WithMany("Teachers")
-                        .HasForeignKey("GradebookId");
                 });
 #pragma warning restore 612, 618
         }

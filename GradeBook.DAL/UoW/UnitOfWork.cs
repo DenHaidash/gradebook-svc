@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using GradeBook.Common.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace GradeBook.DAL.UoW
 {
@@ -31,7 +33,24 @@ namespace GradeBook.DAL.UoW
 
         public async Task SaveChangesAsync()
         {
-            await DbContext.SaveChangesAsync();
+            try
+            {
+                await DbContext.SaveChangesAsync();
+            }
+            catch(DbUpdateException ex) when(ex.InnerException is PostgresException 
+                                             && ex.InnerException.Message.Contains("23505"))
+            {
+                throw new ResourceDatabaseOperationException("Duplicated record", ex);
+            }
+            catch(DbUpdateException ex) when(ex.InnerException is PostgresException 
+                                             && ex.InnerException.Message.Contains("23503"))
+            {
+                throw new ResourceDatabaseOperationException("Foreign key violation", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new ResourceDatabaseOperationException("Database operation error", ex);
+            }
         }
  
         public virtual void Dispose(bool disposing)

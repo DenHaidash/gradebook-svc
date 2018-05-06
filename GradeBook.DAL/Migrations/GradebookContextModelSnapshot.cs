@@ -58,6 +58,9 @@ namespace GradeBook.DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Login")
+                        .IsUnique();
+
                     b.ToTable("Accounts");
                 });
 

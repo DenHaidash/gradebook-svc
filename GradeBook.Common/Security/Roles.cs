@@ -1,4 +1,6 @@
-﻿namespace GradeBook.Common.Security
+﻿using System.Linq;
+
+namespace GradeBook.Common.Security
 {
     public static class Roles
     {

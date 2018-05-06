@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AutoMapper;
-using GradeBook.Common.Mailing;
+using GradeBook.Common.Exceptions;
 using GradeBook.Common.Mailing.Abstractions;
 using GradeBook.Common.Security;
 using GradeBook.DAL.Repositories.Abstractions;
@@ -80,7 +80,7 @@ namespace GradeBook.Services
 
             if (acct == null)
             {
-                return; // throw
+                throw new ResourceNotFoundException($"Account {accountId} not found");
             }
 
             acct.IsActive = false;
@@ -92,11 +92,10 @@ namespace GradeBook.Services
         {
             var acctToUpdate = await _accountUnitOfWork.Repository.GetByIdAsync(acct.Id).ConfigureAwait(false);
 
-            if (acctToUpdate == null)
+            if (acctToUpdate == null || !acctToUpdate.IsActive)
             {
-                // throw
+                throw new ResourceNotFoundException($"Account {acct.Id} not found");
 
-                return;
             }
 
             acctToUpdate.FirstName = acct.FirstName;
@@ -111,11 +110,9 @@ namespace GradeBook.Services
         {
             var acctToUpdate = await _accountUnitOfWork.Repository.GetByIdAsync(accountId).ConfigureAwait(false);
 
-            if (acctToUpdate == null)
+            if (acctToUpdate == null || !acctToUpdate.IsActive)
             {
-                // throw
-
-                return;
+                throw new ResourceNotFoundException($"Account {accountId} not found");
             }
             
             var salt = PasswordProtector.GenerateSalt();
@@ -133,9 +130,8 @@ namespace GradeBook.Services
 
             if (acctToUpdate == null)
             {
-                // throw
+                throw new ResourceNotFoundException($"Account {login} not found");
 
-                return;
             }
             
             var salt = PasswordProtector.GenerateSalt();

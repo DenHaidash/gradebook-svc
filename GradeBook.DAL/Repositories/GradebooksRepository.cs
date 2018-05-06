@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.Models;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +15,7 @@ namespace GradeBook.DAL.Repositories
         {
             return dbSet
                 .Include(s => s.Semester)
+                .Include(s => s.SemesterSubject.AssestmentType)
                 .Include(s => s.GradebookTeachers)
                 .ThenInclude(s => s.Teacher);
         }

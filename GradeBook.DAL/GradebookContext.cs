@@ -20,6 +20,10 @@ namespace GradeBook.DAL
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Account>()
+                .HasIndex(i => i.Login)
+                .IsUnique();
+            
             modelBuilder.Entity<GradebookTeacher>()
                 .HasKey(i => new { i.GradebookRefId, i.TeacherRefId });
             

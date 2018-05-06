@@ -8,7 +8,14 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GradeBook.Common\GradeBook.Common.csproj">
+      <Project>{97BF144C-0CC4-470E-8F3D-C38284036235}</Project>
+      <Name>GradeBook.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GradeBook.Models\GradeBook.Models.csproj" />
     <ProjectReference Include="..\GradeBook.Models\GradeBook.Models.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Migrations" />
   </ItemGroup>
 </Project>

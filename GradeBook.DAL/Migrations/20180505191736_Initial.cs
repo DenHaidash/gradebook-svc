@@ -16,12 +16,14 @@ namespace GradeBook.DAL.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    FirstName = table.Column<string>(nullable: false),
-                    LastName = table.Column<string>(nullable: false),
-                    MiddleName = table.Column<string>(nullable: false),
+                    FirstName = table.Column<string>(maxLength: 20, nullable: false),
+                    IsActive = table.Column<bool>(nullable: false),
+                    LastName = table.Column<string>(maxLength: 20, nullable: false),
+                    Login = table.Column<string>(maxLength: 30, nullable: false),
+                    MiddleName = table.Column<string>(maxLength: 20, nullable: true),
                     PasswordHash = table.Column<string>(nullable: false),
                     PasswordSalt = table.Column<string>(nullable: false),
-                    Role = table.Column<string>(nullable: false),
+                    Role = table.Column<string>(maxLength: 20, nullable: false),
                     UpdatedAt = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -30,104 +32,103 @@ namespace GradeBook.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Semester",
+                name: "AssestmentTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    Description = table.Column<string>(maxLength: 20, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AssestmentTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Specialties",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    Code = table.Column<string>(maxLength: 20, nullable: false),
+                    Name = table.Column<string>(maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Specialties", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Subjects",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    Name = table.Column<string>(maxLength: 30, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Subjects", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Teachers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Teachers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Teachers_Accounts_Id",
+                        column: x => x.Id,
+                        principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Groups",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    Code = table.Column<string>(maxLength: 10, nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    SpecialityRefId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Groups", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Groups_Specialties_SpecialityRefId",
+                        column: x => x.SpecialityRefId,
+                        principalTable: "Specialties",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Semesters",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     CourseNumber = table.Column<int>(nullable: false),
-                    CourseSemesterNumber = table.Column<int>(nullable: false),
-                    Number = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Semester", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Specialty",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    Code = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Specialty", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Curriculum",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    SemesterRefId = table.Column<int>(nullable: false),
-                    SpecialtyRefId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Curriculum", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Curriculum_Semester_SemesterRefId",
-                        column: x => x.SemesterRefId,
-                        principalTable: "Semester",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Curriculum_Specialty_SpecialtyRefId",
-                        column: x => x.SpecialtyRefId,
-                        principalTable: "Specialty",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Group",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    Code = table.Column<string>(nullable: false),
-                    SpecialityRefId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Group", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Group_Specialty_SpecialityRefId",
-                        column: x => x.SpecialityRefId,
-                        principalTable: "Specialty",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SemesterSchedule",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     EndsAt = table.Column<DateTime>(nullable: false),
                     GroupRefId = table.Column<int>(nullable: false),
-                    SemesteRefId = table.Column<int>(nullable: false),
+                    SemesterNumber = table.Column<int>(nullable: false),
                     StartsAt = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SemesterSchedule", x => x.Id);
+                    table.PrimaryKey("PK_Semesters", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SemesterSchedule_Group_GroupRefId",
+                        name: "FK_Semesters_Groups_GroupRefId",
                         column: x => x.GroupRefId,
-                        principalTable: "Group",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_SemesterSchedule_Semester_SemesteRefId",
-                        column: x => x.SemesteRefId,
-                        principalTable: "Semester",
+                        principalTable: "Groups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -136,73 +137,56 @@ namespace GradeBook.DAL.Migrations
                 name: "Students",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    AccountRefId = table.Column<int>(nullable: false),
-                    GroupRefId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false),
+                    GroupRefId = table.Column<int>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Students", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Students_Accounts_AccountRefId",
-                        column: x => x.AccountRefId,
-                        principalTable: "Accounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Students_Group_GroupRefId",
+                        name: "FK_Students_Groups_GroupRefId",
                         column: x => x.GroupRefId,
-                        principalTable: "Group",
+                        principalTable: "Groups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Teachers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    AccountRefId = table.Column<int>(nullable: false),
-                    GradebookId = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Teachers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Teachers_Accounts_AccountRefId",
-                        column: x => x.AccountRefId,
+                        name: "FK_Students_Accounts_Id",
+                        column: x => x.Id,
                         principalTable: "Accounts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Subject",
+                name: "SemestersSubjects",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    CurriculumId = table.Column<int>(nullable: true),
-                    Name = table.Column<string>(nullable: false),
-                    TeacherId = table.Column<int>(nullable: true)
+                    SemesterRefId = table.Column<int>(nullable: false),
+                    SubjectRefId = table.Column<int>(nullable: false),
+                    AssestmentTypeRefId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Subject", x => x.Id);
+                    table.PrimaryKey("PK_SemestersSubjects", x => new { x.SemesterRefId, x.SubjectRefId });
                     table.ForeignKey(
-                        name: "FK_Subject_Curriculum_CurriculumId",
-                        column: x => x.CurriculumId,
-                        principalTable: "Curriculum",
+                        name: "FK_SemestersSubjects_AssestmentTypes_AssestmentTypeRefId",
+                        column: x => x.AssestmentTypeRefId,
+                        principalTable: "AssestmentTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Subject_Teachers_TeacherId",
-                        column: x => x.TeacherId,
-                        principalTable: "Teachers",
+                        name: "FK_SemestersSubjects_Semesters_SemesterRefId",
+                        column: x => x.SemesterRefId,
+                        principalTable: "Semesters",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SemestersSubjects_Subjects_SubjectRefId",
+                        column: x => x.SubjectRefId,
+                        principalTable: "Subjects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -211,35 +195,34 @@ namespace GradeBook.DAL.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    CurriculumRefId = table.Column<int>(nullable: false),
-                    GroupRefId = table.Column<int>(nullable: false),
+                    SemesterRefId = table.Column<int>(nullable: false),
                     SubjectRefId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Gradebooks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Gradebooks_Curriculum_CurriculumRefId",
-                        column: x => x.CurriculumRefId,
-                        principalTable: "Curriculum",
+                        name: "FK_Gradebooks_Semesters_SemesterRefId",
+                        column: x => x.SemesterRefId,
+                        principalTable: "Semesters",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Gradebooks_Group_GroupRefId",
-                        column: x => x.GroupRefId,
-                        principalTable: "Group",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Gradebooks_Subject_SubjectRefId",
+                        name: "FK_Gradebooks_Subjects_SubjectRefId",
                         column: x => x.SubjectRefId,
-                        principalTable: "Subject",
+                        principalTable: "Subjects",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Gradebooks_SemestersSubjects_SemesterRefId_SubjectRefId",
+                        columns: x => new { x.SemesterRefId, x.SubjectRefId },
+                        principalTable: "SemestersSubjects",
+                        principalColumns: new[] { "SemesterRefId", "SubjectRefId" },
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "FinalGrade",
+                name: "FinalGrades",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -252,21 +235,21 @@ namespace GradeBook.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FinalGrade", x => x.Id);
+                    table.PrimaryKey("PK_FinalGrades", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FinalGrade_Gradebooks_GradebookRefId",
+                        name: "FK_FinalGrades_Gradebooks_GradebookRefId",
                         column: x => x.GradebookRefId,
                         principalTable: "Gradebooks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_FinalGrade_Students_StudentRefId",
+                        name: "FK_FinalGrades_Students_StudentRefId",
                         column: x => x.StudentRefId,
                         principalTable: "Students",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_FinalGrade_Teachers_TeacherRefId",
+                        name: "FK_FinalGrades_Teachers_TeacherRefId",
                         column: x => x.TeacherRefId,
                         principalTable: "Teachers",
                         principalColumn: "Id",
@@ -274,12 +257,37 @@ namespace GradeBook.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Grade",
+                name: "GradebooksTeachers",
+                columns: table => new
+                {
+                    GradebookRefId = table.Column<int>(nullable: false),
+                    TeacherRefId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GradebooksTeachers", x => new { x.GradebookRefId, x.TeacherRefId });
+                    table.ForeignKey(
+                        name: "FK_GradebooksTeachers_Gradebooks_GradebookRefId",
+                        column: x => x.GradebookRefId,
+                        principalTable: "Gradebooks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GradebooksTeachers_Teachers_TeacherRefId",
+                        column: x => x.TeacherRefId,
+                        principalTable: "Teachers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Grades",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     CreatedAt = table.Column<DateTime>(nullable: false),
+                    Description = table.Column<string>(maxLength: 50, nullable: false),
                     GradebookRefId = table.Column<int>(nullable: false),
                     StudentRefId = table.Column<int>(nullable: false),
                     TeacherRefId = table.Column<int>(nullable: false),
@@ -287,21 +295,21 @@ namespace GradeBook.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Grade", x => x.Id);
+                    table.PrimaryKey("PK_Grades", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Grade_Gradebooks_GradebookRefId",
+                        name: "FK_Grades_Gradebooks_GradebookRefId",
                         column: x => x.GradebookRefId,
                         principalTable: "Gradebooks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Grade_Students_StudentRefId",
+                        name: "FK_Grades_Students_StudentRefId",
                         column: x => x.StudentRefId,
                         principalTable: "Students",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Grade_Teachers_TeacherRefId",
+                        name: "FK_Grades_Teachers_TeacherRefId",
                         column: x => x.TeacherRefId,
                         principalTable: "Teachers",
                         principalColumn: "Id",
@@ -309,54 +317,20 @@ namespace GradeBook.DAL.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Curriculum_SemesterRefId",
-                table: "Curriculum",
-                column: "SemesterRefId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Curriculum_SpecialtyRefId",
-                table: "Curriculum",
-                column: "SpecialtyRefId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FinalGrade_GradebookRefId",
-                table: "FinalGrade",
-                column: "GradebookRefId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FinalGrade_StudentRefId",
-                table: "FinalGrade",
+                name: "IX_FinalGrades_StudentRefId",
+                table: "FinalGrades",
                 column: "StudentRefId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FinalGrade_TeacherRefId",
-                table: "FinalGrade",
+                name: "IX_FinalGrades_TeacherRefId",
+                table: "FinalGrades",
                 column: "TeacherRefId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Grade_GradebookRefId",
-                table: "Grade",
-                column: "GradebookRefId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Grade_StudentRefId",
-                table: "Grade",
-                column: "StudentRefId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Grade_TeacherRefId",
-                table: "Grade",
-                column: "TeacherRefId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Gradebooks_CurriculumRefId",
-                table: "Gradebooks",
-                column: "CurriculumRefId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Gradebooks_GroupRefId",
-                table: "Gradebooks",
-                column: "GroupRefId");
+                name: "IX_FinalGrades_GradebookRefId_StudentRefId",
+                table: "FinalGrades",
+                columns: new[] { "GradebookRefId", "StudentRefId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Gradebooks_SubjectRefId",
@@ -364,24 +338,81 @@ namespace GradeBook.DAL.Migrations
                 column: "SubjectRefId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Group_SpecialityRefId",
-                table: "Group",
+                name: "IX_Gradebooks_SemesterRefId_SubjectRefId",
+                table: "Gradebooks",
+                columns: new[] { "SemesterRefId", "SubjectRefId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GradebooksTeachers_TeacherRefId",
+                table: "GradebooksTeachers",
+                column: "TeacherRefId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GradebooksTeachers_GradebookRefId_TeacherRefId",
+                table: "GradebooksTeachers",
+                columns: new[] { "GradebookRefId", "TeacherRefId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Grades_GradebookRefId",
+                table: "Grades",
+                column: "GradebookRefId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Grades_StudentRefId",
+                table: "Grades",
+                column: "StudentRefId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Grades_TeacherRefId",
+                table: "Grades",
+                column: "TeacherRefId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Groups_Code",
+                table: "Groups",
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Groups_SpecialityRefId",
+                table: "Groups",
                 column: "SpecialityRefId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SemesterSchedule_GroupRefId",
-                table: "SemesterSchedule",
-                column: "GroupRefId");
+                name: "IX_Semesters_GroupRefId_CourseNumber_SemesterNumber",
+                table: "Semesters",
+                columns: new[] { "GroupRefId", "CourseNumber", "SemesterNumber" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_SemesterSchedule_SemesteRefId",
-                table: "SemesterSchedule",
-                column: "SemesteRefId");
+                name: "IX_SemestersSubjects_AssestmentTypeRefId",
+                table: "SemestersSubjects",
+                column: "AssestmentTypeRefId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Students_AccountRefId",
-                table: "Students",
-                column: "AccountRefId");
+                name: "IX_SemestersSubjects_SubjectRefId",
+                table: "SemestersSubjects",
+                column: "SubjectRefId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SemestersSubjects_SemesterRefId_SubjectRefId",
+                table: "SemestersSubjects",
+                columns: new[] { "SemesterRefId", "SubjectRefId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Specialties_Code",
+                table: "Specialties",
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Specialties_Name",
+                table: "Specialties",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Students_GroupRefId",
@@ -389,87 +420,52 @@ namespace GradeBook.DAL.Migrations
                 column: "GroupRefId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Subject_CurriculumId",
-                table: "Subject",
-                column: "CurriculumId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Subject_TeacherId",
-                table: "Subject",
-                column: "TeacherId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Teachers_AccountRefId",
-                table: "Teachers",
-                column: "AccountRefId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Teachers_GradebookId",
-                table: "Teachers",
-                column: "GradebookId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Teachers_Gradebooks_GradebookId",
-                table: "Teachers",
-                column: "GradebookId",
-                principalTable: "Gradebooks",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
+                name: "IX_Subjects_Name",
+                table: "Subjects",
+                column: "Name",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Curriculum_Semester_SemesterRefId",
-                table: "Curriculum");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Curriculum_Specialty_SpecialtyRefId",
-                table: "Curriculum");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Group_Specialty_SpecialityRefId",
-                table: "Group");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Teachers_Gradebooks_GradebookId",
-                table: "Teachers");
+            migrationBuilder.DropTable(
+                name: "FinalGrades");
 
             migrationBuilder.DropTable(
-                name: "FinalGrade");
+                name: "GradebooksTeachers");
 
             migrationBuilder.DropTable(
-                name: "Grade");
-
-            migrationBuilder.DropTable(
-                name: "SemesterSchedule");
-
-            migrationBuilder.DropTable(
-                name: "Students");
-
-            migrationBuilder.DropTable(
-                name: "Semester");
-
-            migrationBuilder.DropTable(
-                name: "Specialty");
+                name: "Grades");
 
             migrationBuilder.DropTable(
                 name: "Gradebooks");
 
             migrationBuilder.DropTable(
-                name: "Group");
-
-            migrationBuilder.DropTable(
-                name: "Subject");
-
-            migrationBuilder.DropTable(
-                name: "Curriculum");
+                name: "Students");
 
             migrationBuilder.DropTable(
                 name: "Teachers");
 
             migrationBuilder.DropTable(
+                name: "SemestersSubjects");
+
+            migrationBuilder.DropTable(
                 name: "Accounts");
+
+            migrationBuilder.DropTable(
+                name: "AssestmentTypes");
+
+            migrationBuilder.DropTable(
+                name: "Semesters");
+
+            migrationBuilder.DropTable(
+                name: "Subjects");
+
+            migrationBuilder.DropTable(
+                name: "Groups");
+
+            migrationBuilder.DropTable(
+                name: "Specialties");
         }
     }
 }

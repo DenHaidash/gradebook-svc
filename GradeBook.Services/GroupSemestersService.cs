@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using GradeBook.Common.Exceptions;
 using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.DAL.UoW;
 using GradeBook.DTO;
@@ -29,11 +30,12 @@ namespace GradeBook.Services
             return _mapper.Map<IEnumerable<SemesterDto>>(semesters);
         }
 
-        public async Task<SemesterDto> GetGroupSemesterAsync(int groupId, int year, int semesterNumber)
+        public async Task<SemesterDto> GetGroupSemesterAsync(int groupId, int yearNumber, int semesterNumber)
         {
             var semester = (await _semesterScheduleUnitOfWork.Repository
                     .GetAllAsync(s =>
-                        s.GroupRefId == groupId && s.StartsAt.Year == year && s.SemesterNumber == semesterNumber)
+                        s.GroupRefId == groupId && s.StartsAt.Year == (semesterNumber == 2 ? yearNumber + 1 : yearNumber) 
+                                                && s.SemesterNumber == semesterNumber)
                     .ConfigureAwait(false))
                 .FirstOrDefault();
 
@@ -79,7 +81,7 @@ namespace GradeBook.Services
 
             if (semesterToDelete == null)
             {
-                return;
+                throw new ResourceNotFoundException($"Semester {semesterId} not found");
             }
             
             _semesterScheduleUnitOfWork.Repository.Delete(semesterToDelete);

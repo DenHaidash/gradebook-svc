@@ -31,8 +31,10 @@ namespace GradeBook.Helpers.Jwt
                 new Claim("Role", acct.Role),
                 new Claim("Email", acct.Email),
                 new Claim("Id", acct.Id.ToString()),
+                
                 new Claim(ClaimTypes.Role, acct.Role),
-                new Claim(ClaimTypes.Sid, acct.Id.ToString())
+                new Claim(ClaimTypes.Sid, acct.Id.ToString()),
+                new Claim(ClaimTypes.Email, acct.Email)
             };
         }
         

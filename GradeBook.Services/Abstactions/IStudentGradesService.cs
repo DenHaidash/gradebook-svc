@@ -6,8 +6,8 @@ namespace GradeBook.Services.Abstactions
 {
     public interface IStudentGradesService
     {
-        Task<IEnumerable<GradeDto>> GetStudentFinalGradesAsync(int studentId);
-        Task<GradeDto> GetStudentSubjectFinalGradeAsync(int studentId, int subjectId);
+        Task<IEnumerable<FinalGradeDto>> GetStudentFinalGradesAsync(int studentId);
+        Task<FinalGradeDto> GetStudentSubjectFinalGradeAsync(int studentId, int subjectId);
         Task<StudentSubjectGradesDto> GetStudentSubjectCurrentGradesAsync(int studentId, int subjectId);
 
         Task AddStudentCourseGradeAsync(GradeDto grade, int studentId, int teacherId, int subjectId);

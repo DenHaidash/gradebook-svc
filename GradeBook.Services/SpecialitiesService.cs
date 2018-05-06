@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using GradeBook.Common.Exceptions;
 using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.DAL.UoW;
 using GradeBook.DTO;
@@ -57,7 +58,7 @@ namespace GradeBook.Services
 
             if (specialityToUpdate == null)
             {
-                return;
+                throw new ResourceNotFoundException($"Speciality {specialty.Id} not found");
             }
             
             specialityToUpdate.Name = specialty.Name;
@@ -72,7 +73,7 @@ namespace GradeBook.Services
 
             if (speciality == null)
             {
-                return;
+                throw new ResourceNotFoundException($"Speciality {specialityId} not found");
             }
             
             _specialitiesUnitOfWork.Repository.Delete(speciality);

@@ -4,6 +4,7 @@ using GradeBook.Common.Security;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
+using GradeBook.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +28,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Get student
         /// </summary>
-        [HttpGet("{studentId:int}", Name = "GetStudent")]
+        [HttpGet("{studentId:int:min(1)}", Name = "GetStudent")]
         [ProducesResponseType(typeof(StudentDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetStudentAsync(int studentId)
@@ -45,7 +46,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Delete student
         /// </summary>
-        [HttpDelete("{studentId:int}")]
+        [HttpDelete("{studentId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteStudentAsync(int studentId)
         {
@@ -57,14 +58,14 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Update student
         /// </summary>
-        [HttpPost("{studentId:int}")]
+        [HttpPost("{studentId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateStudentAsync(int studentId, [FromBody]AccountViewModel student)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new ValidationError(ModelState));
             }
 
             var studentDto = _mapper.Map<StudentDto>(student);
@@ -85,7 +86,7 @@ namespace GradeBook.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new ValidationError(ModelState));
             }
             
             var studentId = await _studentsService.CreateStudentAsync(_mapper.Map<StudentDto>(student));

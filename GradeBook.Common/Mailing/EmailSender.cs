@@ -4,16 +4,19 @@ using System.Net.Mail;
 using System.Threading.Tasks;
 using GradeBook.Common.Mailing.Abstractions;
 using GradeBook.Common.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace GradeBook.Common.Mailing
 {
     public class EmailSender : IEmailSender
     {
+        private readonly ILogger<EmailSender> _logger;
         private readonly EmailSenderOptions _options;
 
-        public EmailSender(IOptions<EmailSenderOptions> settings)
+        public EmailSender(IOptions<EmailSenderOptions> settings, ILogger<EmailSender> logger)
         {
+            _logger = logger;
             _options = settings.Value;
         }
 
@@ -38,7 +41,14 @@ namespace GradeBook.Common.Mailing
                 Body = message
             })
             {
-                await smtp.SendMailAsync(mail);
+                try
+                {
+                    await smtp.SendMailAsync(mail);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("Email sending failed", ex);
+                }
             }
         }
     }

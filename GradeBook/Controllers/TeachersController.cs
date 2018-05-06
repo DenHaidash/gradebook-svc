@@ -5,6 +5,7 @@ using GradeBook.Common.Security;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
+using GradeBook.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -40,7 +41,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Get teacher
         /// </summary>
-        [HttpGet("{teacherId:int}", Name = "GetTeacher")]
+        [HttpGet("{teacherId:int:min(1)}", Name = "GetTeacher")]
         [ProducesResponseType(typeof(TeacherDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetTeacherAsync(int teacherId)
@@ -58,14 +59,14 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Update teacher
         /// </summary>
-        [HttpPost("{teacherId:int}")]
+        [HttpPost("{teacherId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> EditTeacherAsync(int teacherId, [FromBody]AccountViewModel account)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new ValidationError(ModelState));
             }
 
             var teacherDto = _mapper.Map<TeacherDto>(account);
@@ -79,7 +80,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Delete teacher
         /// </summary>
-        [HttpDelete("{teacherId:int}")]
+        [HttpDelete("{teacherId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteTeacherAsync(int teacherId)
         {
@@ -97,7 +98,7 @@ namespace GradeBook.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new ValidationError(ModelState));
             }
             
             var teacherId = await _teachersService.CreateTeacherAsync(_mapper.Map<TeacherDto>(account));

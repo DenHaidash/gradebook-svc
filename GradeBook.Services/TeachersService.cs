@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
 using AutoMapper;
+using GradeBook.Common.Exceptions;
+using GradeBook.Common.Security;
 using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.DAL.UoW;
 using GradeBook.DTO;
@@ -27,7 +28,7 @@ namespace GradeBook.Services
         {
             var teacher = await _teachersUnitOfWork.Repository.GetByIdAsync(id).ConfigureAwait(false);
 
-            if (teacher == null)
+            if (teacher == null || teacher.IsDeleted)
             {
                 return null;
             }
@@ -37,7 +38,7 @@ namespace GradeBook.Services
 
         public async Task<IEnumerable<TeacherDto>> GetTeachersAsync()
         {
-            var teachers = await _teachersUnitOfWork.Repository.GetAllAsync().ConfigureAwait(false);
+            var teachers = await _teachersUnitOfWork.Repository.GetAllAsync(t => !t.IsDeleted).ConfigureAwait(false);
 
             return _mapper.Map<IEnumerable<TeacherDto>>(teachers);
         }
@@ -46,7 +47,7 @@ namespace GradeBook.Services
         {
             using (var transaction = await _teachersUnitOfWork.BeginTransactionAsync().ConfigureAwait(false))
             {
-                teacher.Role = "teacher";
+                teacher.Role = Roles.Teacher;
                 
                 var newAcctId = await _accountService.CreateAccountAsync(teacher).ConfigureAwait(false);
 
@@ -67,14 +68,17 @@ namespace GradeBook.Services
         public async Task UpdateTeacherAsync(TeacherDto teacher)
         {
             await _accountService.UpdateAccountAsync(teacher).ConfigureAwait(false);
-            
-            await _teachersUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteTeacherAsync(int teacherId)
         {
             var teacherToUpdate = await _teachersUnitOfWork.Repository.GetByIdAsync(teacherId).ConfigureAwait(false);
 
+            if (teacherToUpdate == null || teacherToUpdate.IsDeleted)
+            {
+                throw new ResourceNotFoundException($"Teacher {teacherId} not found");
+            }
+            
             using (var transaction = await _teachersUnitOfWork.BeginTransactionAsync().ConfigureAwait(false))
             {
                 await _accountService.DisableAccountAsync(teacherId).ConfigureAwait(false);

@@ -17,8 +17,7 @@ namespace GradeBook.DAL.Repositories
 
         protected override IQueryable<Teacher> WithIncludes(DbSet<Teacher> dbSet)
         {
-            return dbSet
-                .Include(t => t.Account);
+            return dbSet.Include(t => t.Account);
         }
 
         protected override int GetKeyValue(Teacher entity)

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using AutoMapper;
 using GradeBook.CompositionRoot;
+using GradeBook.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -76,7 +78,7 @@ namespace GradeBook
                 });
                 c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
                 {
-                    { "Bearer", new string[] {} }
+                    { "Bearer", Enumerable.Empty<string>() }
                 });
             });
 
@@ -99,17 +101,14 @@ namespace GradeBook
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "GradeBook API v1");
             });
             
-            app.UseResponseCompression(); // todo: prod only?
+            app.UseResponseCompression();
             
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod());
             
             app.UseAuthentication();
 
-//            if (env.IsProduction())
-//            {
-//                app.UseMiddleware<ErrorHandlingMiddleware>();
-//            }
-
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+            
             app.UseMvc();
         }
     }

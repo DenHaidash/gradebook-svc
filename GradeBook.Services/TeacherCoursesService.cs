@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using GradeBook.Common.Exceptions;
 using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.DAL.UoW;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
+using GradeBook.Services.Helpers;
 
 namespace GradeBook.Services
 {
@@ -32,16 +35,32 @@ namespace GradeBook.Services
             return _mapper.Map<IEnumerable<GroupDto>>(groups);
         }
 
+        public async Task<IEnumerable<GroupDto>> GetTeacherCurrentSemesterGroupsAsync(int teacherId)
+        {
+            var semesterData = SemestersHelper.IdentifySemester(DateTime.Now);
+
+            return await GetTeacherSemesterGroupsAsync(teacherId, semesterData.year, semesterData.semester)
+                .ConfigureAwait(false);
+        }
+
         public async Task<IEnumerable<SubjectDto>> GetTeacherSemesterGroupCoursesAsync(int teacherId, int year, int semester, int groupId)
         {
             var subjects = (await _teacherGradebookUnitOfWork.Repository
                 .GetAllAsync(s => s.TeacherRefId == teacherId
                                   && s.Gradebook.Semester.GroupRefId == groupId
-                                  && s.Gradebook.Semester.StartsAt.Year == year
+                                  && s.Gradebook.Semester.StartsAt.Year == (semester == 2 ? year + 1 : year)
                                   && s.Gradebook.Semester.SemesterNumber == semester)
                 .ConfigureAwait(false)).Select(s => s.Gradebook.Subject);
 
             return _mapper.Map<IEnumerable<SubjectDto>>(subjects);
+        }
+
+        public async Task<IEnumerable<SubjectDto>> GetTeacherCurrentSemesterGroupCoursesAsync(int teacherId, int groupId)
+        {
+            var semesterData = SemestersHelper.IdentifySemester(DateTime.Now);
+
+            return await GetTeacherSemesterGroupCoursesAsync(teacherId, semesterData.year, semesterData.semester, groupId)
+                .ConfigureAwait(false);
         }
 
         public async Task AssignTeacherToCourseAsync(int teacherId, int year, int semester, int groupId, int subjectId)
@@ -50,7 +69,7 @@ namespace GradeBook.Services
 
             if (gradebook == null)
             {
-                return;
+                throw new ResourceNotFoundException($"Gradebook for subject {subjectId} of group {groupId} not found");
             }
             
             var newTeacherAssignment = new GradebookTeacher
@@ -70,7 +89,7 @@ namespace GradeBook.Services
                 s.TeacherRefId == teacherId
                 && s.Gradebook.Semester.GroupRefId == groupId
                 && s.Gradebook.SubjectRefId == subjectId
-                && s.Gradebook.Semester.StartsAt.Year == year
+                && s.Gradebook.Semester.StartsAt.Year == (semester == 2 ? year + 1 : year)
                 && s.Gradebook.Semester.SemesterNumber == semester).ConfigureAwait(false)).FirstOrDefault();
 
             if (teacherAssignment == null)

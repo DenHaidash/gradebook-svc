@@ -5,6 +5,7 @@ using GradeBook.Common.Security;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
+using GradeBook.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -40,7 +41,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Get speciality
         /// </summary>
-        [HttpGet("{specialtyId:int}", Name = "GetSpeciality")]
+        [HttpGet("{specialtyId:int:min(1)}", Name = "GetSpeciality")]
         [ProducesResponseType(typeof(SpecialtyDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetSpecialityAsync(int specialtyId)
@@ -65,7 +66,7 @@ namespace GradeBook.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new ValidationError(ModelState));
             }
             
             var specialtyId = await _specialitiesService.CreateSpecialityAsync(_mapper.Map<SpecialtyDto>(specialty));
@@ -76,14 +77,14 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Update speciality
         /// </summary>
-        [HttpPost("{specialtyId:int}")]
+        [HttpPost("{specialtyId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateSpecialityAsync(int specialtyId, [FromBody]SpecialtyViewModel specialty)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new ValidationError(ModelState));
             }
 
             var specialtyDto = _mapper.Map<SpecialtyDto>(specialty);
@@ -97,7 +98,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Delete speciality
         /// </summary>
-        [HttpDelete("{specialtyId:int}")]
+        [HttpDelete("{specialtyId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteSpecialityAsync(int specialtyId)
         {

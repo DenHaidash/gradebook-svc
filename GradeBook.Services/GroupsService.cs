@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using GradeBook.Common.Exceptions;
 using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.DAL.UoW;
 using GradeBook.DTO;
@@ -30,7 +31,7 @@ namespace GradeBook.Services
         {
             var group = await _groupsUnitOfWork.Repository.GetByIdAsync(id).ConfigureAwait(false);
 
-            if (group == null)
+            if (group == null || group.IsDeleted)
             {
                 return null;
             }
@@ -40,7 +41,9 @@ namespace GradeBook.Services
 
         public async Task<IEnumerable<GroupDto>> GetGroupsAsync()
         {
-            var groups = await _groupsUnitOfWork.Repository.GetAllAsync().ConfigureAwait(false);
+            var groups = await _groupsUnitOfWork.Repository
+                .GetAllAsync(g => !g.IsDeleted)
+                .ConfigureAwait(false);
 
             return _mapper.Map<IEnumerable<GroupDto>>(groups);
         }
@@ -56,7 +59,7 @@ namespace GradeBook.Services
                 await _groupsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
                 var groupSemesters = SemestersHelper.GenerateSemesters(educationStartedAt.Year).ToList();
-                groupSemesters.ForEach(s => { s.Group.Id = newGroup.Id; });
+                groupSemesters.ForEach(s => { s.GroupId = newGroup.Id; });
             
                 await _groupSemestersService.CreateGroupSemestersAsync(groupSemesters).ConfigureAwait(false);
 
@@ -70,9 +73,9 @@ namespace GradeBook.Services
         {
             var groupToUpdate = await _groupsUnitOfWork.Repository.GetByIdAsync(group.Id).ConfigureAwait(false);
 
-            if (groupToUpdate == null)
+            if (groupToUpdate == null || groupToUpdate.IsDeleted)
             {
-                return;
+                throw new ResourceNotFoundException($"Group {group.Id} not found");
             }
 
             groupToUpdate.Code = group.Code;
@@ -85,9 +88,9 @@ namespace GradeBook.Services
         {
             var groupToUpdate = await _groupsUnitOfWork.Repository.GetByIdAsync(groupId).ConfigureAwait(false);
 
-            if (groupToUpdate == null)
+            if (groupToUpdate == null || groupToUpdate.IsDeleted)
             {
-                return;
+                throw new ResourceNotFoundException($"Group {groupId} not found");
             }
 
             groupToUpdate.IsDeleted = true;
