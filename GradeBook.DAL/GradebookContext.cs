@@ -1,13 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using GradeBook.Models;
 
-/*
- * dotnet ef migrations add Initial --project ../GradeBook.DAL/GradeBook.DAL.csproj
-
- * dotnet ef database update
-docker run -p 1111:5432 -e POSTGRES_PASSWORD=mysecretpassword -v pg_data:/var/lib/postgresql/data postgres
- */
-
 namespace GradeBook.DAL
 {
     public class GradebookContext : DbContext

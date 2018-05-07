@@ -6,12 +6,15 @@ using System.Reflection;
 using System.Text;
 using AutoMapper;
 using GradeBook.CompositionRoot;
+using GradeBook.DAL;
 using GradeBook.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -110,6 +113,19 @@ namespace GradeBook
             app.UseMiddleware<ErrorHandlingMiddleware>();
             
             app.UseMvc();
+
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                try
+                {
+                    serviceScope.ServiceProvider.GetService<GradebookContext>().Database.Migrate();
+                }
+                catch (Exception ex)
+                {
+                    serviceScope.ServiceProvider.GetService<ILogger<Startup>>()
+                        .LogError(ex, "Failed to migrate database");
+                }
+            }
         }
     }
 }
