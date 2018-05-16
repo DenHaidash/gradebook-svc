@@ -11,9 +11,10 @@ using System;
 namespace GradeBook.DAL.Migrations
 {
     [DbContext(typeof(GradebookContext))]
-    partial class GradebookContextModelSnapshot : ModelSnapshot
+    [Migration("20180516214917_NoCascadeDelete")]
+    partial class NoCascadeDelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -178,6 +179,8 @@ namespace GradeBook.DAL.Migrations
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(10);
+
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<int>("SpecialityRefId");
 
@@ -407,20 +410,20 @@ namespace GradeBook.DAL.Migrations
                     b.HasOne("GradeBook.Models.Group", "Group")
                         .WithMany("Students")
                         .HasForeignKey("GroupRefId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GradeBook.Models.Account", "Account")
-                        .WithOne("Student")
-                        .HasForeignKey("GradeBook.Models.Student", "Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .WithMany()
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GradeBook.Models.Teacher", b =>
                 {
                     b.HasOne("GradeBook.Models.Account", "Account")
-                        .WithOne("Teacher")
-                        .HasForeignKey("GradeBook.Models.Teacher", "Id")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .WithMany()
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

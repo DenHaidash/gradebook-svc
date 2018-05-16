@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GradeBook.Models
 {
@@ -8,16 +9,18 @@ namespace GradeBook.Models
         public int SemesterRefId { get; set; }
         
         [ForeignKey("SemesterRefId")]
-        public Semester Semester { get; set; }
+        public virtual Semester Semester { get; set; }
         
         public int SubjectRefId { get; set; }
         
         [ForeignKey("SubjectRefId")]        
-        public Subject Subject { get; set; }
+        public virtual Subject Subject { get; set; }
         
         public int AssestmentTypeRefId { get; set; }
         
         [ForeignKey("AssestmentTypeRefId")]   
-        public AssestmentType AssestmentType { get; set; }
+        public virtual AssestmentType AssestmentType { get; set; }
+        
+        public virtual IEnumerable<Gradebook> Gradebooks { get; set; }
     }
 }

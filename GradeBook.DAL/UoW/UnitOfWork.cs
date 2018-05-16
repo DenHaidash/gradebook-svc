@@ -24,7 +24,7 @@ namespace GradeBook.DAL.UoW
  
         public async Task<IUnitOfWorkTransaction> BeginTransactionAsync(IsolationLevel level = IsolationLevel.ReadCommitted)
         {
-            var transaction = new UnitOfWorkTransaction(await DbContext.Database.BeginTransactionAsync(level));
+            var transaction = new UnitOfWorkTransaction(await DbContext.Database.BeginTransactionAsync(level).ConfigureAwait(false));
             
             Transactions.Add(transaction);
             
@@ -35,7 +35,7 @@ namespace GradeBook.DAL.UoW
         {
             try
             {
-                await DbContext.SaveChangesAsync();
+                await DbContext.SaveChangesAsync().ConfigureAwait(false);
             }
             catch(DbUpdateException ex) when(ex.InnerException is PostgresException 
                                              && ex.InnerException.Message.Contains("23505"))

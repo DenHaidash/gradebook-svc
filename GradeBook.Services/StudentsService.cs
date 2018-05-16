@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using GradeBook.Common.Exceptions;
 using GradeBook.Common.Security;
@@ -35,26 +36,47 @@ namespace GradeBook.Services
             return _mapper.Map<StudentDto>(student);
         }
 
-        public async Task<int> CreateStudentAsync(StudentDto student)
+        public async Task<StudentDto> CreateStudentAsync(StudentDto student)
         {
             using (var tranaction = await _studentsUnitOfWork.BeginTransactionAsync().ConfigureAwait(false))
             {
-                student.Role = Roles.Student;
-                
-                var newAcctId = await _acctService.CreateAccountAsync(student).ConfigureAwait(false);
+                var existingStudent = (await _studentsUnitOfWork.Repository
+                    .GetAllAsync(t => t.IsDeleted && !t.Account.IsActive && t.Account.Login == student.Email)
+                    .ConfigureAwait(false)).FirstOrDefault();
 
-                var newStudent = new Student
+                var acctId = 0;
+
+                if (existingStudent != null)
                 {
-                    Id = newAcctId,
-                    GroupRefId = student.Group.Id
-                };
+                    existingStudent.IsDeleted = false;
+                    
+                    await _studentsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
+
+                    acctId = existingStudent.Id;
+
+                    await _acctService.EnableAccountAsync(existingStudent.Id).ConfigureAwait(false);
+                }
+                else
+                {
+                    student.Role = Roles.Student;
+                
+                    var newAcct = await _acctService.CreateAccountAsync(student).ConfigureAwait(false);
+
+                    var newStudent = new Student
+                    {
+                        Id = newAcct.Id,
+                        GroupRefId = student.Group.Id
+                    };
             
-                _studentsUnitOfWork.Repository.Add(newStudent);
-                await _studentsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
+                    _studentsUnitOfWork.Repository.Add(newStudent);
+                    await _studentsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
+
+                    acctId = newStudent.Id;
+                }
                 
                 tranaction.Commit();
 
-                return newAcctId;
+                return await GetStudentAsync(acctId).ConfigureAwait(false);
             }
         }
 

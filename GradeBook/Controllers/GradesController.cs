@@ -26,7 +26,7 @@ namespace GradeBook.Controllers
             _mapper = mapper;
         }
         
-        private int TeacherId => int.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
+        private int AccountId => int.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
         
         /// <summary>
         /// Get student's grades for the subject
@@ -47,7 +47,7 @@ namespace GradeBook.Controllers
         [Authorize(Roles = Roles.Teacher)]
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddStudentGradeAsync(int studentId, int courseId, [FromBody]GradeViewModel grade)
         {
             if (!ModelState.IsValid)
@@ -55,7 +55,7 @@ namespace GradeBook.Controllers
                 return BadRequest(new ValidationError(ModelState));
             }
             
-            await _studentGradesService.AddStudentCourseGradeAsync(_mapper.Map<GradeDto>(grade), studentId, TeacherId, courseId);
+            await _studentGradesService.AddStudentCourseGradeAsync(_mapper.Map<GradeDto>(grade), studentId, AccountId, courseId);
 
             return NoContent();
         }
@@ -68,7 +68,7 @@ namespace GradeBook.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteStudentGradeAsync(int gradeId)
         {            
-            await _studentGradesService.RemoveStudentCourseGradeAsync(gradeId, TeacherId);
+            await _studentGradesService.RemoveStudentCourseGradeAsync(gradeId, AccountId);
 
             return NoContent();
         }
@@ -92,7 +92,6 @@ namespace GradeBook.Controllers
             return Ok(grade);
         }
         
-        
         /// <summary>
         /// Create student's final grade for the subject
         /// </summary>
@@ -101,7 +100,7 @@ namespace GradeBook.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> ConfirmStudentFinalGradeAsync(int studentId, int courseId)
         {
-            await _studentGradesService.ConfirmStudentCourseFinalGradeAsync(studentId, TeacherId, courseId);
+            await _studentGradesService.ConfirmStudentCourseFinalGradeAsync(studentId, AccountId, courseId);
             
             return NoContent();
         }

@@ -14,12 +14,9 @@ services:
        - network
  
   gradebooksvc:
-     image: gradebooksvc
+     image: denhaidash/gradebooksvc
      ports:
        - 8090:80
-     build:
-       context: ./
-       dockerfile: Dockerfile
      environment:
        ASPNETCORE_ENVIRONMENT: Production
      links:

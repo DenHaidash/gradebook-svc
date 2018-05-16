@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using AutoMapper;
 using GradeBook.Common.Exceptions;
@@ -17,13 +19,14 @@ namespace GradeBook.Services
         private readonly IAccountService _accountService;
         private readonly IMapper _mapper;
 
-        public TeachersService(IUnitOfWork<ITeachersRepository> teachersUnitOfWork, IAccountService accountService, IMapper mapper)
+        public TeachersService(IUnitOfWork<ITeachersRepository> teachersUnitOfWork, IAccountService accountService,
+            IMapper mapper)
         {
             _teachersUnitOfWork = teachersUnitOfWork;
             _accountService = accountService;
             _mapper = mapper;
         }
-        
+
         public async Task<TeacherDto> GetTeacherAsync(int id)
         {
             var teacher = await _teachersUnitOfWork.Repository.GetByIdAsync(id).ConfigureAwait(false);
@@ -32,7 +35,7 @@ namespace GradeBook.Services
             {
                 return null;
             }
-            
+
             return _mapper.Map<TeacherDto>(teacher);
         }
 
@@ -43,25 +46,46 @@ namespace GradeBook.Services
             return _mapper.Map<IEnumerable<TeacherDto>>(teachers);
         }
 
-        public async Task<int> CreateTeacherAsync(TeacherDto teacher)
+        public async Task<TeacherDto> CreateTeacherAsync(TeacherDto teacher)
         {
             using (var transaction = await _teachersUnitOfWork.BeginTransactionAsync().ConfigureAwait(false))
             {
-                teacher.Role = Roles.Teacher;
-                
-                var newAcctId = await _accountService.CreateAccountAsync(teacher).ConfigureAwait(false);
+                var existingTeacher = (await _teachersUnitOfWork.Repository
+                    .GetAllAsync(t => t.IsDeleted && !t.Account.IsActive && t.Account.Login == teacher.Email)
+                    .ConfigureAwait(false)).FirstOrDefault();
 
-                var newTeacher = new Teacher
+                var acctId = 0;
+
+                if (existingTeacher != null)
                 {
-                    Id = newAcctId
-                };
-            
-                _teachersUnitOfWork.Repository.Add(newTeacher);
-                await _teachersUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
-                
-               transaction.Commit();
+                    existingTeacher.IsDeleted = false;
+                    
+                    await _teachersUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
-               return newAcctId;
+                    acctId = existingTeacher.Id;
+
+                    await _accountService.EnableAccountAsync(existingTeacher.Id).ConfigureAwait(false);
+                }
+                else
+                {
+                    teacher.Role = Roles.Teacher;
+
+                    var newAcct = await _accountService.CreateAccountAsync(teacher).ConfigureAwait(false);
+
+                    var newTeacher = new Teacher
+                    {
+                        Id = newAcct.Id
+                    };
+
+                    _teachersUnitOfWork.Repository.Add(newTeacher);
+                    await _teachersUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
+
+                    acctId = newTeacher.Id;
+                }
+
+                transaction.Commit();
+
+                return await GetTeacherAsync(acctId).ConfigureAwait(false);
             }
         }
 
@@ -78,14 +102,14 @@ namespace GradeBook.Services
             {
                 throw new ResourceNotFoundException($"Teacher {teacherId} not found");
             }
-            
+
             using (var transaction = await _teachersUnitOfWork.BeginTransactionAsync().ConfigureAwait(false))
             {
                 await _accountService.DisableAccountAsync(teacherId).ConfigureAwait(false);
-                
+
                 teacherToUpdate.IsDeleted = true;
                 await _teachersUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
-                
+
                 transaction.Commit();
             }
         }

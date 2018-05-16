@@ -8,7 +8,7 @@ namespace GradeBook.Services.Abstactions
     {
         Task<TeacherDto> GetTeacherAsync(int id);
         Task<IEnumerable<TeacherDto>> GetTeachersAsync();
-        Task<int> CreateTeacherAsync(TeacherDto teacher);
+        Task<TeacherDto> CreateTeacherAsync(TeacherDto teacher);
         Task UpdateTeacherAsync(TeacherDto teacher);
         Task DeleteTeacherAsync(int teacherId);
     }

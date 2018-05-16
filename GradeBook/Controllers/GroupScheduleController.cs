@@ -57,7 +57,7 @@ namespace GradeBook.Controllers
         /// </summary>
         [HttpPut("{groupId:int:min(1)}/semesters/{year:int:range(2000,2200)}/{semester:int:range(1,2)}/courses")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddGroupSemesterSubjectAsync(int groupId, int year, int semester, [FromBody]SemesterSubjectViewModel subject)
         {
             if (!ModelState.IsValid)

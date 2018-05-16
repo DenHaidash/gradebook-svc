@@ -8,7 +8,8 @@ namespace GradeBook.Services.Abstactions
     {
         Task<IEnumerable<SemesterDto>> GetGroupSemestersAsync(int groupId);
         Task<SemesterDto> GetGroupSemesterAsync(int groupId, int year, int semester);
-        Task<int> CreateGroupSemesterAsync(SemesterDto semester);
+        Task<SemesterDto> GetGroupSemesterAsync(int semesterId);
+        Task<SemesterDto> CreateGroupSemesterAsync(SemesterDto semester);
         Task CreateGroupSemestersAsync(IEnumerable<SemesterDto> semester);
         Task DeleteGroupSemester(int semesterId);
     }

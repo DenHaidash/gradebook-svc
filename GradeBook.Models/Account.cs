@@ -34,5 +34,8 @@ namespace GradeBook.Models
         [Required, MaxLength(20)]
         public string Role { get; set; }
         public bool IsActive { get; set; }
+
+        public virtual Student Student { get; set; }
+        public virtual Teacher Teacher { get; set; }
     }
 }

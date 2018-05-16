@@ -69,7 +69,7 @@ namespace GradeBook.Services
             return _mapper.Map<GradebookDto>(gradebook);
         }
 
-        public async Task<int> CreateGradebookAsync(GradebookDto gradebook)
+        public async Task<GradebookDto> CreateGradebookAsync(GradebookDto gradebook)
         {
             var newGradebook = _mapper.Map<Gradebook>(gradebook);
             
@@ -77,7 +77,7 @@ namespace GradeBook.Services
 
             await _gradebookUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
-            return newGradebook.Id;
+            return await GetGradebookAsync(newGradebook.Id).ConfigureAwait(false);
         }
 
         public async Task RemoveGradebookAsync(int gradebookId)

@@ -60,8 +60,8 @@ namespace GradeBook.Controllers
         /// Create subject
         /// </summary>
         [HttpPut]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(SubjectDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateSubjectAsync([FromBody]SubjectViewModel subject)
         {
             if (!ModelState.IsValid)
@@ -69,9 +69,9 @@ namespace GradeBook.Controllers
                 return BadRequest(new ValidationError(ModelState));
             }
             
-            var subjectId = await _subjectsService.CreateSubjectAsync(_mapper.Map<SubjectDto>(subject));
+            var newSubject = await _subjectsService.CreateSubjectAsync(_mapper.Map<SubjectDto>(subject));
 
-            return CreatedAtRoute("GetSubject", new {  subjectId }, null);
+            return CreatedAtRoute("GetSubject", new { subjectId = newSubject.Id }, newSubject);
         }
         
         /// <summary>
@@ -79,7 +79,7 @@ namespace GradeBook.Controllers
         /// </summary>
         [HttpPost("{subjectId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateSubjectAsync(int subjectId, [FromBody]SubjectViewModel subject)
         {
             if (!ModelState.IsValid)

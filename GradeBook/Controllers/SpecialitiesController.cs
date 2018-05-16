@@ -60,8 +60,8 @@ namespace GradeBook.Controllers
         /// Create speciality
         /// </summary>
         [HttpPut]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(SpecialtyDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateSpecialityAsync([FromBody]SpecialtyViewModel specialty)
         {
             if (!ModelState.IsValid)
@@ -69,9 +69,9 @@ namespace GradeBook.Controllers
                 return BadRequest(new ValidationError(ModelState));
             }
             
-            var specialtyId = await _specialitiesService.CreateSpecialityAsync(_mapper.Map<SpecialtyDto>(specialty));
+            var newSpecialty = await _specialitiesService.CreateSpecialityAsync(_mapper.Map<SpecialtyDto>(specialty));
 
-            return CreatedAtRoute("GetSpeciality", new { specialtyId }, null);
+            return CreatedAtRoute("GetSpeciality", new { specialtyId = newSpecialty.Id }, newSpecialty);
         }
         
         /// <summary>
@@ -79,7 +79,7 @@ namespace GradeBook.Controllers
         /// </summary>
         [HttpPost("{specialtyId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateSpecialityAsync(int specialtyId, [FromBody]SpecialtyViewModel specialty)
         {
             if (!ModelState.IsValid)

@@ -16,5 +16,9 @@ namespace GradeBook.Models
         public bool IsDeleted { get; set; }
         
         public virtual IEnumerable<GradebookTeacher> GradebookTeachers { get; set; }
+        
+        public virtual IEnumerable<FinalGrade> FinalGrades { get; set; }
+        
+        public virtual IEnumerable<Grade> Grades { get; set; }
     }
 }

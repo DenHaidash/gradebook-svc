@@ -51,7 +51,7 @@ namespace GradeBook.Services
             return saltedPassword.Equals(account.PasswordHash);
         }
 
-        public async Task<int> CreateAccountAsync(AccountDto acct)
+        public async Task<AccountDto> CreateAccountAsync(AccountDto acct)
         {
             var salt = PasswordProtector.GenerateSalt();
             var randPassword = PasswordProtector.GenerateSalt(10);
@@ -71,7 +71,7 @@ namespace GradeBook.Services
                 .SendEmailAsync(acct.Email, "GradeBook account created", $"Account password: {randPassword}")
                 .ConfigureAwait(false);
 
-            return newAcct.Id;
+            return await GetAccountAsync(newAcct.Login).ConfigureAwait(false);
         }
 
         public async Task DisableAccountAsync(int accountId)
@@ -84,8 +84,34 @@ namespace GradeBook.Services
             }
 
             acct.IsActive = false;
+            acct.UpdatedAt = DateTime.Now;
 
             await _accountUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        public async Task EnableAccountAsync(int accountId)
+        {
+            var acct = await _accountUnitOfWork.Repository.GetByIdAsync(accountId).ConfigureAwait(false);
+
+            if (acct == null)
+            {
+                throw new ResourceNotFoundException($"Account {accountId} not found");
+            }
+
+            acct.IsActive = true;
+            acct.UpdatedAt = DateTime.Now;
+
+            var salt = PasswordProtector.GenerateSalt();
+            var newPassword = PasswordProtector.GenerateSalt(10);
+
+            acct.PasswordSalt = salt;
+            acct.PasswordHash = PasswordProtector.SaltString(salt, newPassword);
+            
+            await _accountUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
+            
+            await _emailSender
+                .SendEmailAsync(acct.Login, "GradeBook account restored", $"New password: {newPassword}")
+                .ConfigureAwait(false);
         }
 
         public async Task UpdateAccountAsync(AccountDto acct)
@@ -95,7 +121,6 @@ namespace GradeBook.Services
             if (acctToUpdate == null || !acctToUpdate.IsActive)
             {
                 throw new ResourceNotFoundException($"Account {acct.Id} not found");
-
             }
 
             acctToUpdate.FirstName = acct.FirstName;
@@ -131,7 +156,6 @@ namespace GradeBook.Services
             if (acctToUpdate == null)
             {
                 throw new ResourceNotFoundException($"Account {login} not found");
-
             }
             
             var salt = PasswordProtector.GenerateSalt();

@@ -60,7 +60,7 @@ namespace GradeBook.Controllers
         /// </summary>
         [HttpPost("{studentId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateStudentAsync(int studentId, [FromBody]AccountViewModel student)
         {
             if (!ModelState.IsValid)
@@ -80,8 +80,8 @@ namespace GradeBook.Controllers
         /// Create student
         /// </summary>
         [HttpPut]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(StudentDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateStudentAsync([FromBody]NewStudentViewModel student)
         {
             if (!ModelState.IsValid)
@@ -89,9 +89,9 @@ namespace GradeBook.Controllers
                 return BadRequest(new ValidationError(ModelState));
             }
             
-            var studentId = await _studentsService.CreateStudentAsync(_mapper.Map<StudentDto>(student));
+            var newStudent = await _studentsService.CreateStudentAsync(_mapper.Map<StudentDto>(student));
             
-            return CreatedAtRoute("GetStudent", new { studentId }, null);
+            return CreatedAtRoute("GetStudent", new { studentId = newStudent.Id }, newStudent);
         }
     }
 }

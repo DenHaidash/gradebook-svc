@@ -8,7 +8,7 @@ namespace GradeBook.Services.Abstactions
     {
         Task<IEnumerable<SubjectDto>> GetSubjectsAsync();
         Task<SubjectDto> GetSubjectAsync(int subjectId);
-        Task<int> CreateSubjectAsync(SubjectDto subject);
+        Task<SubjectDto> CreateSubjectAsync(SubjectDto subject);
         Task UpdateSubjectAsync(SubjectDto subject);
         Task DeleteSubjectAsync(int subjectId);
     }

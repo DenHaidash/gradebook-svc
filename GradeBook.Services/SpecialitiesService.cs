@@ -40,7 +40,7 @@ namespace GradeBook.Services
             return _mapper.Map<SpecialtyDto>(specialty);
         }
 
-        public async Task<int> CreateSpecialityAsync(SpecialtyDto specialty)
+        public async Task<SpecialtyDto> CreateSpecialityAsync(SpecialtyDto specialty)
         {
             var newSpeciality = _mapper.Map<Specialty>(specialty);
             
@@ -48,7 +48,7 @@ namespace GradeBook.Services
 
             await _specialitiesUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
-            return newSpeciality.Id;
+            return await GetSpecialityAsync(newSpeciality.Id).ConfigureAwait(false);
         }
 
         public async Task UpdateSpecialityAsync(SpecialtyDto specialty)

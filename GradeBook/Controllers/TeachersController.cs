@@ -61,7 +61,7 @@ namespace GradeBook.Controllers
         /// </summary>
         [HttpPost("{teacherId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> EditTeacherAsync(int teacherId, [FromBody]AccountViewModel account)
         {
             if (!ModelState.IsValid)
@@ -93,7 +93,8 @@ namespace GradeBook.Controllers
         /// Create teacher
         /// </summary>
         [HttpPut]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(TeacherDto), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateTeacherAsync([FromBody]NewAccountViewModel account)
         {
             if (!ModelState.IsValid)
@@ -101,9 +102,9 @@ namespace GradeBook.Controllers
                 return BadRequest(new ValidationError(ModelState));
             }
             
-            var teacherId = await _teachersService.CreateTeacherAsync(_mapper.Map<TeacherDto>(account));
+            var newTeacher = await _teachersService.CreateTeacherAsync(_mapper.Map<TeacherDto>(account));
 
-            return CreatedAtRoute("GetTeacher", new { teacherId }, null);
+            return CreatedAtRoute("GetTeacher", new { teacherId = newTeacher.Id }, newTeacher);
         }
     }
 }

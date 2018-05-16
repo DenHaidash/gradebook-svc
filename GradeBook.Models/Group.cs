@@ -14,8 +14,6 @@ namespace GradeBook.Models
         [Required, MaxLength(10)]
         public string Code { get; set; }
         
-        public bool IsDeleted { get; set; }
-        
         public int SpecialityRefId { get; set; }
         
         [ForeignKey("SpecialityRefId")]

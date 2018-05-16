@@ -40,7 +40,7 @@ namespace GradeBook.Services
             return _mapper.Map<SubjectDto>(subject);
         }
 
-        public async Task<int> CreateSubjectAsync(SubjectDto subject)
+        public async Task<SubjectDto> CreateSubjectAsync(SubjectDto subject)
         {
             var newSubject = _mapper.Map<Subject>(subject);
             
@@ -48,7 +48,7 @@ namespace GradeBook.Services
 
             await _subjectsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
-            return newSubject.Id;
+            return await GetSubjectAsync(newSubject.Id).ConfigureAwait(false);
         }
 
         public async Task UpdateSubjectAsync(SubjectDto subject)

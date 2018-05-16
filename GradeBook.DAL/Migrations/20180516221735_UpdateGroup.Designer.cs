@@ -11,9 +11,10 @@ using System;
 namespace GradeBook.DAL.Migrations
 {
     [DbContext(typeof(GradebookContext))]
-    partial class GradebookContextModelSnapshot : ModelSnapshot
+    [Migration("20180516221735_UpdateGroup")]
+    partial class UpdateGroup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

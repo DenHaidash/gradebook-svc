@@ -26,7 +26,7 @@ namespace GradeBook.Controllers
         /// </summary>
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AssignTeacherToCourseAsync(int groupId, int year, int semester, int courseId, [FromBody]TeacherSubjectAssignmentViewModel teacherAssignment)
         {
             if (!ModelState.IsValid)

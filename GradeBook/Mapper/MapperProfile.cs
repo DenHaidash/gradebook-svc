@@ -70,9 +70,6 @@ namespace GradeBook.Mapper
             CreateMap<GradebookDto, Gradebook>()
                 .ForMember(m => m.SemesterRefId, t => t.MapFrom(s => s.SemesterId))
                 .ForMember(m => m.SubjectRefId, t => t.MapFrom(s => s.SubjectId));
-//            CreateMap<StudentDto, Student>()
-//                .ForMember(m => m.GroupRefId, t => t.MapFrom(s => s.Group.Id))
-//                .ForMember(m => m.Group, t => t.Ignore());
         }
     }
 }

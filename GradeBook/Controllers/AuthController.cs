@@ -32,7 +32,7 @@ namespace GradeBook.Controllers
         [AllowAnonymous]
         [HttpPost]
         [ProducesResponseType(typeof(TokenDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetAuthTokenAsync([FromBody]LoginViewModel loginModel)
         {
@@ -59,7 +59,7 @@ namespace GradeBook.Controllers
         [Authorize]
         [HttpPost("change-password")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> ChangePasswordAsync([FromBody]ChangePasswordViewModel changePasswordModel)
         {
@@ -90,7 +90,7 @@ namespace GradeBook.Controllers
         [AllowAnonymous]
         [HttpPost("reset-password")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RestorePasswordAsync([FromBody]PasswordResetViewModel passwordResetModel)
         {
             if (!ModelState.IsValid)

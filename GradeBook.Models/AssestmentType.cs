@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GradeBook.Models
@@ -11,5 +12,7 @@ namespace GradeBook.Models
         
         [Required, MaxLength(20)]
         public string Description { get; set; }
+        
+        public virtual IEnumerable<SemesterSubject> Semesters { get; set; }
     }
 }

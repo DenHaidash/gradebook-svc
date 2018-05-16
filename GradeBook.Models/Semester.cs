@@ -25,5 +25,6 @@ namespace GradeBook.Models
         public DateTime EndsAt { get; set; }
         
         public virtual IEnumerable<SemesterSubject> SemesterSubjects { get; set; }
+        public virtual IEnumerable<Gradebook> Gradebooks { get; set; }
     }
 }

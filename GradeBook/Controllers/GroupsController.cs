@@ -60,8 +60,8 @@ namespace GradeBook.Controllers
         /// Create group
         /// </summary>
         [HttpPut]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(GroupDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateGroupAsync([FromBody]GroupViewModel group)
         {
             if (!ModelState.IsValid)
@@ -69,9 +69,9 @@ namespace GradeBook.Controllers
                 return BadRequest(new ValidationError(ModelState));
             }
             
-            var groupId = await _groupsService.CreateGroupAsync(_mapper.Map<GroupDto>(group), group.EducationStartedAt);
+            var newGroup = await _groupsService.CreateGroupAsync(_mapper.Map<GroupDto>(group), group.EducationStartedAt);
 
-            return CreatedAtRoute("GetGroup", new { groupId }, null);
+            return CreatedAtRoute("GetGroup", new { groupId = newGroup.Id }, newGroup);
         }
         
         /// <summary>
@@ -91,7 +91,7 @@ namespace GradeBook.Controllers
         /// </summary>
         [HttpPost("{groupId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateGroupAsync(int groupId, [FromBody]GroupViewModel group)
         {
             if (!ModelState.IsValid)

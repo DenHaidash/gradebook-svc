@@ -31,7 +31,7 @@ namespace GradeBook.Services
         {
             var group = await _groupsUnitOfWork.Repository.GetByIdAsync(id).ConfigureAwait(false);
 
-            if (group == null || group.IsDeleted)
+            if (group == null)
             {
                 return null;
             }
@@ -42,13 +42,13 @@ namespace GradeBook.Services
         public async Task<IEnumerable<GroupDto>> GetGroupsAsync()
         {
             var groups = await _groupsUnitOfWork.Repository
-                .GetAllAsync(g => !g.IsDeleted)
+                .GetAllAsync()
                 .ConfigureAwait(false);
 
             return _mapper.Map<IEnumerable<GroupDto>>(groups);
         }
 
-        public async Task<int> CreateGroupAsync(GroupDto group, DateTime educationStartedAt)
+        public async Task<GroupDto> CreateGroupAsync(GroupDto group, DateTime educationStartedAt)
         {
             using (var transaction = await _groupsUnitOfWork.BeginTransactionAsync().ConfigureAwait(false))
             {
@@ -65,7 +65,7 @@ namespace GradeBook.Services
 
                 transaction.Commit();
                 
-                return newGroup.Id;
+                return await GetGroupAsync(newGroup.Id).ConfigureAwait(false);
             }
         }
 
@@ -73,7 +73,7 @@ namespace GradeBook.Services
         {
             var groupToUpdate = await _groupsUnitOfWork.Repository.GetByIdAsync(group.Id).ConfigureAwait(false);
 
-            if (groupToUpdate == null || groupToUpdate.IsDeleted)
+            if (groupToUpdate == null)
             {
                 throw new ResourceNotFoundException($"Group {group.Id} not found");
             }
@@ -86,14 +86,14 @@ namespace GradeBook.Services
 
         public async Task RemoveGroupAsync(int groupId)
         {
-            var groupToUpdate = await _groupsUnitOfWork.Repository.GetByIdAsync(groupId).ConfigureAwait(false);
+            var groupToDelete = await _groupsUnitOfWork.Repository.GetByIdAsync(groupId).ConfigureAwait(false);
 
-            if (groupToUpdate == null || groupToUpdate.IsDeleted)
+            if (groupToDelete == null)
             {
                 throw new ResourceNotFoundException($"Group {groupId} not found");
             }
 
-            groupToUpdate.IsDeleted = true;
+            _groupsUnitOfWork.Repository.Delete(groupToDelete);
             
             await _groupsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }

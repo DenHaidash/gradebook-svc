@@ -106,7 +106,7 @@ namespace GradeBook
             
             app.UseResponseCompression();
             
-            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod());
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             
             app.UseAuthentication();
 

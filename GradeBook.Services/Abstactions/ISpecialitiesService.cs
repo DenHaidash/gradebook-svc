@@ -8,7 +8,7 @@ namespace GradeBook.Services.Abstactions
     {
         Task<IEnumerable<SpecialtyDto>> GetSpecialitiesAsync();
         Task<SpecialtyDto> GetSpecialityAsync(int specialtyId);
-        Task<int> CreateSpecialityAsync(SpecialtyDto specialty);
+        Task<SpecialtyDto> CreateSpecialityAsync(SpecialtyDto specialty);
         Task UpdateSpecialityAsync(SpecialtyDto specialty);
         Task DeleteSpecialityAsync(int specialityId);
     }

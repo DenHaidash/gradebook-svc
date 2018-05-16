@@ -14,5 +14,7 @@ namespace GradeBook.Models
         public string Name { get; set; }
         
         public virtual IEnumerable<SemesterSubject> Semesters { get; set; }
+        public virtual IEnumerable<Gradebook> Gradebooks { get; set; }
+
     }
 }

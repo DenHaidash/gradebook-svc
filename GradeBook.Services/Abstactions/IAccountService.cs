@@ -7,8 +7,9 @@ namespace GradeBook.Services.Abstactions
     {
         Task<AccountDto> GetAccountAsync(string login);
         Task<bool> VerifyPasswordAsync(string login, string password);
-        Task<int> CreateAccountAsync(AccountDto acct);
+        Task<AccountDto> CreateAccountAsync(AccountDto acct);
         Task DisableAccountAsync(int accountId);
+        Task EnableAccountAsync(int accountId);
         Task UpdateAccountAsync(AccountDto acct);
         Task ChangePasswordAsync(int accountId, string newPassword);
         Task ResetPasswordAsync(string email);

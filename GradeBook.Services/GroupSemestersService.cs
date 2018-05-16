@@ -47,6 +47,18 @@ namespace GradeBook.Services
             return _mapper.Map<SemesterDto>(semester);
         }
 
+        public async Task<SemesterDto> GetGroupSemesterAsync(int semesterId)
+        {
+            var semester = await _semesterScheduleUnitOfWork.Repository.GetByIdAsync(semesterId).ConfigureAwait(false);
+
+            if (semester == null)
+            {
+                return null;
+            }
+            
+            return _mapper.Map<SemesterDto>(semester);
+        }
+
         private Semester _addSemesterToRepo(SemesterDto semester)
         {
             var newSemester = _mapper.Map<Semester>(semester);
@@ -56,13 +68,13 @@ namespace GradeBook.Services
             return newSemester;
         }
         
-        public async Task<int> CreateGroupSemesterAsync(SemesterDto semester)
+        public async Task<SemesterDto> CreateGroupSemesterAsync(SemesterDto semester)
         {
             var newSemester = _addSemesterToRepo(semester);
 
             await _semesterScheduleUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
-            return newSemester.Id;
+            return await GetGroupSemesterAsync(newSemester.Id).ConfigureAwait(false);
         }
         
         public async Task CreateGroupSemestersAsync(IEnumerable<SemesterDto> semesters)
