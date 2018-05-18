@@ -1,4 +1,5 @@
 ﻿using System;
+using GradeBook.DAL.UoW.Abstractions;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace GradeBook.DAL.UoW
@@ -6,6 +7,7 @@ namespace GradeBook.DAL.UoW
     public class UnitOfWorkTransaction : IUnitOfWorkTransaction
     {
         protected IDbContextTransaction DbTransaction { get; private set; }
+        
         public UnitOfWorkTransaction(IDbContextTransaction transaction)
         {
             DbTransaction = transaction;
@@ -23,11 +25,13 @@ namespace GradeBook.DAL.UoW
  
         public virtual void Dispose(bool disposing)
         {
-            if (disposing)
+            if (!disposing)
             {
-                DbTransaction?.Dispose();
-                DbTransaction = null;
+                return;
             }
+            
+            DbTransaction?.Dispose();
+            DbTransaction = null;
         }
  
         public void Dispose()

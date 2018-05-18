@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace GradeBook.DTO
+﻿namespace GradeBook.DTO
 {
     public class GroupDto
     {

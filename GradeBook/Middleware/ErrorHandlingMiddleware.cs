@@ -35,15 +35,17 @@ namespace GradeBook.Middleware
 
         private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            HttpStatusCode code = HttpStatusCode.InternalServerError;
+            var code = HttpStatusCode.InternalServerError;
 
-            if (exception is ResourceAccessPermissionException)
+            switch (exception)
             {
-                code = HttpStatusCode.Forbidden;
-            }
-            else if (exception is GradebookException)
-            {
-                code = HttpStatusCode.BadRequest;
+                case ResourceAccessPermissionException _:
+                    code = HttpStatusCode.Forbidden;
+                    break;
+                
+                case GradebookException _:
+                    code = HttpStatusCode.BadRequest;
+                    break;
             }
             
             var result = JsonConvert.SerializeObject(new { Error = exception.Message });

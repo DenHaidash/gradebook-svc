@@ -2,7 +2,6 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using GradeBook.DTO;
-using GradeBook.Helpers;
 using GradeBook.Helpers.Jwt.Abstractions;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;

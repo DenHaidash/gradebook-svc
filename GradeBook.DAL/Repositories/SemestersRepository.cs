@@ -1,7 +1,5 @@
-﻿using System.Linq;
-using GradeBook.DAL.Repositories.Abstractions;
+﻿using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace GradeBook.DAL.Repositories
 {

@@ -4,7 +4,7 @@ using AutoMapper;
 using GradeBook.Common.Exceptions;
 using GradeBook.Common.Security;
 using GradeBook.DAL.Repositories.Abstractions;
-using GradeBook.DAL.UoW;
+using GradeBook.DAL.UoW.Abstractions;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;

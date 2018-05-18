@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using GradeBook.Common.Exceptions;
 using GradeBook.DAL.Repositories.Abstractions;
-using GradeBook.DAL.UoW;
+using GradeBook.DAL.UoW.Abstractions;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;

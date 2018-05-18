@@ -6,8 +6,8 @@ namespace GradeBook.Validation
 {
     public class ValidationError
     {
-        public string Error { get; private set; } = "Model is invalid";
-        public Dictionary<string, List<string>> Data { get; set; }
+        public string Error { get; } = "Model is invalid";
+        public Dictionary<string, List<string>> Data { get; }
         
         public ValidationError(ModelStateDictionary modelState)
         {

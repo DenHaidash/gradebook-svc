@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using GradeBook.Common.Exceptions;
+using GradeBook.DAL.UoW.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
@@ -18,9 +19,10 @@ namespace GradeBook.DAL.UoW
             Transactions= new List<IUnitOfWorkTransaction>();
         }
  
-        public TRepository Repository { get; private set; }
+        public TRepository Repository { get; }
+        protected List<IUnitOfWorkTransaction> Transactions { get; }
+        
         protected GradebookContext DbContext { get; private set; }
-        protected List<IUnitOfWorkTransaction> Transactions { get; private set; }
  
         public async Task<IUnitOfWorkTransaction> BeginTransactionAsync(IsolationLevel level = IsolationLevel.ReadCommitted)
         {

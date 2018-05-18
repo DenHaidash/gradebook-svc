@@ -8,7 +8,6 @@ using GradeBook.Helpers.Jwt.Abstractions;
 using GradeBook.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 
 namespace GradeBook.Helpers.Jwt
 {

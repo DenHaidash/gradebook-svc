@@ -5,7 +5,7 @@ using GradeBook.DAL;
 using GradeBook.DAL.Repositories;
 using GradeBook.DAL.Repositories.Abstractions;
 using GradeBook.DAL.UoW;
-using GradeBook.Helpers;
+using GradeBook.DAL.UoW.Abstractions;
 using GradeBook.Helpers.Jwt;
 using GradeBook.Helpers.Jwt.Abstractions;
 using GradeBook.Options;
