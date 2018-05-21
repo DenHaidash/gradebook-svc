@@ -15,7 +15,7 @@ namespace GradeBook.Mapper
             CreateMap<NewAccountViewModel, TeacherDto>();
             CreateMap<SpecialtyViewModel, SpecialtyDto>();
             CreateMap<GroupViewModel, GroupDto>()
-                .ForPath(m => m.Specialty.Id, t => t.MapFrom(s => s.SpecialtyId));
+                .ForPath(m => m.Specialty.Id, t => t.MapFrom(s => s.SpecialityId));
             CreateMap<NewStudentViewModel, StudentDto>()
                 .ForPath(m => m.Group.Id, t => t.MapFrom(s => s.GroupId));
             CreateMap<SemesterSubjectViewModel, SemesterSubjectDto>()

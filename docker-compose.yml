@@ -19,6 +19,7 @@ services:
        - 8090:80
      environment:
        ASPNETCORE_ENVIRONMENT: Production
+       Jwt__TokenLifetimeMinutes: 1440
      links:
        - postgresserver
      depends_on:

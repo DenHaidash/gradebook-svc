@@ -12,6 +12,6 @@ namespace GradeBook.Models
         public DateTime EducationStartedAt { get; set; }
         
         [Range(1, int.MaxValue)]
-        public int SpecialtyId { get; set; }
+        public int SpecialityId { get; set; }
     }
 }
