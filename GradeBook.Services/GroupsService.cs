@@ -78,7 +78,7 @@ namespace GradeBook.Services
             }
 
             groupToUpdate.Code = group.Code;
-            groupToUpdate.SpecialityRefId = group.Specialty.Id;
+            groupToUpdate.SpecialityRefId = group.Speciality.Id;
 
             await _groupsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }

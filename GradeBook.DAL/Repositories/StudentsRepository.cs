@@ -15,7 +15,7 @@ namespace GradeBook.DAL.Repositories
         {
             return dbSet
                 .Include(s => s.Account)
-                .Include(s => s.Group.Specialty);
+                .Include(s => s.Group.Speciality);
         }
 
         protected override int GetKeyValue(Student entity)

@@ -16,7 +16,7 @@ namespace GradeBook.Models
         public int SpecialityRefId { get; set; }
         
         [ForeignKey("SpecialityRefId")]
-        public virtual Specialty Specialty { get; set; }
+        public virtual Specialty Speciality { get; set; }
         
         public virtual IEnumerable<Student> Students { get; set; }
         

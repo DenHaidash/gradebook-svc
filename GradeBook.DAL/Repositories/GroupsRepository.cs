@@ -13,7 +13,7 @@ namespace GradeBook.DAL.Repositories
 
         protected override IQueryable<Group> WithIncludes(DbSet<Group> dbSet)
         {
-            return dbSet.Include(g => g.Specialty);
+            return dbSet.Include(g => g.Speciality);
         }
 
         protected override int GetKeyValue(Group entity)

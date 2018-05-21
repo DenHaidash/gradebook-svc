@@ -32,7 +32,7 @@ namespace GradeBook.DAL.Repositories
                             && s.Gradebook.Semester.StartsAt.Year == (semester == 2 ? year + 1 : year)
                             && s.Gradebook.Semester.SemesterNumber == semester)
                 .Select(s => s.Gradebook.Semester.Group)
-                .Include(s => s.Specialty)
+                .Include(s => s.Speciality)
                 .Distinct()
                 .ToListAsync()
                 .ConfigureAwait(false);

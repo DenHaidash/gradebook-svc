@@ -4,6 +4,6 @@
     {
         public int Id { get; set; }
         public string Code { get; set; }
-        public SpecialtyDto Specialty { get; set; }
+        public SpecialtyDto Speciality { get; set; }
     }
 }

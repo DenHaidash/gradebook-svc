@@ -106,7 +106,7 @@ namespace GradeBook.DAL
                 .HasIndex(i => i.Code)
                 .IsUnique();
             modelBuilder.Entity<Group>()
-                .HasOne(i => i.Specialty)
+                .HasOne(i => i.Speciality)
                 .WithMany(i => i.Groups)
                 .OnDelete(DeleteBehavior.Restrict);
 
