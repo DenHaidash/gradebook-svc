@@ -116,7 +116,7 @@ namespace GradeBook.DAL
             modelBuilder.Entity<Semester>()
                 .HasOne(i => i.Group)
                 .WithMany(i => i.Semesters)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
             
             modelBuilder.Entity<SemesterSubject>()
                 .HasIndex(i => new {i.SemesterRefId, i.SubjectRefId})
@@ -128,7 +128,7 @@ namespace GradeBook.DAL
             modelBuilder.Entity<SemesterSubject>()
                 .HasOne(i => i.Semester)
                 .WithMany(i => i.SemesterSubjects)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<SemesterSubject>()
                 .HasOne(i => i.Subject)
                 .WithMany(i => i.Semesters)
