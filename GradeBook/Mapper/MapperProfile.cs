@@ -28,6 +28,10 @@ namespace GradeBook.Mapper
             
             CreateMap<Subject, SubjectDto>().ReverseMap();
             CreateMap<Specialty, SpecialtyDto>().ReverseMap();
+            CreateMap<SemesterSubject, SemesterSubjectDto>()
+                .ForMember(m => m.Teachers,
+                    t => t.MapFrom(s =>
+                        s.Gradebooks.SelectMany(g => g.GradebookTeachers.Select(i => i.Teacher))));
             CreateMap<Account, AccountDto>()
                 .ForMember(m => m.Email, t => t.MapFrom(s => s.Login));
             CreateMap<Teacher, TeacherDto>()

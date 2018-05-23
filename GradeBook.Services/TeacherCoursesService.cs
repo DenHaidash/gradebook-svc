@@ -63,9 +63,21 @@ namespace GradeBook.Services
                 .ConfigureAwait(false);
         }
 
-        public async Task AssignTeacherToCourseAsync(int teacherId, int year, int semester, int groupId, int subjectId)
+        public async Task<IEnumerable<TeacherDto>> GetTeachersOfCourseAsync(int groupId, int subjectId)
         {
-            var gradebook = await _gradebooksService.GetGradebookAsync(year, semester, subjectId).ConfigureAwait(false);
+            var gradebook = await _gradebooksService.GetGradebookByGroupAsync(groupId, subjectId).ConfigureAwait(false);
+            
+            if (gradebook == null)
+            {
+                throw new ResourceNotFoundException($"Gradebook for subject {subjectId} of group {groupId} not found");
+            }
+            
+            return _mapper.Map<IEnumerable<TeacherDto>>(gradebook.Teachers);
+        }
+
+        public async Task AssignTeacherToCourseAsync(int teacherId, int groupId, int subjectId)
+        {
+            var gradebook = await _gradebooksService.GetGradebookByGroupAsync(groupId, subjectId).ConfigureAwait(false);
 
             if (gradebook == null)
             {

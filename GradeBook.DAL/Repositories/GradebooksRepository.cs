@@ -17,7 +17,7 @@ namespace GradeBook.DAL.Repositories
                 .Include(s => s.Semester)
                 .Include(s => s.SemesterSubject.AssestmentType)
                 .Include(s => s.GradebookTeachers)
-                .ThenInclude(s => s.Teacher);
+                .ThenInclude(s => s.Teacher.Account);
         }
 
         protected override int GetKeyValue(Gradebook entity)

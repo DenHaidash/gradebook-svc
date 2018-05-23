@@ -10,7 +10,8 @@ namespace GradeBook.Services.Abstactions
         Task<IEnumerable<GroupDto>> GetTeacherCurrentSemesterGroupsAsync(int teacherId);
         Task<IEnumerable<SubjectDto>> GetTeacherSemesterGroupCoursesAsync(int teacherId, int year, int semester, int groupId);
         Task<IEnumerable<SubjectDto>> GetTeacherCurrentSemesterGroupCoursesAsync(int teacherId, int groupId);
-        Task AssignTeacherToCourseAsync(int teacherId, int year, int semester, int groupId, int subjectId);
+        Task<IEnumerable<TeacherDto>> GetTeachersOfCourseAsync(int groupId, int subjectId);
+        Task AssignTeacherToCourseAsync(int teacherId, int groupId, int subjectId);
         Task UnassignTeacherFromCourseAsync(int teacherId, int year, int semester, int groupId, int subjectId);
     }
 }

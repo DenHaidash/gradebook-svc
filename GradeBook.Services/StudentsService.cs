@@ -49,7 +49,8 @@ namespace GradeBook.Services
                 if (existingStudent != null)
                 {
                     existingStudent.IsDeleted = false;
-                    
+
+                    await _acctService.UpdateAccountAsync(student).ConfigureAwait(false);
                     await _studentsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
                     acctId = existingStudent.Id;

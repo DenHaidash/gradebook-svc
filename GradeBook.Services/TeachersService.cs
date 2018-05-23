@@ -59,6 +59,8 @@ namespace GradeBook.Services
                 {
                     existingTeacher.IsDeleted = false;
                     
+                    await _accountService.UpdateAccountAsync(teacher).ConfigureAwait(false);
+                    
                     await _teachersUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
                     acctId = existingTeacher.Id;

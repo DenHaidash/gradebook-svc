@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using GradeBook.Common.Security;
+using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
 using GradeBook.Validation;
@@ -22,19 +23,32 @@ namespace GradeBook.Controllers
         }
         
         /// <summary>
+        /// Get teachers of group's subject
+        /// </summary>
+        [HttpGet]
+        [ProducesResponseType(typeof(TeacherDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetTeachersOfCourseAsync(int groupId, int courseId)
+        {            
+            var teachers = await _teacherCoursesService.GetTeachersOfCourseAsync(groupId, courseId);
+
+            return Ok(teachers);
+        }
+        
+        
+        /// <summary>
         /// Assign teacher to group's subject
         /// </summary>
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AssignTeacherToCourseAsync(int groupId, int year, int semester, int courseId, [FromBody]TeacherSubjectAssignmentViewModel teacherAssignment)
+        public async Task<IActionResult> AssignTeacherToCourseAsync(int groupId, int courseId, [FromBody]TeacherSubjectAssignmentViewModel teacherAssignment)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(new ValidationError(ModelState));
             }
             
-            await _teacherCoursesService.AssignTeacherToCourseAsync(teacherAssignment.TeacherId, year, semester, groupId, courseId);
+            await _teacherCoursesService.AssignTeacherToCourseAsync(teacherAssignment.TeacherId, groupId, courseId);
 
             return NoContent();
         }
