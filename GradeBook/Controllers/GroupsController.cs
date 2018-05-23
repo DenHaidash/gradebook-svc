@@ -62,7 +62,7 @@ namespace GradeBook.Controllers
         [HttpPut]
         [ProducesResponseType(typeof(GroupDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateGroupAsync([FromBody]GroupViewModel group)
+        public async Task<IActionResult> CreateGroupAsync([FromBody]NewGroupViewModel group)
         {
             if (!ModelState.IsValid)
             {
