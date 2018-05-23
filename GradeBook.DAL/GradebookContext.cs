@@ -152,7 +152,7 @@ namespace GradeBook.DAL
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Gradebook>()
                 .HasOne(i => i.SemesterSubject)
-                .WithMany(i => i.Gradebooks)
+                .WithOne(i => i.Gradebook)
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Gradebook>()
                 .HasOne(i => i.Subject)

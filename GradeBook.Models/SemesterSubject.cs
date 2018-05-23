@@ -21,6 +21,6 @@ namespace GradeBook.Models
         [ForeignKey("AssestmentTypeRefId")]   
         public virtual AssestmentType AssestmentType { get; set; }
         
-        public virtual IEnumerable<Gradebook> Gradebooks { get; set; }
+        public virtual Gradebook Gradebook { get; set; }
     }
 }

@@ -350,8 +350,8 @@ namespace GradeBook.DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("GradeBook.Models.SemesterSubject", "SemesterSubject")
-                        .WithMany("Gradebooks")
-                        .HasForeignKey("SemesterRefId", "SubjectRefId")
+                        .WithOne("Gradebook")
+                        .HasForeignKey("GradeBook.Models.Gradebook", "SemesterRefId", "SubjectRefId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

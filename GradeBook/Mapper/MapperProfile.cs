@@ -31,7 +31,7 @@ namespace GradeBook.Mapper
             CreateMap<SemesterSubject, SemesterSubjectDto>()
                 .ForMember(m => m.Teachers,
                     t => t.MapFrom(s =>
-                        s.Gradebooks.SelectMany(g => g.GradebookTeachers.Select(i => i.Teacher))));
+                        s.Gradebook.GradebookTeachers.Select(i => i.Teacher)));
             CreateMap<Account, AccountDto>()
                 .ForMember(m => m.Email, t => t.MapFrom(s => s.Login));
             CreateMap<Teacher, TeacherDto>()
