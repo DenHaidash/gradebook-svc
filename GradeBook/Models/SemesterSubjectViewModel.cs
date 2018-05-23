@@ -8,6 +8,6 @@ namespace GradeBook.Models
         public int SubjectId { get; set; }
         
         [Range(1, int.MaxValue)]
-        public int AssestmentTypeId { get; set; }
+        public int AssessmentTypeId { get; set; }
     }
 }

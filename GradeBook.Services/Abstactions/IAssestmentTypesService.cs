@@ -6,6 +6,6 @@ namespace GradeBook.Services.Abstactions
 {
     public interface IAssestmentTypesService
     {
-        Task<IEnumerable<AssestmentTypeDto>> GetAssestmentTypesAsync();
+        Task<IEnumerable<AssessmentTypeDto>> GetAssestmentTypesAsync();
     }
 }

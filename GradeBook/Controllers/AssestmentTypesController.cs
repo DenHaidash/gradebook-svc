@@ -25,7 +25,7 @@ namespace GradeBook.Controllers
         /// Get assestment types
         /// </summary>
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<AssestmentTypeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<AssessmentTypeDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAssestmentTypesAsync()
         {
             var assestmentTypes = await _assestmentTypesService.GetAssestmentTypesAsync();

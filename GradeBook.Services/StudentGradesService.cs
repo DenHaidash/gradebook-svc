@@ -83,7 +83,7 @@ namespace GradeBook.Services
             {
                 CurrentGrades = _mapper.Map<IEnumerable<GradeDto>>(currentGrades),
                 FinalGrade = _mapper.Map<FinalGradeDto>(finalGrade),
-                AssestmentType = gradebook.AssestmentType
+                AssessmentType = gradebook.AssessmentType
             };
         }
 

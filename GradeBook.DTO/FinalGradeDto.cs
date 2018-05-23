@@ -8,6 +8,6 @@ namespace GradeBook.DTO
         public int Value { get; set; }
         public DateTime CreatedAt { get; set; }
         public TeacherDto Teacher { get; set; }
-        public AssestmentTypeDto AssestmentType { get; set; }
+        public AssessmentTypeDto AssessmentType { get; set; }
     }
 }

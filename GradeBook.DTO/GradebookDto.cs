@@ -8,6 +8,6 @@ namespace GradeBook.DTO
         public int SemesterId { get; set; }
         public int SubjectId { get; set; }
         public IEnumerable<TeacherDto> Teachers { get; set; }
-        public AssestmentTypeDto AssestmentType { get; set; }
+        public AssessmentTypeDto AssessmentType { get; set; }
     }
 }

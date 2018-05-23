@@ -21,7 +21,7 @@ namespace GradeBook.Mapper
             CreateMap<NewStudentViewModel, StudentDto>()
                 .ForPath(m => m.Group.Id, t => t.MapFrom(s => s.GroupId));
             CreateMap<SemesterSubjectViewModel, SemesterSubjectDto>()
-                .ForPath(m => m.AssestmentType.Id, t => t.MapFrom(s => s.AssestmentTypeId))
+                .ForPath(m => m.AssessmentType.Id, t => t.MapFrom(s => s.AssessmentTypeId))
                 .ForPath(m => m.Subject.Id, t => t.MapFrom(s => s.SubjectId));
             CreateMap<GradeViewModel, GradeDto>()
                 .ForPath(m => m.GradebookRefId, t => t.Ignore())
@@ -43,7 +43,7 @@ namespace GradeBook.Mapper
                 .ForMember(m => m.LastName, t => t.MapFrom(s => s.Account.LastName))
                 .ForMember(m => m.MiddleName, t => t.MapFrom(s => s.Account.MiddleName));
             CreateMap<Group, GroupDto>();
-            CreateMap<AssestmentType, AssestmentTypeDto>().ReverseMap();
+            CreateMap<AssestmentType, AssessmentTypeDto>().ReverseMap();
             CreateMap<Semester, SemesterDto>()
                 .ForMember(m => m.GroupId, t => t.MapFrom(s => s.GroupRefId));
             CreateMap<Student, StudentDto>()
@@ -54,16 +54,16 @@ namespace GradeBook.Mapper
                 .ForMember(m => m.MiddleName, t => t.MapFrom(s => s.Account.MiddleName));
             CreateMap<Grade, GradeDto>();
             CreateMap<FinalGrade, FinalGradeDto>()
-                .ForMember(m => m.AssestmentType, t => t.MapFrom(s => s.Gradebook.SemesterSubject.AssestmentType));
+                .ForMember(m => m.AssessmentType, t => t.MapFrom(s => s.Gradebook.SemesterSubject.AssestmentType));
             CreateMap<Gradebook, GradebookDto>()
-                .ForMember(m => m.AssestmentType, t => t.MapFrom(s => s.SemesterSubject.AssestmentType))
+                .ForMember(m => m.AssessmentType, t => t.MapFrom(s => s.SemesterSubject.AssestmentType))
                 .ForMember(m => m.Teachers, t => t.MapFrom(s => s.GradebookTeachers.Select(r => r.Teacher)));
             
             CreateMap<SemesterDto, Semester>()
                 .ForPath(m => m.GroupRefId, t => t.MapFrom(s => s.GroupId))
                 .ForMember(m => m.Group, t => t.Ignore());
             CreateMap<SemesterSubjectDto, SemesterSubject>()
-                .ForMember(m => m.AssestmentTypeRefId, t => t.MapFrom(s => s.AssestmentType.Id))
+                .ForMember(m => m.AssestmentTypeRefId, t => t.MapFrom(s => s.AssessmentType.Id))
                 .ForMember(m => m.SubjectRefId, t => t.MapFrom(s => s.Subject.Id))
                 .ForMember(m => m.Semester, t => t.Ignore())
                 .ForMember(m => m.AssestmentType, t => t.Ignore())

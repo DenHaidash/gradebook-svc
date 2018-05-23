@@ -18,11 +18,11 @@ namespace GradeBook.Services
             _mapper = mapper;
         }
         
-        public async Task<IEnumerable<AssestmentTypeDto>> GetAssestmentTypesAsync()
+        public async Task<IEnumerable<AssessmentTypeDto>> GetAssestmentTypesAsync()
         {
             var assestmentTypes = await _assestmentTypesRepository.GetAllAsync().ConfigureAwait(false);
 
-            return _mapper.Map<IEnumerable<AssestmentTypeDto>>(assestmentTypes);
+            return _mapper.Map<IEnumerable<AssessmentTypeDto>>(assestmentTypes);
         }
     }
 }

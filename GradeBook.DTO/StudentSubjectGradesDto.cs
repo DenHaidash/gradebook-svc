@@ -5,7 +5,7 @@ namespace GradeBook.DTO
 {
     public class StudentSubjectGradesDto
     {
-        public AssestmentTypeDto AssestmentType { get; set; }
+        public AssessmentTypeDto AssessmentType { get; set; }
         public FinalGradeDto FinalGrade { get; set; }
         public IEnumerable<GradeDto> CurrentGrades { get; set; } = new List<GradeDto>();
         
