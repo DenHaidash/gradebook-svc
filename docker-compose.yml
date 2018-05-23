@@ -7,7 +7,7 @@ services:
      ports:
        - 5432:5432
      environment:
-         POSTGRES_PASSWORD: gradesL0cked!2
+         POSTGRES_PASSWORD: mysecretpassword
      volumes:
        - pg_data_prod:/var/lib/postgredata
      networks:
