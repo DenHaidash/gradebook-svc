@@ -11,7 +11,7 @@ namespace GradeBook.Controllers
 {
     [Produces("application/json")]
     [Authorize(Roles = Roles.Admin)]
-    [Route("api/assestment-types")]
+    [Route("api/assessment-types")]
     public class AssestmentTypesController : Controller
     {
         private readonly IAssestmentTypesService _assestmentTypesService;
