@@ -32,7 +32,7 @@ namespace GradeBook.Services.Helpers
         {
             var semester = date.Month > 1 && date.Month < 9 ? 2 : 1;
 
-            return (year: date.Year, semester);
+            return (year: semester == 1 ? date.Year : date.Year - 1, semester);
         }
     }
 }
