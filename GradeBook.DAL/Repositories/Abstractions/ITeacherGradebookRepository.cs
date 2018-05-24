@@ -6,6 +6,6 @@ namespace GradeBook.DAL.Repositories.Abstractions
 {
     public interface ITeacherGradebookRepository : IRepository<GradebookTeacher>
     {
-        Task<IEnumerable<Group>> GetTeacherSemesterGroups(int teacherId, int year, int semester);
+        Task<IEnumerable<SemesterSubject>> GetTeacherSemesterGroups(int teacherId, int year, int semester);
     }
 }

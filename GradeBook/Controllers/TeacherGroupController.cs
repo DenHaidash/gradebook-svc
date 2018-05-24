@@ -42,12 +42,12 @@ namespace GradeBook.Controllers
         /// </summary>
         [Authorize(Roles = Roles.Teacher)]
         [HttpGet("self/semesters/current/groups")]
-        [ProducesResponseType(typeof(IEnumerable<GroupDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<GroupSubjectsDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCurrentTeacherCurrentSemesterGroupsAsync()
         {
-            var groups = await _teacherCoursesService.GetTeacherCurrentSemesterGroupsAsync(AccountId);
+            var groupsSubects = await _teacherCoursesService.GetTeacherCurrentSemesterGroupsAsync(AccountId);
 
-            return Ok(groups);
+            return Ok(groupsSubects);
         }
         
         /// <summary>

@@ -26,16 +26,22 @@ namespace GradeBook.Services
             _gradebooksService = gradebooksService;
         }
         
-        public async Task<IEnumerable<GroupDto>> GetTeacherSemesterGroupsAsync(int teacherId, int year, int semester)
+        public async Task<IEnumerable<GroupSubjectsDto>> GetTeacherSemesterGroupsAsync(int teacherId, int year, int semester)
         {
-            var groups = await _teacherGradebookUnitOfWork.Repository
+            var groupsSubjects = (await _teacherGradebookUnitOfWork.Repository
                 .GetTeacherSemesterGroups(teacherId, year, semester)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false))
+                .GroupBy(g => g.Semester.Group.Id, s => new { s.Semester.Group, s.Subject })
+                .Select(g => new GroupSubjectsDto
+                {
+                    Group = _mapper.Map<GroupDto>(g.FirstOrDefault()?.Group),
+                    Subjects = _mapper.Map<IEnumerable<SubjectDto>>(g.Select(s => s.Subject))
+                });
                 
-            return _mapper.Map<IEnumerable<GroupDto>>(groups);
+            return groupsSubjects;
         }
 
-        public async Task<IEnumerable<GroupDto>> GetTeacherCurrentSemesterGroupsAsync(int teacherId)
+        public async Task<IEnumerable<GroupSubjectsDto>> GetTeacherCurrentSemesterGroupsAsync(int teacherId)
         {
             var semesterData = SemestersHelper.IdentifySemester(DateTime.Now);
 

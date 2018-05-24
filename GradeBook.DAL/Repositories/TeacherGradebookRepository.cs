@@ -25,14 +25,15 @@ namespace GradeBook.DAL.Repositories
             return entity.TeacherRefId;
         }
 
-        public async Task<IEnumerable<Group>> GetTeacherSemesterGroups(int teacherId, int year, int semester)
+        public async Task<IEnumerable<SemesterSubject>> GetTeacherSemesterGroups(int teacherId, int year, int semester)
         {
             return await Set
                 .Where(s => s.TeacherRefId == teacherId 
                             && s.Gradebook.Semester.StartsAt.Year == (semester == 2 ? year + 1 : year)
                             && s.Gradebook.Semester.SemesterNumber == semester)
-                .Select(s => s.Gradebook.Semester.Group)
-                .Include(s => s.Speciality)
+                .Select(s => s.Gradebook.SemesterSubject)
+                .Include(s => s.Semester.Group.Speciality)
+                .Include(s => s.Subject)
                 .Distinct()
                 .ToListAsync()
                 .ConfigureAwait(false);
