@@ -31,6 +31,7 @@ namespace GradeBook.Mapper
             CreateMap<Subject, SubjectDto>().ReverseMap();
             CreateMap<Specialty, SpecialtyDto>().ReverseMap();
             CreateMap<SemesterSubject, SemesterSubjectDto>()
+                .ForMember(m => m.AssessmentType, t => t.MapFrom(s => s.AssestmentType))
                 .ForMember(m => m.Teachers,
                     t => t.MapFrom(s =>
                         s.Gradebook.GradebookTeachers.Select(i => i.Teacher)));
