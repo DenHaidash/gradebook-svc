@@ -14,6 +14,8 @@ namespace GradeBook.DAL.Repositories
         protected override IQueryable<FinalGrade> WithIncludes(DbSet<FinalGrade> dbSet)
         {
             return dbSet.Include(s => s.Teacher.Account)
+                .Include(s => s.Gradebook.Semester)
+                .Include(s => s.Gradebook.Subject)
                 .Include(s => s.Gradebook.SemesterSubject.AssestmentType);
         }
 

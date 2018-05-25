@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -46,7 +47,7 @@ namespace GradeBook.Controllers
         /// </summary>
         [Authorize(Roles = Roles.Teacher)]
         [HttpPut]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(GradeDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddStudentGradeAsync(int studentId, int courseId, [FromBody]GradeViewModel grade)
         {
@@ -55,9 +56,9 @@ namespace GradeBook.Controllers
                 return BadRequest(new ValidationError(ModelState));
             }
             
-            await _studentGradesService.AddStudentCourseGradeAsync(_mapper.Map<GradeDto>(grade), studentId, AccountId, courseId);
+            var newGrade = await _studentGradesService.AddStudentCourseGradeAsync(_mapper.Map<GradeDto>(grade), studentId, AccountId, courseId);
 
-            return NoContent();
+            return Created(String.Empty, newGrade);
         }
         
         /// <summary>
@@ -78,7 +79,7 @@ namespace GradeBook.Controllers
         /// </summary>
         [Authorize(Roles = Roles.Teacher+","+Roles.Admin)]
         [HttpGet("final")]
-        [ProducesResponseType(typeof(GradeDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FinalGradeDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetStudentFinalGradeAsync(int studentId, int courseId)
         {
@@ -97,12 +98,12 @@ namespace GradeBook.Controllers
         /// </summary>
         [Authorize(Roles = Roles.Teacher)]
         [HttpPut("final")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(FinalGradeDto), StatusCodes.Status201Created)]
         public async Task<IActionResult> ConfirmStudentFinalGradeAsync(int studentId, int courseId)
         {
-            await _studentGradesService.ConfirmStudentCourseFinalGradeAsync(studentId, AccountId, courseId);
+            var finalGrade = await _studentGradesService.ConfirmStudentCourseFinalGradeAsync(studentId, AccountId, courseId);
             
-            return NoContent();
+            return Created(String.Empty, finalGrade);
         }
     }
 }

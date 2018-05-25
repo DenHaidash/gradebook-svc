@@ -87,7 +87,31 @@ namespace GradeBook.Services
             };
         }
 
-        public async Task AddStudentCourseGradeAsync(GradeDto grade, int studentId, int teacherId, int subjectId)
+        public async Task<GradeDto> GetGradeAsync(int gradeId)
+        {
+            var grade = await _gradesUnitOfWork.Repository.GetByIdAsync(gradeId).ConfigureAwait(false);
+
+            if (grade == null)
+            {
+                return null;
+            }
+
+            return _mapper.Map<GradeDto>(grade);
+        }
+
+        public async Task<FinalGradeDto> GetFinalGradeAsync(int finalGradeId)
+        {
+            var grade = await _finalGradesUnitOfWork.Repository.GetByIdAsync(finalGradeId).ConfigureAwait(false);
+
+            if (grade == null)
+            {
+                return null;
+            }
+
+            return _mapper.Map<FinalGradeDto>(grade);
+        }
+
+        public async Task<GradeDto> AddStudentCourseGradeAsync(GradeDto grade, int studentId, int teacherId, int subjectId)
         {
             if (grade.Value == 0)
             {
@@ -146,6 +170,8 @@ namespace GradeBook.Services
                 await _gradesUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
                 
                 transaction.Commit();
+
+                return await GetGradeAsync(newGrade.Id).ConfigureAwait(false);
             }
         }
 
@@ -184,7 +210,7 @@ namespace GradeBook.Services
             await _gradesUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public async Task ConfirmStudentCourseFinalGradeAsync(int studentId, int teacherId, int subjectId)
+        public async Task<FinalGradeDto> ConfirmStudentCourseFinalGradeAsync(int studentId, int teacherId, int subjectId)
         {
             var student = await _studentsService.GetStudentAsync(studentId).ConfigureAwait(false);
 
@@ -231,6 +257,8 @@ namespace GradeBook.Services
                 await _finalGradesUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
                 
                 transaction.Commit();
+
+                return await GetFinalGradeAsync(finalGrade.Id).ConfigureAwait(false);
             }
         }
 

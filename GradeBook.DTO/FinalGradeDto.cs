@@ -9,5 +9,7 @@ namespace GradeBook.DTO
         public DateTime CreatedAt { get; set; }
         public TeacherDto Teacher { get; set; }
         public AssessmentTypeDto AssessmentType { get; set; }
+        public SemesterDto Semester { get; set; }
+        public SubjectDto Subject { get; set; }
     }
 }

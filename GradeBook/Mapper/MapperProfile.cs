@@ -55,6 +55,8 @@ namespace GradeBook.Mapper
                 .ForMember(m => m.MiddleName, t => t.MapFrom(s => s.Account.MiddleName));
             CreateMap<Grade, GradeDto>();
             CreateMap<FinalGrade, FinalGradeDto>()
+                .ForMember(m => m.Semester, t => t.MapFrom(s => s.Gradebook.Semester))
+                .ForMember(m => m.Subject, t => t.MapFrom(s => s.Gradebook.Subject))
                 .ForMember(m => m.AssessmentType, t => t.MapFrom(s => s.Gradebook.SemesterSubject.AssestmentType));
             CreateMap<Gradebook, GradebookDto>()
                 .ForMember(m => m.AssessmentType, t => t.MapFrom(s => s.SemesterSubject.AssestmentType))

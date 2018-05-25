@@ -9,10 +9,13 @@ namespace GradeBook.Services.Abstactions
         Task<IEnumerable<FinalGradeDto>> GetStudentFinalGradesAsync(int studentId);
         Task<FinalGradeDto> GetStudentSubjectFinalGradeAsync(int studentId, int subjectId);
         Task<StudentSubjectGradesDto> GetStudentSubjectCurrentGradesAsync(int studentId, int subjectId);
+        
+        Task<GradeDto> GetGradeAsync(int gradeId);
+        Task<FinalGradeDto> GetFinalGradeAsync(int finalGradeId);
 
-        Task AddStudentCourseGradeAsync(GradeDto grade, int studentId, int teacherId, int subjectId);
+        Task<GradeDto> AddStudentCourseGradeAsync(GradeDto grade, int studentId, int teacherId, int subjectId);
         Task RemoveStudentCourseGradeAsync(int gradeId, int teacherId);
-        Task ConfirmStudentCourseFinalGradeAsync(int studentId, int teacherId, int subjectId);
+        Task<FinalGradeDto> ConfirmStudentCourseFinalGradeAsync(int studentId, int teacherId, int subjectId);
         Task<int> GetStudentCourseCurrentGradeTotalAsync(int studentId, int subjectId);
         
     }
