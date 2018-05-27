@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace GradeBook.Controllers
 {
     [Produces("application/json")]
-    [Authorize(Roles = Roles.Admin)]
     [Route("api/groups")]
     public class GroupsController : Controller
     {
@@ -29,6 +28,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Get groups
         /// </summary>
+        [Authorize(Roles = Roles.Admin)]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<GroupDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetGroupsAsync()
@@ -41,6 +41,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Get group
         /// </summary>
+        [Authorize(Roles = Roles.Admin+","+Roles.Teacher)]
         [HttpGet("{groupId:int:min(1)}", Name = "GetGroup")]
         [ProducesResponseType(typeof(GroupDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(GroupDto), StatusCodes.Status404NotFound)]
@@ -59,6 +60,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Create group
         /// </summary>
+        [Authorize(Roles = Roles.Admin)]
         [HttpPut]
         [ProducesResponseType(typeof(GroupDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
@@ -77,6 +79,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Delete group
         /// </summary>
+        [Authorize(Roles = Roles.Admin)]
         [HttpDelete("{groupId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteGroupAsync(int groupId)
@@ -89,6 +92,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Update group
         /// </summary>
+        [Authorize(Roles = Roles.Admin)]
         [HttpPost("{groupId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]

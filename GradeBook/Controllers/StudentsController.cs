@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace GradeBook.Controllers
 {
     [Produces("application/json")]
-    [Authorize(Roles = Roles.Admin)]
     [Route("api/students")]
     public class StudentsController : Controller
     {
@@ -28,6 +27,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Get student
         /// </summary>
+        [Authorize(Roles = Roles.Admin+","+Roles.Teacher)]
         [HttpGet("{studentId:int:min(1)}", Name = "GetStudent")]
         [ProducesResponseType(typeof(StudentDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -46,6 +46,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Delete student
         /// </summary>
+        [Authorize(Roles = Roles.Admin)]
         [HttpDelete("{studentId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteStudentAsync(int studentId)
@@ -58,6 +59,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Update student
         /// </summary>
+        [Authorize(Roles = Roles.Admin)]
         [HttpPost("{studentId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
@@ -79,6 +81,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Create student
         /// </summary>
+        [Authorize(Roles = Roles.Admin)]
         [HttpPut]
         [ProducesResponseType(typeof(StudentDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
