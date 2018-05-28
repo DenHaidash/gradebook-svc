@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using GradeBook.Models.Abstractions;
 
 namespace GradeBook.Models
 {
     [Table("Specialties")]
-    public class Specialty
+    public class Specialty : IEntity
     {
         [Key]
         public int Id { get; set; }

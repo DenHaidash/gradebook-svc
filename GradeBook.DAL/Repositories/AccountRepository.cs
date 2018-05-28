@@ -15,13 +15,8 @@ namespace GradeBook.DAL.Repositories
         public async Task<Account> GetByLoginAsync(string login)
         {
             return await Set
-                .FirstOrDefaultAsync(i => i.Login == login && i.IsActive)
+                .FirstOrDefaultAsync(i => i.Login == login)
                 .ConfigureAwait(false);
-        }
-
-        protected override int GetKeyValue(Account entity)
-        {
-            return entity.Id;
         }
     }
 }

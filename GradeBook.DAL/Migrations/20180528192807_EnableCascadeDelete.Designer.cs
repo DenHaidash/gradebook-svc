@@ -11,9 +11,10 @@ using System;
 namespace GradeBook.DAL.Migrations
 {
     [DbContext(typeof(GradebookContext))]
-    partial class GradebookContextModelSnapshot : ModelSnapshot
+    [Migration("20180528192807_EnableCascadeDelete")]
+    partial class EnableCascadeDelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

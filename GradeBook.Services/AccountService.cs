@@ -57,7 +57,6 @@ namespace GradeBook.Services
             var randPassword = PasswordProtector.GenerateSalt(10);
 
             var newAcct = _mapper.Map<Account>(acct);
-            newAcct.IsActive = true;
             newAcct.PasswordSalt = salt;
             newAcct.PasswordHash = PasswordProtector.SaltString(salt, randPassword);
             newAcct.CreatedAt = DateTime.Now;
@@ -74,7 +73,7 @@ namespace GradeBook.Services
             return await GetAccountAsync(newAcct.Login).ConfigureAwait(false);
         }
 
-        public async Task DisableAccountAsync(int accountId)
+        public async Task RemoveAccountAsync(int accountId)
         {
             var acct = await _accountUnitOfWork.Repository.GetByIdAsync(accountId).ConfigureAwait(false);
 
@@ -82,43 +81,17 @@ namespace GradeBook.Services
             {
                 throw new ResourceNotFoundException($"Account {accountId} not found");
             }
-
-            acct.IsActive = false;
-            acct.UpdatedAt = DateTime.Now;
-
-            await _accountUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
-        }
-
-        public async Task EnableAccountAsync(int accountId)
-        {
-            var acct = await _accountUnitOfWork.Repository.GetByIdAsync(accountId).ConfigureAwait(false);
-
-            if (acct == null)
-            {
-                throw new ResourceNotFoundException($"Account {accountId} not found");
-            }
-
-            acct.IsActive = true;
-            acct.UpdatedAt = DateTime.Now;
-
-            var salt = PasswordProtector.GenerateSalt();
-            var newPassword = PasswordProtector.GenerateSalt(10);
-
-            acct.PasswordSalt = salt;
-            acct.PasswordHash = PasswordProtector.SaltString(salt, newPassword);
             
-            await _accountUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
-            
-            await _emailSender
-                .SendEmailAsync(acct.Login, "GradeBook account restored", $"New password: {newPassword}")
-                .ConfigureAwait(false);
+            _accountUnitOfWork.Repository.Delete(acct);
+
+            _accountUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task UpdateAccountAsync(AccountDto acct)
         {
             var acctToUpdate = await _accountUnitOfWork.Repository.GetByIdAsync(acct.Id).ConfigureAwait(false);
 
-            if (acctToUpdate == null || !acctToUpdate.IsActive)
+            if (acctToUpdate == null)
             {
                 throw new ResourceNotFoundException($"Account {acct.Id} not found");
             }
@@ -135,7 +108,7 @@ namespace GradeBook.Services
         {
             var acctToUpdate = await _accountUnitOfWork.Repository.GetByIdAsync(accountId).ConfigureAwait(false);
 
-            if (acctToUpdate == null || !acctToUpdate.IsActive)
+            if (acctToUpdate == null)
             {
                 throw new ResourceNotFoundException($"Account {accountId} not found");
             }

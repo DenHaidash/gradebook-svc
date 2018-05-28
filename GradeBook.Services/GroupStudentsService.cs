@@ -21,7 +21,7 @@ namespace GradeBook.Services
         public async Task<IEnumerable<StudentDto>> GetStudentsAsync(int groupId)
         {
             var students = await _studentsRepository
-                .GetAllAsync(s => s.GroupRefId == groupId && !s.IsDeleted)
+                .GetAllAsync(s => s.GroupRefId == groupId)
                 .ConfigureAwait(false);
 
             return _mapper.Map<IEnumerable<StudentDto>>(students);

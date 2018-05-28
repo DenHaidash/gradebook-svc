@@ -22,11 +22,6 @@ namespace GradeBook.DAL.Repositories
                 .Include(s => s.AssestmentType);
         }
 
-        protected override int GetKeyValue(SemesterSubject entity)
-        {
-            return entity.SemesterRefId;
-        }
-
         public async Task<bool> HasGroupSubjectInScheduleAsync(int groupId, int subjectId)
         {
             return await Set.AnyAsync(s => s.SubjectRefId == subjectId && s.Semester.GroupRefId == groupId)

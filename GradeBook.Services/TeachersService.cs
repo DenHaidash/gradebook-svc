@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using GradeBook.Common.Exceptions;
@@ -30,7 +29,7 @@ namespace GradeBook.Services
         {
             var teacher = await _teachersUnitOfWork.Repository.GetByIdAsync(id).ConfigureAwait(false);
 
-            if (teacher == null || teacher.IsDeleted)
+            if (teacher == null)
             {
                 return null;
             }
@@ -40,7 +39,7 @@ namespace GradeBook.Services
 
         public async Task<IEnumerable<TeacherDto>> GetTeachersAsync()
         {
-            var teachers = await _teachersUnitOfWork.Repository.GetAllAsync(t => !t.IsDeleted).ConfigureAwait(false);
+            var teachers = await _teachersUnitOfWork.Repository.GetAllAsync().ConfigureAwait(false);
 
             return _mapper.Map<IEnumerable<TeacherDto>>(teachers);
         }
@@ -49,44 +48,21 @@ namespace GradeBook.Services
         {
             using (var transaction = await _teachersUnitOfWork.BeginTransactionAsync().ConfigureAwait(false))
             {
-                var existingTeacher = (await _teachersUnitOfWork.Repository
-                    .GetAllAsync(t => t.IsDeleted && !t.Account.IsActive && t.Account.Login == teacher.Email)
-                    .ConfigureAwait(false)).FirstOrDefault();
+                teacher.Role = Roles.Teacher;
 
-                var acctId = 0;
+                var newAcct = await _accountService.CreateAccountAsync(teacher).ConfigureAwait(false);
 
-                if (existingTeacher != null)
+                var newTeacher = new Teacher
                 {
-                    existingTeacher.IsDeleted = false;
-                    
-                    await _accountService.UpdateAccountAsync(teacher).ConfigureAwait(false);
-                    
-                    await _teachersUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
+                    Id = newAcct.Id
+                };
 
-                    acctId = existingTeacher.Id;
-
-                    await _accountService.EnableAccountAsync(existingTeacher.Id).ConfigureAwait(false);
-                }
-                else
-                {
-                    teacher.Role = Roles.Teacher;
-
-                    var newAcct = await _accountService.CreateAccountAsync(teacher).ConfigureAwait(false);
-
-                    var newTeacher = new Teacher
-                    {
-                        Id = newAcct.Id
-                    };
-
-                    _teachersUnitOfWork.Repository.Add(newTeacher);
-                    await _teachersUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
-
-                    acctId = newTeacher.Id;
-                }
+                _teachersUnitOfWork.Repository.Add(newTeacher);
+                await _teachersUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
                 transaction.Commit();
 
-                return await GetTeacherAsync(acctId).ConfigureAwait(false);
+                return await GetTeacherAsync(newTeacher.Id).ConfigureAwait(false);
             }
         }
 
@@ -97,22 +73,16 @@ namespace GradeBook.Services
 
         public async Task DeleteTeacherAsync(int teacherId)
         {
-            var teacherToUpdate = await _teachersUnitOfWork.Repository.GetByIdAsync(teacherId).ConfigureAwait(false);
+            var teacher = await _teachersUnitOfWork.Repository.GetByIdAsync(teacherId).ConfigureAwait(false);
 
-            if (teacherToUpdate == null || teacherToUpdate.IsDeleted)
+            if (teacher == null)
             {
                 throw new ResourceNotFoundException($"Teacher {teacherId} not found");
             }
-
-            using (var transaction = await _teachersUnitOfWork.BeginTransactionAsync().ConfigureAwait(false))
-            {
-                await _accountService.DisableAccountAsync(teacherId).ConfigureAwait(false);
-
-                teacherToUpdate.IsDeleted = true;
-                await _teachersUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
-
-                transaction.Commit();
-            }
+            
+            _teachersUnitOfWork.Repository.Delete(teacher);
+            
+            await _teachersUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }

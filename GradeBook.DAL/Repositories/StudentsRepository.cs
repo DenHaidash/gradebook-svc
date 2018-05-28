@@ -17,10 +17,5 @@ namespace GradeBook.DAL.Repositories
                 .Include(s => s.Account)
                 .Include(s => s.Group.Speciality);
         }
-
-        protected override int GetKeyValue(Student entity)
-        {
-            return entity.Id;
-        }
     }
 }

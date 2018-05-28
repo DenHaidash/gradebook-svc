@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace GradeBook.Controllers
 {
     [Produces("application/json")]
-    [Authorize(Roles = Roles.Admin)]
     [Route("api/subjects")]
     public class SubjectsController : Controller
     {
@@ -29,6 +28,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Get subjects
         /// </summary>
+        [Authorize(Roles = Roles.Admin)]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<SubjectDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetSubjectsAsync()
@@ -41,6 +41,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Get subject
         /// </summary>
+        [Authorize(Roles = Roles.Admin+","+Roles.Teacher)]
         [HttpGet("{subjectId:int:min(1)}", Name = "GetSubject")]
         [ProducesResponseType(typeof(SubjectDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -59,6 +60,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Create subject
         /// </summary>
+        [Authorize(Roles = Roles.Admin)]
         [HttpPut]
         [ProducesResponseType(typeof(SubjectDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
@@ -77,6 +79,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Update subject
         /// </summary>
+        [Authorize(Roles = Roles.Admin)]
         [HttpPost("{subjectId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
@@ -98,6 +101,7 @@ namespace GradeBook.Controllers
         /// <summary>
         /// Delete subject
         /// </summary>
+        [Authorize(Roles = Roles.Admin)]
         [HttpDelete("{subjectId:int:min(1)}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteSubjectAsync(int subjectId)

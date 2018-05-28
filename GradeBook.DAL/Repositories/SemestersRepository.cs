@@ -8,10 +8,5 @@ namespace GradeBook.DAL.Repositories
         public SemestersRepository(GradebookContext context) : base(context)
         {
         }
-
-        protected override int GetKeyValue(Semester entity)
-        {
-            return entity.Id;
-        }
     }
 }

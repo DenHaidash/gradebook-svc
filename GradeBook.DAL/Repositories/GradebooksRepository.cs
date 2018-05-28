@@ -19,10 +19,5 @@ namespace GradeBook.DAL.Repositories
                 .Include(s => s.GradebookTeachers)
                 .ThenInclude(s => s.Teacher.Account);
         }
-
-        protected override int GetKeyValue(Gradebook entity)
-        {
-            return entity.Id;
-        }
     }
 }

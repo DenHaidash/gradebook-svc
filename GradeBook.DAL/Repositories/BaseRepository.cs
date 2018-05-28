@@ -4,11 +4,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using GradeBook.DAL.Repositories.Abstractions;
+using GradeBook.Models.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
 namespace GradeBook.DAL.Repositories
 {
-    public abstract class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
+    public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class, IEntity 
     {
         private readonly GradebookContext _context;
 
@@ -24,11 +25,9 @@ namespace GradeBook.DAL.Repositories
         
         protected DbSet<TEntity> Set => _context.Set<TEntity>();
 
-        protected abstract int GetKeyValue(TEntity entity);
-
         public virtual async Task<TEntity> GetByIdAsync(int id)
         {
-            return await WithIncludes(Set).FirstOrDefaultAsync(i => GetKeyValue(i) == id).ConfigureAwait(false);
+            return await WithIncludes(Set).FirstOrDefaultAsync(i => i.Id == id).ConfigureAwait(false);
         }
 
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync()

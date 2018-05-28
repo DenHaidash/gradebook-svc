@@ -1,11 +1,12 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using GradeBook.Models.Abstractions;
 
 namespace GradeBook.Models
 {
     [Table("Accounts")]
-    public class Account
+    public class Account : IEntity
     {
         [Key]
         public int Id { get; set; }
@@ -33,7 +34,6 @@ namespace GradeBook.Models
         
         [Required, MaxLength(20)]
         public string Role { get; set; }
-        public bool IsActive { get; set; }
 
         public virtual Student Student { get; set; }
         public virtual Teacher Teacher { get; set; }

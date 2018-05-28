@@ -26,10 +26,5 @@ namespace GradeBook.DAL.Repositories
                             && s.Gradebook.SubjectRefId == subjectId)
                 .SumAsync(s => s.Value);
         }
-
-        protected override int GetKeyValue(Grade entity)
-        {
-            return entity.Id;
-        }
     }
 }

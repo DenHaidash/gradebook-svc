@@ -9,7 +9,7 @@ services:
      environment:
          POSTGRES_PASSWORD: mysecretpassword
      volumes:
-       - pg_data_prod:/var/lib/postgredata
+       - pg_data_prod:/var/lib/postgresql/data
      networks:
        - network
  

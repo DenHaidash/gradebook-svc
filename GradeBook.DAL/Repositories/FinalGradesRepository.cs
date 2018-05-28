@@ -18,10 +18,5 @@ namespace GradeBook.DAL.Repositories
                 .Include(s => s.Gradebook.Subject)
                 .Include(s => s.Gradebook.SemesterSubject.AssestmentType);
         }
-
-        protected override int GetKeyValue(FinalGrade entity)
-        {
-            return entity.Id;
-        }
     }
 }

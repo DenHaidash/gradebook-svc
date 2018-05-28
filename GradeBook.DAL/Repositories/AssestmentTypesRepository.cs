@@ -8,10 +8,5 @@ namespace GradeBook.DAL.Repositories
         public AssestmentTypesRepository(GradebookContext context) : base(context)
         {
         }
-
-        protected override int GetKeyValue(AssestmentType entity)
-        {
-            return entity.Id;
-        }
     }
 }

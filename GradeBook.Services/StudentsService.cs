@@ -28,7 +28,7 @@ namespace GradeBook.Services
         {
             var student = await _studentsUnitOfWork.Repository.GetByIdAsync(id).ConfigureAwait(false);
 
-            if (student == null || student.IsDeleted)
+            if (student == null)
             {
                 return null;
             }
@@ -40,44 +40,23 @@ namespace GradeBook.Services
         {
             using (var tranaction = await _studentsUnitOfWork.BeginTransactionAsync().ConfigureAwait(false))
             {
-                var existingStudent = (await _studentsUnitOfWork.Repository
-                    .GetAllAsync(t => t.IsDeleted && !t.Account.IsActive && t.Account.Login == student.Email)
-                    .ConfigureAwait(false)).FirstOrDefault();
-
-                var acctId = 0;
-
-                if (existingStudent != null)
-                {
-                    existingStudent.IsDeleted = false;
-
-                    await _acctService.UpdateAccountAsync(student).ConfigureAwait(false);
-                    await _studentsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
-
-                    acctId = existingStudent.Id;
-
-                    await _acctService.EnableAccountAsync(existingStudent.Id).ConfigureAwait(false);
-                }
-                else
-                {
-                    student.Role = Roles.Student;
-                
-                    var newAcct = await _acctService.CreateAccountAsync(student).ConfigureAwait(false);
-
-                    var newStudent = new Student
-                    {
-                        Id = newAcct.Id,
-                        GroupRefId = student.Group.Id
-                    };
+                student.Role = Roles.Student;
             
-                    _studentsUnitOfWork.Repository.Add(newStudent);
-                    await _studentsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
+                var newAcct = await _acctService.CreateAccountAsync(student).ConfigureAwait(false);
 
-                    acctId = newStudent.Id;
-                }
+                var newStudent = new Student
+                {
+                    Id = newAcct.Id,
+                    GroupRefId = student.Group.Id
+                };
+        
+                _studentsUnitOfWork.Repository.Add(newStudent);
+                await _studentsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
+                
                 
                 tranaction.Commit();
 
-                return await GetStudentAsync(acctId).ConfigureAwait(false);
+                return await GetStudentAsync(newStudent.Id).ConfigureAwait(false);
             }
         }
 
@@ -88,23 +67,16 @@ namespace GradeBook.Services
 
         public async Task DeleteStudentAsync(int studentId)
         {
-            var studentToUpdate = await _studentsUnitOfWork.Repository.GetByIdAsync(studentId).ConfigureAwait(false);
+            var student = await _studentsUnitOfWork.Repository.GetByIdAsync(studentId).ConfigureAwait(false);
 
-            if (studentToUpdate == null || studentToUpdate.IsDeleted)
+            if (student == null)
             {
                 throw new ResourceNotFoundException($"Student {studentId} not found");
             }
             
-            using (var tranaction = await _studentsUnitOfWork.BeginTransactionAsync().ConfigureAwait(false))
-            {
-                await _acctService.DisableAccountAsync(studentId).ConfigureAwait(false);
-                
-                studentToUpdate.IsDeleted = true;
-
-                await _studentsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
-                
-                tranaction.Commit();
-            }
+            _studentsUnitOfWork.Repository.Delete(student);
+            
+            await _studentsUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }

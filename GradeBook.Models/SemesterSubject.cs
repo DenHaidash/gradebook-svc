@@ -1,11 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using GradeBook.Models.Abstractions;
 
 namespace GradeBook.Models
 {
     [Table("SemestersSubjects")]
-    public class SemesterSubject
+    public class SemesterSubject : IEntity
     {
+        [Key]
+        public int Id { get; set; }
+        
         public int SemesterRefId { get; set; }
         
         [ForeignKey("SemesterRefId")]
@@ -21,6 +25,6 @@ namespace GradeBook.Models
         [ForeignKey("AssestmentTypeRefId")]   
         public virtual AssestmentType AssestmentType { get; set; }
         
-        public virtual Gradebook Gradebook { get; set; }
+        public virtual Gradebook Gradebook { get; set; }        
     }
 }

@@ -1,19 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using GradeBook.Models.Abstractions;
 
 namespace GradeBook.Models
 {
     [Table("Students")]
-    public class Student
+    public class Student : IEntity
     {
         [Key]
         public int Id { get; set; }
         
         [ForeignKey("Id")]
         public virtual Account Account { get; set; }
-        
-        public bool IsDeleted { get; set; }
         
         public int GroupRefId { get; set; }
         

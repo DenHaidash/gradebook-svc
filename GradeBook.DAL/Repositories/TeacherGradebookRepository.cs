@@ -20,11 +20,6 @@ namespace GradeBook.DAL.Repositories
                 .Include(s => s.Gradebook.Subject);
         }
 
-        protected override int GetKeyValue(GradebookTeacher entity)
-        {
-            return entity.TeacherRefId;
-        }
-
         public async Task<IEnumerable<SemesterSubject>> GetTeacherSemesterGroups(int teacherId, int year, int semester)
         {
             return await Set

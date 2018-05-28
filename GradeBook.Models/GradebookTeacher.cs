@@ -1,10 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using GradeBook.Models.Abstractions;
 
 namespace GradeBook.Models
 {
     [Table("GradebooksTeachers")]
-    public class GradebookTeacher
+    public class GradebookTeacher : IEntity
     {
+        [Key]
+        public int Id { get; set; }
+        
         public int GradebookRefId { get; set; }
         
         [ForeignKey("GradebookRefId")]
