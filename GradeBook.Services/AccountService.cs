@@ -9,6 +9,7 @@ using GradeBook.DAL.UoW.Abstractions;
 using GradeBook.DTO;
 using GradeBook.Models;
 using GradeBook.Services.Abstactions;
+using Microsoft.Extensions.Logging;
 
 namespace GradeBook.Services
 {
@@ -17,12 +18,15 @@ namespace GradeBook.Services
         private readonly IUnitOfWork<IAccountRepository> _accountUnitOfWork;
         private readonly IEmailSender _emailSender;
         private readonly IMapper _mapper;
+        private readonly ILogger<AccountService> _logger;
 
-        public AccountService(IUnitOfWork<IAccountRepository> accountUnitOfWork, IEmailSender emailSender, IMapper mapper)
+        public AccountService(IUnitOfWork<IAccountRepository> accountUnitOfWork, IEmailSender emailSender, 
+            IMapper mapper, ILogger<AccountService> logger)
         {
             _accountUnitOfWork = accountUnitOfWork;
             _emailSender = emailSender;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<AccountDto> GetAccountAsync(string login)
@@ -66,9 +70,19 @@ namespace GradeBook.Services
 
             await _accountUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
-            await _emailSender
-                .SendEmailAsync(acct.Email, "GradeBook account created", $"Account password: {randPassword}")
-                .ConfigureAwait(false);
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await _emailSender
+                        .SendEmailAsync(acct.Email, "GradeBook account created", $"Account password: {randPassword}")
+                        .ConfigureAwait(false);
+                }
+                catch (Exception)
+                {
+                    _logger.LogError($"Failed to send email with password to user {acct.Email}");
+                }
+            });
 
             return await GetAccountAsync(newAcct.Login).ConfigureAwait(false);
         }
@@ -140,9 +154,19 @@ namespace GradeBook.Services
 
             await _accountUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
             
-            await _emailSender
-                .SendEmailAsync(acctToUpdate.Login, "GradeBook password reset", $"New password: {newPassword}")
-                .ConfigureAwait(false);
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await _emailSender
+                        .SendEmailAsync(acctToUpdate.Login, "GradeBook password reset", $"New password: {newPassword}")
+                        .ConfigureAwait(false);
+                }
+                catch (Exception)
+                {
+                    _logger.LogError($"Failed to send email with password to user {login}");
+                }
+            });
         }
     }
 }
