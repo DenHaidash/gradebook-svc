@@ -7,7 +7,6 @@ namespace GradeBook.Models
     [Table("SemestersSubjects")]
     public class SemesterSubject : IEntity
     {
-        [Key]
         public int Id { get; set; }
         
         public int SemesterRefId { get; set; }

@@ -7,7 +7,6 @@ namespace GradeBook.Models
     [Table("GradebooksTeachers")]
     public class GradebookTeacher : IEntity
     {
-        [Key]
         public int Id { get; set; }
         
         public int GradebookRefId { get; set; }
