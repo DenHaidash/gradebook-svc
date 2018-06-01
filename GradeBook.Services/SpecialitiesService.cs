@@ -57,7 +57,7 @@ namespace GradeBook.Services
 
             if (specialityToUpdate == null)
             {
-                throw new ResourceNotFoundException($"Speciality {specialty.Id} not found");
+                throw new ResourceNotFoundException($"Спеціальність {specialty.Id} не знайдена");
             }
             
             specialityToUpdate.Name = specialty.Name;
@@ -72,7 +72,7 @@ namespace GradeBook.Services
 
             if (speciality == null)
             {
-                throw new ResourceNotFoundException($"Speciality {specialityId} not found");
+                throw new ResourceNotFoundException($"Спеціальність {specialityId} не знайдена");
             }
             
             _specialitiesUnitOfWork.Repository.Delete(speciality);

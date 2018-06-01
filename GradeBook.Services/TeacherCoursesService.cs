@@ -75,7 +75,7 @@ namespace GradeBook.Services
             
             if (gradebook == null)
             {
-                throw new ResourceNotFoundException($"Gradebook for subject {subjectId} of group {groupId} not found");
+                throw new ResourceNotFoundException($"Журнал групи {groupId} по предмету {subjectId} не знайдено");
             }
             
             return _mapper.Map<IEnumerable<TeacherDto>>(gradebook.Teachers);
@@ -87,7 +87,7 @@ namespace GradeBook.Services
 
             if (gradebook == null)
             {
-                throw new ResourceNotFoundException($"Gradebook for subject {subjectId} of group {groupId} not found");
+                throw new ResourceNotFoundException($"Журнал групи {groupId} по предмету {subjectId} не знайдено");
             }
             
             var newTeacherAssignment = new GradebookTeacher

@@ -20,19 +20,21 @@ namespace GradeBook.Services
         private readonly IMapper _mapper;
         private readonly IGradebooksService _gradebooksService;
         private readonly IStudentsService _studentsService;
+        private readonly ISubjectsService _subjectsService;
 
         private const int MinFinalGradeValue = 60;
         private const int MaxFinalGradeValue = 100;
 
         public StudentGradesService(IUnitOfWork<IGradesRepository> gradesUnitOfWork,
             IUnitOfWork<IFinalGradesRepository> finalGradesUnitOfWork, IMapper mapper,
-            IGradebooksService gradebooksService, IStudentsService studentsService)
+            IGradebooksService gradebooksService, IStudentsService studentsService, ISubjectsService subjectsService)
         {
             _gradesUnitOfWork = gradesUnitOfWork;
             _finalGradesUnitOfWork = finalGradesUnitOfWork;
             _mapper = mapper;
             _gradebooksService = gradebooksService;
             _studentsService = studentsService;
+            _subjectsService = subjectsService;
         }
 
         public async Task<IEnumerable<FinalGradeDto>> GetStudentFinalGradesAsync(int studentId)
@@ -68,15 +70,17 @@ namespace GradeBook.Services
 
             if (student == null)
             {
-                throw new ResourceNotFoundException($"Student {studentId} not found");
+                throw new ResourceNotFoundException($"Стедент {studentId} не знайдений");
             }
             
             var gradebook = await _gradebooksService.GetGradebookByGroupAsync(student.Group.Id, subjectId)
                 .ConfigureAwait(false);
 
+            var subject = await _subjectsService.GetSubjectAsync(subjectId).ConfigureAwait(false);
+            
             if (gradebook == null)
             {
-                throw new ResourceNotFoundException($"Gradebook of group {student.Group.Id} for subject {subjectId} not found");
+                throw new ResourceNotFoundException($"Журнал групи {student.Group.Code} по предмету {subject?.Name ?? subjectId.ToString()} не знайдений");
             }
             
             return new StudentSubjectGradesDto
@@ -115,36 +119,38 @@ namespace GradeBook.Services
         {
             if (grade.Value == 0)
             {
-                throw new ResourceOperationException("Grade value can't be 0");
+                throw new ResourceOperationException("Бал не повинен бути 0");
             }
 
             using (var transaction = await _gradesUnitOfWork.BeginTransactionAsync(IsolationLevel.RepeatableRead).ConfigureAwait(false))
             {
-                var finalGrade = await GetStudentSubjectFinalGradeAsync(studentId, subjectId).ConfigureAwait(false);
-
-                if (finalGrade != null)
-                {
-                    throw new ResourceOperationException($"Student {studentId} already has final grade for subject {subjectId}");
-                }
-
                 var student = await _studentsService.GetStudentAsync(studentId).ConfigureAwait(false);
 
                 if (student == null)
                 {
-                    throw new ResourceNotFoundException($"Student {studentId} not found");
+                    throw new ResourceNotFoundException($"Студент {studentId} не знайдений");
+                }
+                
+                var finalGrade = await GetStudentSubjectFinalGradeAsync(studentId, subjectId).ConfigureAwait(false);
+
+                var subject = await _subjectsService.GetSubjectAsync(subjectId).ConfigureAwait(false);
+                
+                if (finalGrade != null)
+                {
+                    throw new ResourceOperationException($"Студент {student.LastName} {student.FirstName} ({studentId}) вже має кінцеву оцінку по предмету {subject?.Name ?? subjectId.ToString()}");
                 }
 
                 var gradebook = await _gradebooksService.GetGradebookByGroupAsync(student.Group.Id, subjectId)
                     .ConfigureAwait(false);
-
+                
                 if (gradebook == null)
                 {
-                    throw new ResourceNotFoundException($"Gradebook for subject {subjectId} of group {student.Group.Id} not found");
+                    throw new ResourceNotFoundException($"Журнал групи {student.Group.Code} по предмету {subject?.Name ?? subjectId.ToString()} не знайдено");
                 }
 
                 if (gradebook.Teachers.All(t => t.Id != teacherId))
                 {
-                    throw new ResourceAccessPermissionException($"Teacher {teacherId} doesn't have an access to gradebook {gradebook.Id}");
+                    throw new ResourceAccessPermissionException($"Викладач {teacherId} не має доступу до журналу {gradebook.Id}");
                 }
 
                 var currentGradeTotal =
@@ -152,7 +158,7 @@ namespace GradeBook.Services
 
                 if (currentGradeTotal + grade.Value > MaxFinalGradeValue)
                 {
-                    throw new ResourceOperationException($"Total grades for subject can't be greater then {MaxFinalGradeValue}");
+                    throw new ResourceOperationException($"Сумарна кількість балів не має перевищувати {MaxFinalGradeValue} балів");
                 }
 
                 var newGrade = new Grade
@@ -181,7 +187,7 @@ namespace GradeBook.Services
 
             if (grade == null)
             {
-                throw new ResourceNotFoundException($"Grade {gradeId} not found");
+                throw new ResourceNotFoundException($"Оцінка {gradeId} не знайдена");
             }
 
             var finalGrade = await GetStudentSubjectFinalGradeAsync(grade.StudentRefId, grade.Gradebook.SemesterRefId)
@@ -189,7 +195,7 @@ namespace GradeBook.Services
 
             if (finalGrade != null)
             {
-                throw new ResourceOperationException($"Student {grade.StudentRefId} already has final grade for subject {grade.Gradebook.SemesterRefId}");
+                throw new ResourceOperationException($"Студент {grade.Student.Account.LastName} {grade.Student.Account.FirstName} ({grade.StudentRefId}) вже має кінцеву оцінку по предмету {grade.Gradebook.Subject.Name}");
             }
 
             var gradebook = await _gradebooksService.GetGradebookAsync(grade.GradebookRefId)
@@ -197,12 +203,12 @@ namespace GradeBook.Services
 
             if (gradebook == null)
             {
-                throw new ResourceNotFoundException($"Gradebook {grade.GradebookRefId} not found");
+                throw new ResourceNotFoundException($"Журнал {grade.GradebookRefId} не знайдено");
             }
 
             if (gradebook.Teachers.All(t => t.Id != teacherId))
             {
-                throw new ResourceAccessPermissionException($"Teacher {teacherId} doesn't have an access to gradebook {gradebook.Id}");
+                throw new ResourceAccessPermissionException($"Викладач {teacherId} не має доступу до журналу {gradebook.Id}");
             }
 
             _gradesUnitOfWork.Repository.Delete(grade);
@@ -216,7 +222,7 @@ namespace GradeBook.Services
 
             if (student == null)
             {
-                throw new ResourceNotFoundException($"Student {studentId} not found");
+                throw new ResourceNotFoundException($"Студент {studentId} не знайдний");
             }
 
             var gradebook = await _gradebooksService.GetGradebookByGroupAsync(student.Group.Id, subjectId)
@@ -224,12 +230,12 @@ namespace GradeBook.Services
 
             if (gradebook == null)
             {
-                throw new ResourceNotFoundException($"Gradebook for subject {subjectId} of group {student.Group.Id} not found");
+                throw new ResourceNotFoundException($"Журнал групи {student.Group.Code} по предмету {subjectId} не знайдено");
             }
 
             if (gradebook.Teachers.All(t => t.Id != teacherId))
             {
-                throw new ResourceAccessPermissionException($"Teacher {teacherId} doesn't have an access to gradebook {gradebook.Id}");
+                throw new ResourceAccessPermissionException($"Викладач {teacherId} не має доступу до журналу {gradebook.Id}");
             }
 
             using (var transaction = await _finalGradesUnitOfWork.BeginTransactionAsync(IsolationLevel.RepeatableRead)
@@ -240,7 +246,7 @@ namespace GradeBook.Services
 
                 if (currentGradeTotal < MinFinalGradeValue)
                 {
-                    throw new ResourceOperationException($"Final grade can't be lower than {MinFinalGradeValue}");
+                    throw new ResourceOperationException($"Кінцева оцінка не може бути нижча за {MinFinalGradeValue} балів");
                 }
 
                 var finalGrade = new FinalGrade

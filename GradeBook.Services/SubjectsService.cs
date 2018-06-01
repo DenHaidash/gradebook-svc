@@ -57,7 +57,7 @@ namespace GradeBook.Services
 
             if (subjectToUpdate == null)
             {
-                throw new ResourceNotFoundException($"Subject {subject.Id} not found");
+                throw new ResourceNotFoundException($"Предмет {subject.Id} не знайдений");
             }
 
             subjectToUpdate.Name = subject.Name;
@@ -71,7 +71,7 @@ namespace GradeBook.Services
 
             if (subjectToUpdate == null)
             {
-                throw new ResourceNotFoundException($"Subject {subjectId} not found");
+                throw new ResourceNotFoundException($"Предмет {subjectId} не знайдений");
             }
 
             _subjectsUnitOfWork.Repository.Delete(subjectToUpdate);

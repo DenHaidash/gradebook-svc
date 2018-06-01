@@ -93,7 +93,7 @@ namespace GradeBook.Services
 
             if (acct == null)
             {
-                throw new ResourceNotFoundException($"Account {accountId} not found");
+                throw new ResourceNotFoundException($"Аккаунт {accountId} не знайдено");
             }
             
             _accountUnitOfWork.Repository.Delete(acct);
@@ -107,7 +107,7 @@ namespace GradeBook.Services
 
             if (acctToUpdate == null)
             {
-                throw new ResourceNotFoundException($"Account {acct.Id} not found");
+                throw new ResourceNotFoundException($"Аккаунт {acct.Id} не знайдено");
             }
 
             acctToUpdate.FirstName = acct.FirstName;
@@ -124,7 +124,7 @@ namespace GradeBook.Services
 
             if (acctToUpdate == null)
             {
-                throw new ResourceNotFoundException($"Account {accountId} not found");
+                throw new ResourceNotFoundException($"Аккаунт {accountId} не знайдено");
             }
             
             var salt = PasswordProtector.GenerateSalt();
@@ -142,7 +142,7 @@ namespace GradeBook.Services
 
             if (acctToUpdate == null)
             {
-                throw new ResourceNotFoundException($"Account {login} not found");
+                throw new ResourceNotFoundException($"Аккаунт {login} не знайдено");
             }
             
             var salt = PasswordProtector.GenerateSalt();

@@ -93,7 +93,7 @@ namespace GradeBook.Services
 
             if (semesterToDelete == null)
             {
-                throw new ResourceNotFoundException($"Semester {semesterId} not found");
+                throw new ResourceNotFoundException($"Семестр {semesterId} не знайдено");
             }
             
             _semesterScheduleUnitOfWork.Repository.Delete(semesterToDelete);

@@ -74,7 +74,7 @@ namespace GradeBook.Services
 
             if (groupToUpdate == null)
             {
-                throw new ResourceNotFoundException($"Group {group.Id} not found");
+                throw new ResourceNotFoundException($"Група {group.Id} не знайдена");
             }
 
             groupToUpdate.Code = group.Code;
@@ -89,7 +89,7 @@ namespace GradeBook.Services
 
             if (groupToDelete == null)
             {
-                throw new ResourceNotFoundException($"Group {groupId} not found");
+                throw new ResourceNotFoundException($"Група {groupId} не знайдена");
             }
 
             _groupsUnitOfWork.Repository.Delete(groupToDelete);

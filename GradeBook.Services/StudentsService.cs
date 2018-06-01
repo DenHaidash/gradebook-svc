@@ -71,7 +71,7 @@ namespace GradeBook.Services
 
             if (student == null)
             {
-                throw new ResourceNotFoundException($"Student {studentId} not found");
+                throw new ResourceNotFoundException($"Студент {studentId} не знайдений");
             }
             
             _studentsUnitOfWork.Repository.Delete(student);

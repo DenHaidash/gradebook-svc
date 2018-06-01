@@ -20,14 +20,18 @@ namespace GradeBook.Services
         private readonly IGroupSemestersService _groupSemestersService;
         private readonly IGradebooksService _gradebooksService;
         private readonly IStudentsService _studentsService;
+        private readonly IGroupsService _groupsService;
 
-        public GroupScheduleService(IUnitOfWork<ISemesterSubjectsRepository> semesterScheduleUnitOfWork, IMapper mapper, IGroupSemestersService groupSemestersService, IGradebooksService gradebooksService, IStudentsService studentsService)
+        public GroupScheduleService(IUnitOfWork<ISemesterSubjectsRepository> semesterScheduleUnitOfWork, IMapper mapper,
+            IGroupSemestersService groupSemestersService, IGradebooksService gradebooksService,
+            IStudentsService studentsService, IGroupsService groupsService)
         {
             _semesterScheduleUnitOfWork = semesterScheduleUnitOfWork;
             _mapper = mapper;
             _groupSemestersService = groupSemestersService;
             _gradebooksService = gradebooksService;
             _studentsService = studentsService;
+            _groupsService = groupsService;
         }
 
         public async Task<IEnumerable<SemesterSubjectDto>> GetGroupSemesterSubjects(int groupId, int yearNumber, int semesterNumber)
@@ -46,7 +50,7 @@ namespace GradeBook.Services
 
             if (student == null)
             {
-                throw new ResourceNotFoundException($"Student {studentId} not found");
+                throw new ResourceNotFoundException($"Студент {studentId} не знайдений");
             }
 
             var semesterData = SemestersHelper.IdentifySemester(DateTime.Now);
@@ -62,9 +66,16 @@ namespace GradeBook.Services
 
         public async Task AddSubjectToSemester(SemesterSubjectDto semesterSubject, int groupId, int yearNumber, int semesterNumber)
         {
+            var group = await _groupsService.GetGroupAsync(groupId).ConfigureAwait(false);
+
+            if (group == null)
+            {
+                throw new ResourceNotFoundException($"Група {groupId} не знайдена");
+            }
+            
             if (await HasGroupSubjectInScheduleAsync(groupId, semesterSubject.Subject.Id).ConfigureAwait(false))
             {
-                throw new ResourceOperationException($"Group {groupId} already has subject {semesterSubject.Subject.Id} in its schedule");
+                throw new ResourceOperationException($"Група {group.Code} вже має предмет {semesterSubject.Subject.Name} у своєму розкладі");
             }
             
             var semester = await _groupSemestersService.GetGroupSemesterAsync(groupId, yearNumber, semesterNumber)
@@ -72,7 +83,7 @@ namespace GradeBook.Services
 
             if (semester == null)
             {
-                throw new ResourceNotFoundException($"Semester {yearNumber}/{semesterNumber} for group {groupId} not found");
+                throw new ResourceNotFoundException($"Семестр {yearNumber}/{semesterNumber} для групи {group.Code} не знайдений");
             }
 
             var newSemesterSubject = _mapper.Map<SemesterSubject>(semesterSubject);
@@ -96,12 +107,19 @@ namespace GradeBook.Services
 
         public async Task DeleteSubjectFromSemester(int subjectId, int groupId, int yearNumber, int semesterNumber)
         {
+            var group = await _groupsService.GetGroupAsync(groupId).ConfigureAwait(false);
+            
+            if (group == null)
+            {
+                throw new ResourceNotFoundException($"Група {groupId} не знайдена");
+            }
+            
             var semester = await _groupSemestersService.GetGroupSemesterAsync(groupId, yearNumber, semesterNumber)
                 .ConfigureAwait(false);
 
             if (semester == null)
             {
-                throw new ResourceNotFoundException($"Semester {yearNumber}/{semesterNumber} for group {groupId} not found");
+                throw new ResourceNotFoundException($"Семестр {yearNumber}/{semesterNumber} для групи {group.Code} не знайдений");
             }
 
             var semesterSubject = (await _semesterScheduleUnitOfWork.Repository
@@ -110,7 +128,7 @@ namespace GradeBook.Services
 
             if (semesterSubject == null)
             {
-                throw new ResourceNotFoundException($"Semester subject {subjectId} for semester {semester.Id} not found");
+                throw new ResourceNotFoundException($"Предмет {subjectId} у семестрі {semester.Id} не знайдено");
             }
 
             using (var transaction = await _semesterScheduleUnitOfWork.BeginTransactionAsync().ConfigureAwait(false))

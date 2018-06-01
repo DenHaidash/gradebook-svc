@@ -86,7 +86,7 @@ namespace GradeBook.Services
 
             if (gradebook == null)
             {
-                throw new ResourceNotFoundException($"Gradebook {gradebookId} not found");
+                throw new ResourceNotFoundException($"Журнал оцінок {gradebookId} не знайдено");
             }
             
             _gradebookUnitOfWork.Repository.Delete(gradebook);
