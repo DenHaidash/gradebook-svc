@@ -48,7 +48,7 @@ namespace GradeBook.Middleware
                     break;
             }
             
-            var result = JsonConvert.SerializeObject(new { Error = exception.Message });
+            var result = JsonConvert.SerializeObject(new { error = exception.Message });
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)code;
             await context.Response.WriteAsync(result);

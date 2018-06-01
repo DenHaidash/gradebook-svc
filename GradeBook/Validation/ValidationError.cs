@@ -1,12 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json;
 
 namespace GradeBook.Validation
 {
+    [JsonObject]
     public class ValidationError
     {
+        [JsonProperty(PropertyName = "error")]
         public string Error { get; } = "Некоректні дані";
+        
+        [JsonProperty(PropertyName = "data")]
         public Dictionary<string, List<string>> Data { get; }
         
         public ValidationError(ModelStateDictionary modelState, string errorMessage = null)
