@@ -20,7 +20,7 @@ namespace GradeBook.Helpers.Jwt
             _jwtOptions = jwtOptions.Value;
         }
 
-        private static IEnumerable<Claim> _createClaims(AccountDto acct)
+        private static IEnumerable<Claim> CreateClaims(AccountDto acct)
         {
             return new[]
             {
@@ -39,7 +39,7 @@ namespace GradeBook.Helpers.Jwt
         
         public string BuildJwtToken(AccountDto acct)
         {
-            var claims = _createClaims(acct);
+            var claims = CreateClaims(acct);
             
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

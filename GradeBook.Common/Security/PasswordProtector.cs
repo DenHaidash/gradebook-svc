@@ -7,7 +7,7 @@ namespace GradeBook.Common.Security
 {
     public static class PasswordProtector
     {
-        private static string _getRandomString(int length)
+        private static string GetRandomString(int length)
         {
             var random = new Random();
             
@@ -20,7 +20,7 @@ namespace GradeBook.Common.Security
         
         public static string GenerateSalt(int saltLength = 30)
         {
-            return _getRandomString(saltLength);
+            return GetRandomString(saltLength);
         }
 
         public static string SaltString(string salt, string str)

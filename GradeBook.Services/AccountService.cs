@@ -98,7 +98,7 @@ namespace GradeBook.Services
             
             _accountUnitOfWork.Repository.Delete(acct);
 
-            _accountUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
+            await _accountUnitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task UpdateAccountAsync(AccountDto acct)
